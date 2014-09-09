@@ -1,0 +1,48 @@
+================================================================================
+
+GitHub repository : blankaspect/regexSearch
+
+================================================================================
+
+This repository contains the source code for classes of the RegexSearch
+application that belong to the *unnamed* package.  The source code for classes
+of *named* packages can be found in the blankaspect/javaLibrary1 repository,
+which contains code that is shared by Blank Aspect Java applications.  Both sets
+of code are required to build the RegexSearch application.  For example, if the
+source code is in tmp/regexSearch/src and tmp/javaLibrary1/src, you could
+compile with javac from the regexSearch directory with the following command:
+
+javac -d classes -sourcepath ../javaLibrary1/src src/*
+
+The Java version of the source code is 1.7 (Java SE 7).
+
+The complete source code of the RegexSearch application is distributed, along
+with an executable JAR, through SourceForge:
+<http://regexsearch.sourceforge.net/>
+The distribution contains an Ant file for building the application from source.
+The motivation for additionally publishing the source code on GitHub is to allow
+it to be browsed without the need to download an archive and extract its
+contents.
+
+NOTE: There is an important difference between the source code in the GitHub
+repositories and the code that's distributed via SourceForge: in the code here,
+the named library packages have the prefix "uk.org.blankaspect" whereas the
+prefix is removed from the named packages in the code on SourceForge during the
+release process.  Thus, for example, the package named "uk.org.blankaspect.util"
+here (and in my local repo) is named "util" in the distributed source-code
+archive.
+
+You may use any of the source code under the terms of the GPL version 3 license.
+If you modify any of the code from the named packages and distribute the
+modified code, would you please rename the package, either by replacing the
+"uk.org.blankaspect" prefix with one of your own or by removing the prefix
+altogether.
+
+This repository doesn't contain anything apart from source code because I didn't
+want to publish the entire contents of my local repo.  Git doesn't allow partial
+clones, so this repo is managed though a secondary local repo and some
+scripting.  Until I devise an efficient way of managing the publication of a
+specified subset of the contents of my local repo, updates of this one will be
+infrequent.
+
+--------------------------------------------------------------------------------
