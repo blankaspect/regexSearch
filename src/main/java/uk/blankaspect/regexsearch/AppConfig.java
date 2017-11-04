@@ -535,7 +535,7 @@ class AppConfig
 		private CPIgnoreFilenameCase()
 		{
 			super(concatenateKeys(Key.GENERAL, Key.IGNORE_FILENAME_CASE));
-			value = Boolean.FALSE;
+			value = false;
 		}
 
 		//--------------------------------------------------------------
@@ -635,7 +635,7 @@ class AppConfig
 		private CPPreserveLineSeparator()
 		{
 			super(concatenateKeys(Key.GENERAL, Key.PRESERVE_LINE_SEPARATOR));
-			value = Boolean.FALSE;
+			value = false;
 		}
 
 		//--------------------------------------------------------------
@@ -685,7 +685,7 @@ class AppConfig
 		private CPShowUnixPathnames()
 		{
 			super(concatenateKeys(Key.GENERAL, Key.SHOW_UNIX_PATHNAMES));
-			value = Boolean.FALSE;
+			value = false;
 		}
 
 		//--------------------------------------------------------------
@@ -749,7 +749,7 @@ class AppConfig
 		private CPSelectTextOnFocusGained()
 		{
 			super(concatenateKeys(Key.GENERAL, Key.SELECT_TEXT_ON_FOCUS_GAINED));
-			value = Boolean.TRUE;
+			value = true;
 		}
 
 		//--------------------------------------------------------------
@@ -799,7 +799,7 @@ class AppConfig
 		private CPHideControlDialogWhenSearching()
 		{
 			super(concatenateKeys(Key.GENERAL, Key.HIDE_CONTROL_DIALOG_WHEN_SEARCHING));
-			value = Boolean.FALSE;
+			value = false;
 		}
 
 		//--------------------------------------------------------------
@@ -850,7 +850,7 @@ class AppConfig
 		private CPCopyResultsAsListFile()
 		{
 			super(concatenateKeys(Key.GENERAL, Key.COPY_RESULTS_AS_LIST_FILE));
-			value = Boolean.FALSE;
+			value = false;
 		}
 
 		//--------------------------------------------------------------
@@ -2151,14 +2151,14 @@ class AppConfig
 
 	public static void showWarningMessage(AppException exception)
 	{
-		App.INSTANCE.showWarningMessage(App.SHORT_NAME + " | " + CONFIG_ERROR_STR, exception);
+		App.INSTANCE.showWarningMessage(App.SHORT_NAME + " : " + CONFIG_ERROR_STR, exception);
 	}
 
 	//------------------------------------------------------------------
 
 	public static void showErrorMessage(AppException exception)
 	{
-		App.INSTANCE.showErrorMessage(App.SHORT_NAME + " | " + CONFIG_ERROR_STR, exception);
+		App.INSTANCE.showErrorMessage(App.SHORT_NAME + " : " + CONFIG_ERROR_STR, exception);
 	}
 
 	//------------------------------------------------------------------
