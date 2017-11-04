@@ -161,7 +161,7 @@ class PreferencesDialog
 	private static final	String	HIGHLIGHT_BACKGROUND_STR	= "Highlighted background";
 	private static final	String	NO_LOOK_AND_FEELS_STR		= "<no look-and-feels>";
 
-	private static final	String	TAC_STR							= "Text area colour | ";
+	private static final	String	TAC_STR							= "Text area colour : ";
 	private static final	String	TEXT_TITLE_STR					= "Text";
 	private static final	String	BACKGROUND_TITLE_STR			= "Background";
 	private static final	String	HIGHLIGHT_TEXT_TITLE_STR		= "Highlighted text";

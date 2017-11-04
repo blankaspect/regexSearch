@@ -299,7 +299,7 @@ class PathnameFilterDialog
 
 		private String getTitleString(String actionStr)
 		{
-			return (actionStr + " " + PATTERN_STR.toLowerCase() + " | " + filterKind + " " + FILTER_STR);
+			return (actionStr + " " + PATTERN_STR.toLowerCase() + " : " + filterKind + " " + FILTER_STR);
 		}
 
 		//--------------------------------------------------------------
