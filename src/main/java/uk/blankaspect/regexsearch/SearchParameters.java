@@ -67,9 +67,9 @@ class SearchParameters
 	public static final		int	MAX_NUM_TARGETS			= 64;
 	public static final		int	MAX_NUM_REPLACEMENTS	= MAX_NUM_TARGETS;
 
-	private static final	int	VERSION					= 0;
+	private static final	int	VERSION					= 1;
 	private static final	int	MIN_SUPPORTED_VERSION	= 0;
-	private static final	int	MAX_SUPPORTED_VERSION	= 0;
+	private static final	int	MAX_SUPPORTED_VERSION	= 1;
 
 	private static final	String	NAMESPACE_NAME			= "http://ns.blankaspect.uk/regexSearch-1";
 	private static final	String	NAMESPACE_NAME_REGEX	= "http://ns\\.[a-z.]+/regexSearch-1";
@@ -91,6 +91,7 @@ class SearchParameters
 		String	REGEX				= "regex";
 		String	REPLACE				= "replace";
 		String	REPLACEMENT_INDEX	= "replacementIndex";
+		String	SHOW_NOT_FOUND		= "showNotFound";
 		String	TARGET_INDEX		= "targetIndex";
 		String	VERSION				= "version";
 		String	XMLNS				= "xmlns";
@@ -352,6 +353,13 @@ class SearchParameters
 
 	//------------------------------------------------------------------
 
+	public boolean isShowNotFound()
+	{
+		return showNotFound;
+	}
+
+	//------------------------------------------------------------------
+
 	public void setFileSet(int     index,
 						   FileSet fileSet)
 	{
@@ -452,6 +460,17 @@ class SearchParameters
 
 	//------------------------------------------------------------------
 
+	public void setShowNotFound(boolean showNotFound)
+	{
+		if (this.showNotFound != showNotFound)
+		{
+			this.showNotFound = showNotFound;
+			changed = true;
+		}
+	}
+
+	//------------------------------------------------------------------
+
 	public void addFileSet(int     index,
 						   FileSet fileSet)
 	{
@@ -483,9 +502,6 @@ class SearchParameters
 			progressView.setInfo(READING_STR, file);
 			progressView.setProgress(0, -1.0);
 		}
-
-		// Run garbage collector to maximise available memory
-		System.gc();
 
 		// Read file
 		FileInputStream inStream = null;
@@ -659,6 +675,7 @@ class SearchParameters
 				attributes.add(new Attribute(AttrName.REPLACE, replace));
 				attributes.add(new Attribute(AttrName.REGEX, regex));
 				attributes.add(new Attribute(AttrName.IGNORE_CASE, ignoreCase));
+				attributes.add(new Attribute(AttrName.SHOW_NOT_FOUND, showNotFound));
 				if (!fileSets.isEmpty())
 					attributes.add(new Attribute(AttrName.FILE_SET_INDEX, fileSetIndex));
 				if (!targets.isEmpty())
@@ -809,9 +826,10 @@ class SearchParameters
 		attrValue = XmlUtils.getAttribute(rootElement, attrName);
 		if (attrValue == null)
 			throw new XmlParseException(ErrorId.NO_ATTRIBUTE, file, attrKey);
+		int version = -1;
 		try
 		{
-			int version = Integer.parseInt(attrValue);
+			version = Integer.parseInt(attrValue);
 			if ((version < MIN_SUPPORTED_VERSION) || (version > MAX_SUPPORTED_VERSION))
 				throw new FileException(ErrorId.UNSUPPORTED_DOCUMENT_VERSION, file, attrValue);
 		}
@@ -852,6 +870,20 @@ class SearchParameters
 		if (booleanValue == null)
 			throw new XmlParseException(ErrorId.INVALID_ATTRIBUTE, file, attrKey, attrValue);
 		ignoreCase = booleanValue.toBoolean();
+
+		// Attribute: show not found
+		if (version >= 1)
+		{
+			attrName = AttrName.SHOW_NOT_FOUND;
+			attrKey = XmlUtils.appendAttributeName(elementPath, attrName);
+			attrValue = XmlUtils.getAttribute(rootElement, attrName);
+			if (attrValue == null)
+				throw new XmlParseException(ErrorId.NO_ATTRIBUTE, file, attrKey);
+			booleanValue = NoYes.forKey(attrValue);
+			if (booleanValue == null)
+				throw new XmlParseException(ErrorId.INVALID_ATTRIBUTE, file, attrKey, attrValue);
+			showNotFound = booleanValue.toBoolean();
+		}
 
 		// Attribute: file-set index
 		attrName = AttrName.FILE_SET_INDEX;
@@ -976,6 +1008,7 @@ class SearchParameters
 	private	boolean			replace;
 	private	boolean			regex;
 	private	boolean			ignoreCase;
+	private	boolean			showNotFound;
 
 }
 

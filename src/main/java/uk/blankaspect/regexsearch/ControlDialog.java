@@ -112,7 +112,7 @@ class ControlDialog
 
 	private static final	Insets	ICON_BUTTON_MARGINS		= new Insets(1, 1, 1, 1);
 
-	private static final	String	TITLE_STR				= App.SHORT_NAME + " | Control";
+	private static final	String	TITLE_STR				= App.SHORT_NAME + " : Control";
 	private static final	String	FILE_SET_KIND_STR		= "File-set kind";
 	private static final	String	PATHNAME_STR			= "Pathname";
 	private static final	String	INCLUDE_STR				= "Include";
@@ -1558,6 +1558,7 @@ class ControlDialog
 		replaceCheckBox.setSelected(searchParams.isReplace());
 		regexCheckBox.setSelected(searchParams.isRegex());
 		ignoreCaseCheckBox.setSelected(searchParams.isIgnoreCase());
+		showNotFoundCheckBox.setSelected(searchParams.isShowNotFound());
 		enableComponents();
 		updateCommands();
 	}
@@ -1576,6 +1577,7 @@ class ControlDialog
 		searchParams.setReplace(isReplace());
 		searchParams.setRegex(isRegex());
 		searchParams.setIgnoreCase(isIgnoreCase());
+		searchParams.setShowNotFound(isShowNotFound());
 	}
 
 	//------------------------------------------------------------------
