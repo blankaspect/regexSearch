@@ -40,12 +40,13 @@ import javax.swing.SwingUtilities;
 import uk.blankaspect.common.exception.AppException;
 import uk.blankaspect.common.exception.FileException;
 
+import uk.blankaspect.common.indexedsub.IndexedSub;
+
 import uk.blankaspect.common.misc.ArraySet;
 import uk.blankaspect.common.misc.DirectoryFilter;
 import uk.blankaspect.common.misc.FileAttributeUtils;
 import uk.blankaspect.common.misc.LineSeparator;
 import uk.blankaspect.common.misc.PathnameFilter;
-import uk.blankaspect.common.misc.StringUtils;
 
 //----------------------------------------------------------------------
 
@@ -548,7 +549,7 @@ class TextSearcher
 				{
 					if (index >= endIndex)
 					{
-						String str = StringUtils.substitute(DANGLING_ESCAPE_STR, Character.toString(escapeChar));
+						String str = IndexedSub.sub(DANGLING_ESCAPE_STR, Character.toString(escapeChar));
 						throw new SyntaxException(ErrorId.INVALID_REPLACEMENT_STRING, str, index - 1);
 					}
 					textCase = null;
