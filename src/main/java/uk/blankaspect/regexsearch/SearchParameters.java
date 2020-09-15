@@ -23,7 +23,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+
+import java.nio.charset.StandardCharsets;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -37,13 +38,12 @@ import org.w3c.dom.NodeList;
 import uk.blankaspect.common.exception.AppException;
 import uk.blankaspect.common.exception.FileException;
 import uk.blankaspect.common.exception.TempFileException;
-import uk.blankaspect.common.exception.UnexpectedRuntimeException;
-
-import uk.blankaspect.common.gui.IProgressView;
 
 import uk.blankaspect.common.misc.NoYes;
 
-import uk.blankaspect.common.xml.Attribute;
+import uk.blankaspect.common.ui.progress.IProgressView;
+
+import uk.blankaspect.common.xml.AttributeList;
 import uk.blankaspect.common.xml.XmlConstants;
 import uk.blankaspect.common.xml.XmlParseException;
 import uk.blankaspect.common.xml.XmlUtils;
@@ -184,7 +184,7 @@ class SearchParameters
 		//--------------------------------------------------------------
 
 	////////////////////////////////////////////////////////////////////
-	//  Instance fields
+	//  Instance variables
 	////////////////////////////////////////////////////////////////////
 
 		private	String	message;
@@ -646,7 +646,7 @@ class SearchParameters
 			// Open XML writer on temporary file
 			try
 			{
-				writer = new XmlWriter(tempFile, XmlConstants.ENCODING_NAME_UTF8);
+				writer = new XmlWriter(tempFile, StandardCharsets.UTF_8);
 			}
 			catch (FileNotFoundException e)
 			{
@@ -655,10 +655,6 @@ class SearchParameters
 			catch (SecurityException e)
 			{
 				throw new FileException(ErrorId.FILE_ACCESS_NOT_PERMITTED, tempFile, e);
-			}
-			catch (UnsupportedEncodingException e)
-			{
-				throw new UnexpectedRuntimeException(e);
 			}
 
 			// Write file
@@ -669,19 +665,19 @@ class SearchParameters
 										   XmlWriter.Standalone.NO);
 
 				// Write root element start tag
-				List<Attribute> attributes = new ArrayList<>();
-				attributes.add(new Attribute(AttrName.XMLNS, NAMESPACE_NAME));
-				attributes.add(new Attribute(AttrName.VERSION, VERSION));
-				attributes.add(new Attribute(AttrName.REPLACE, replace));
-				attributes.add(new Attribute(AttrName.REGEX, regex));
-				attributes.add(new Attribute(AttrName.IGNORE_CASE, ignoreCase));
-				attributes.add(new Attribute(AttrName.SHOW_NOT_FOUND, showNotFound));
+				AttributeList attributes = new AttributeList();
+				attributes.add(AttrName.XMLNS, NAMESPACE_NAME);
+				attributes.add(AttrName.VERSION, VERSION);
+				attributes.add(AttrName.REPLACE, replace);
+				attributes.add(AttrName.REGEX, regex);
+				attributes.add(AttrName.IGNORE_CASE, ignoreCase);
+				attributes.add(AttrName.SHOW_NOT_FOUND, showNotFound);
 				if (!fileSets.isEmpty())
-					attributes.add(new Attribute(AttrName.FILE_SET_INDEX, fileSetIndex));
+					attributes.add(AttrName.FILE_SET_INDEX, fileSetIndex);
 				if (!targets.isEmpty())
-					attributes.add(new Attribute(AttrName.TARGET_INDEX, targetIndex));
+					attributes.add(AttrName.TARGET_INDEX, targetIndex);
 				if (!replacements.isEmpty())
-					attributes.add(new Attribute(AttrName.REPLACEMENT_INDEX, replacementIndex));
+					attributes.add(AttrName.REPLACEMENT_INDEX, replacementIndex);
 				writer.writeElementStart(ElementName.SEARCH_PARAMETERS, attributes, 0, true, true);
 
 				// Write file sets
@@ -994,7 +990,7 @@ class SearchParameters
 	//------------------------------------------------------------------
 
 ////////////////////////////////////////////////////////////////////////
-//  Instance fields
+//  Instance variables
 ////////////////////////////////////////////////////////////////////////
 
 	private	File			file;

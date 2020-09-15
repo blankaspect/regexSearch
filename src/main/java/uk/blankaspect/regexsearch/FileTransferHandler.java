@@ -32,7 +32,7 @@ import javax.swing.TransferHandler;
 
 import uk.blankaspect.common.exception.AppException;
 
-import uk.blankaspect.common.misc.DataImporter;
+import uk.blankaspect.common.swing.transfer.DataImporter;
 
 //----------------------------------------------------------------------
 
@@ -99,7 +99,7 @@ class FileTransferHandler
 		//--------------------------------------------------------------
 
 	////////////////////////////////////////////////////////////////////
-	//  Instance fields
+	//  Instance variables
 	////////////////////////////////////////////////////////////////////
 
 		private	String	message;

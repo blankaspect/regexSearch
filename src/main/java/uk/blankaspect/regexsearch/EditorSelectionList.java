@@ -24,11 +24,12 @@ import java.awt.Graphics2D;
 
 import java.util.List;
 
-import uk.blankaspect.common.gui.GuiUtils;
-import uk.blankaspect.common.gui.SingleSelectionList;
-import uk.blankaspect.common.gui.TextRendering;
+import uk.blankaspect.common.swing.font.FontUtils;
 
-import uk.blankaspect.common.misc.TextUtils;
+import uk.blankaspect.common.swing.list.SingleSelectionList;
+
+import uk.blankaspect.common.swing.text.TextRendering;
+import uk.blankaspect.common.swing.text.TextUtils;
 
 //----------------------------------------------------------------------
 
@@ -104,13 +105,13 @@ class EditorSelectionList
 		int rowHeight = getRowHeight();
 		gr.setColor(getForegroundColour(index));
 		gr.drawString(text, getHorizontalMargin(),
-					  index * rowHeight + GuiUtils.getBaselineOffset(rowHeight, fontMetrics));
+					  index * rowHeight + FontUtils.getBaselineOffset(rowHeight, fontMetrics));
 	}
 
 	//------------------------------------------------------------------
 
 ////////////////////////////////////////////////////////////////////////
-//  Instance fields
+//  Instance variables
 ////////////////////////////////////////////////////////////////////////
 
 	private	boolean	isPathname;

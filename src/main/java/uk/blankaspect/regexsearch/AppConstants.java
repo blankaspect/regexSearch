@@ -25,10 +25,9 @@ import java.awt.event.KeyEvent;
 
 import javax.swing.KeyStroke;
 
-import uk.blankaspect.common.gui.Colours;
+import uk.blankaspect.common.swing.action.KeyAction;
 
-import uk.blankaspect.common.misc.KeyAction;
-import uk.blankaspect.common.misc.ListEditor;
+import uk.blankaspect.common.swing.colour.Colours;
 
 //----------------------------------------------------------------------
 

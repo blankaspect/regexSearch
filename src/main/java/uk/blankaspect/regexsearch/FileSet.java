@@ -30,9 +30,9 @@ import org.w3c.dom.NodeList;
 
 import uk.blankaspect.common.exception.AppException;
 
-import uk.blankaspect.common.misc.TextUtils;
+import uk.blankaspect.common.misc.EscapedTextUtils;
 
-import uk.blankaspect.common.xml.Attribute;
+import uk.blankaspect.common.xml.AttributeList;
 import uk.blankaspect.common.xml.XmlParseException;
 import uk.blankaspect.common.xml.XmlUtils;
 import uk.blankaspect.common.xml.XmlWriter;
@@ -183,7 +183,7 @@ class FileSet
 		//--------------------------------------------------------------
 
 	////////////////////////////////////////////////////////////////////
-	//  Instance fields
+	//  Instance variables
 	////////////////////////////////////////////////////////////////////
 
 		private	String	key;
@@ -231,7 +231,7 @@ class FileSet
 		//--------------------------------------------------------------
 
 	////////////////////////////////////////////////////////////////////
-	//  Instance fields
+	//  Instance variables
 	////////////////////////////////////////////////////////////////////
 
 		private	String	text;
@@ -281,7 +281,7 @@ class FileSet
 		//--------------------------------------------------------------
 
 	////////////////////////////////////////////////////////////////////
-	//  Instance fields
+	//  Instance variables
 	////////////////////////////////////////////////////////////////////
 
 		private	String	message;
@@ -441,7 +441,7 @@ class FileSet
 	public static List<String> stringToPatterns(String str)
 	{
 		List<String> patterns = new ArrayList<>();
-		for (String s : TextUtils.split(str, ' '))
+		for (String s : EscapedTextUtils.split(str, ' '))
 		{
 			if (!s.isEmpty())
 				patterns.add(s);
@@ -458,7 +458,7 @@ class FileSet
 		{
 			if (i > 0)
 				buffer.append(' ');
-			buffer.append(TextUtils.escapeSeparator(patterns.get(i), ' '));
+			buffer.append(EscapedTextUtils.escapeSeparator(patterns.get(i), ' '));
 		}
 		return buffer.toString();
 	}
@@ -618,16 +618,16 @@ class FileSet
 		throws IOException
 	{
 		// Write root element start tag
-		List<Attribute> attributes = new ArrayList<>();
-		attributes.add(new Attribute(AttrName.KIND, kind.getKey()));
+		AttributeList attributes = new AttributeList();
+		attributes.add(AttrName.KIND, kind.getKey());
 		if (!pathnames.isEmpty())
-			attributes.add(new Attribute(AttrName.PATHNAME_INDEX, pathnameIndex));
+			attributes.add(AttrName.PATHNAME_INDEX, pathnameIndex);
 		if (kind.hasFilters())
 		{
 			if (!inclusionFilters.isEmpty())
-				attributes.add(new Attribute(AttrName.INCLUDE_INDEX, inclusionFilterIndex));
+				attributes.add(AttrName.INCLUDE_INDEX, inclusionFilterIndex);
 			if (!exclusionFilters.isEmpty())
-				attributes.add(new Attribute(AttrName.EXCLUDE_INDEX, exclusionFilterIndex));
+				attributes.add(AttrName.EXCLUDE_INDEX, exclusionFilterIndex);
 		}
 		writer.writeElementStart(ElementName.FILE_SET, attributes, indent, true, true);
 
@@ -667,7 +667,7 @@ class FileSet
 	//------------------------------------------------------------------
 
 ////////////////////////////////////////////////////////////////////////
-//  Instance fields
+//  Instance variables
 ////////////////////////////////////////////////////////////////////////
 
 	private	Kind				kind;

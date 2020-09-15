@@ -26,9 +26,9 @@ import java.util.List;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import uk.blankaspect.common.gui.TextArea;
+import uk.blankaspect.common.filesystem.PathnameUtils;
 
-import uk.blankaspect.common.misc.PropertyString;
+import uk.blankaspect.common.swing.textarea.TextArea;
 
 //----------------------------------------------------------------------
 
@@ -136,7 +136,7 @@ class ResultList
 		//--------------------------------------------------------------
 
 	////////////////////////////////////////////////////////////////////
-	//  Instance fields
+	//  Instance variables
 	////////////////////////////////////////////////////////////////////
 
 		private	String	pathname;
@@ -333,7 +333,7 @@ class ResultList
 		for (Element element : elements)
 		{
 			if (element.searchedFile)
-				files.add(new File(PropertyString.parsePathname(element.pathname)));
+				files.add(new File(PathnameUtils.parsePathname(element.pathname)));
 		}
 	}
 
@@ -359,7 +359,7 @@ class ResultList
 	//------------------------------------------------------------------
 
 ////////////////////////////////////////////////////////////////////////
-//  Instance fields
+//  Instance variables
 ////////////////////////////////////////////////////////////////////////
 
 	private	List<Element>			elements;

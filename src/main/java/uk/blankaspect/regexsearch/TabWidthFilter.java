@@ -25,6 +25,8 @@ import java.util.List;
 
 import uk.blankaspect.common.misc.FilenameFilter;
 
+import uk.blankaspect.common.string.StringUtils;
+
 //----------------------------------------------------------------------
 
 
@@ -39,7 +41,7 @@ class TabWidthFilter
 //  Constants
 ////////////////////////////////////////////////////////////////////////
 
-	private static final	char	WIDTH_SEPARATOR	= ':';
+	private static final	char	WIDTH_SEPARATOR_CHAR	= ':';
 
 ////////////////////////////////////////////////////////////////////////
 //  Constructors
@@ -51,12 +53,12 @@ class TabWidthFilter
 
 	public TabWidthFilter(String str)
 	{
-		String[] strs = str.split(Character.toString(WIDTH_SEPARATOR), -1);
-		if (strs.length != 2)
+		List<String> strs = StringUtils.split(str, WIDTH_SEPARATOR_CHAR);
+		if (strs.size() != 2)
 			throw new IllegalArgumentException();
 
-		setFilters(strs[0]);
-		tabWidth = Integer.parseInt(strs[1].trim());
+		setFilters(strs.get(0));
+		tabWidth = Integer.parseInt(strs.get(1).trim());
 	}
 
 	//------------------------------------------------------------------
@@ -76,7 +78,7 @@ class TabWidthFilter
 
 	public static boolean isWidthSeparator(char ch)
 	{
-		return (ch == WIDTH_SEPARATOR);
+		return (ch == WIDTH_SEPARATOR_CHAR);
 	}
 
 	//------------------------------------------------------------------
@@ -102,7 +104,7 @@ class TabWidthFilter
 	{
 		StringBuilder buffer = new StringBuilder();
 		buffer.append(getFilterString());
-		buffer.append(WIDTH_SEPARATOR);
+		buffer.append(WIDTH_SEPARATOR_CHAR);
 		buffer.append(' ');
 		buffer.append(tabWidth);
 		return buffer.toString();
@@ -161,7 +163,7 @@ class TabWidthFilter
 	//------------------------------------------------------------------
 
 ////////////////////////////////////////////////////////////////////////
-//  Instance fields
+//  Instance variables
 ////////////////////////////////////////////////////////////////////////
 
 	private	List<FilenameFilter>	filters;

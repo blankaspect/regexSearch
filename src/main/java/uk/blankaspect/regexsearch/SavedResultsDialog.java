@@ -21,8 +21,9 @@ package uk.blankaspect.regexsearch;
 import java.awt.Component;
 import java.awt.Window;
 
-import uk.blankaspect.common.gui.GuiUtils;
-import uk.blankaspect.common.gui.NonEditableTextAreaDialog;
+import uk.blankaspect.common.swing.dialog.NonEditableTextAreaDialog;
+
+import uk.blankaspect.common.swing.misc.GuiUtils;
 
 //----------------------------------------------------------------------
 

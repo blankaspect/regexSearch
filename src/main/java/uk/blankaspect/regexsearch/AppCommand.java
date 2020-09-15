@@ -26,7 +26,7 @@ import java.beans.PropertyChangeListener;
 import javax.swing.Action;
 import javax.swing.KeyStroke;
 
-import uk.blankaspect.common.misc.Command;
+import uk.blankaspect.common.swing.action.Command;
 
 //----------------------------------------------------------------------
 
@@ -99,7 +99,7 @@ enum AppCommand
 	(
 		"saveResults",
 		"Save results",
-		KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK | KeyEvent.SHIFT_DOWN_MASK )
+		KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK | KeyEvent.SHIFT_DOWN_MASK)
 	),
 
 	VIEW_SAVED_RESULTS
@@ -248,7 +248,7 @@ enum AppCommand
 	//------------------------------------------------------------------
 
 ////////////////////////////////////////////////////////////////////////
-//  Instance fields
+//  Instance variables
 ////////////////////////////////////////////////////////////////////////
 
 	private	Command	command;

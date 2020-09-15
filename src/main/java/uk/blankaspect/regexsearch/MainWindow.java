@@ -58,16 +58,23 @@ import javax.swing.event.MenuListener;
 import uk.blankaspect.common.exception.AppException;
 import uk.blankaspect.common.exception.ExceptionUtils;
 
-import uk.blankaspect.common.gui.FMenu;
-import uk.blankaspect.common.gui.FMenuItem;
-import uk.blankaspect.common.gui.GuiUtils;
-import uk.blankaspect.common.gui.TextArea;
-import uk.blankaspect.common.gui.TextRendering;
+import uk.blankaspect.common.filesystem.PathnameUtils;
 
 import uk.blankaspect.common.misc.FilenameSuffixFilter;
 import uk.blankaspect.common.misc.PathnameFilter;
-import uk.blankaspect.common.misc.PropertyString;
-import uk.blankaspect.common.misc.StringUtils;
+
+import uk.blankaspect.common.string.StringUtils;
+
+import uk.blankaspect.common.swing.menu.FMenu;
+import uk.blankaspect.common.swing.menu.FMenuItem;
+
+import uk.blankaspect.common.swing.misc.GuiUtils;
+
+import uk.blankaspect.common.swing.text.TextRendering;
+
+import uk.blankaspect.common.swing.textarea.TextArea;
+
+import uk.blankaspect.common.thread.DaemonFactory;
 
 //----------------------------------------------------------------------
 
@@ -86,6 +93,8 @@ class MainWindow
 
 	public static final		int	HIGHLIGHT_MARGIN_ROWS		= 4;
 	public static final		int	HIGHLIGHT_MARGIN_COLUMNS	= 8;
+
+	private static final	String	EDITOR_THREAD_NAME_PREFIX	= "editor-";
 
 	private static final	String	SEARCHING_STR				= "Searching ";
 	private static final	String	OPEN_SEARCH_PARAMS_STR		= "Open search parameters";
@@ -224,7 +233,7 @@ class MainWindow
 		//--------------------------------------------------------------
 
 	////////////////////////////////////////////////////////////////////
-	//  Instance fields
+	//  Instance variables
 	////////////////////////////////////////////////////////////////////
 
 		private	JMenu	menu;
@@ -274,7 +283,7 @@ class MainWindow
 		//--------------------------------------------------------------
 
 	////////////////////////////////////////////////////////////////////
-	//  Instance fields
+	//  Instance variables
 	////////////////////////////////////////////////////////////////////
 
 		private	String	message;
@@ -313,7 +322,7 @@ class MainWindow
 			super(textArea, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
 				  JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 
-			// Initialise instance fields
+			// Initialise instance variables
 			this.textArea = textArea;
 
 			// Set viewport in text area
@@ -350,7 +359,7 @@ class MainWindow
 		//--------------------------------------------------------------
 
 	////////////////////////////////////////////////////////////////////
-	//  Instance fields
+	//  Instance variables
 	////////////////////////////////////////////////////////////////////
 
 		private	TextArea	textArea;
@@ -384,7 +393,7 @@ class MainWindow
 			// Call superclass constructor
 			super(columns, rows, MAX_NUM_COLUMNS, AppFont.RESULT_AREA.getFont());
 
-			// Initialise instance fields
+			// Initialise instance variables
 			selectedIndex = -1;
 
 			// Add listeners
@@ -502,7 +511,7 @@ class MainWindow
 		//--------------------------------------------------------------
 
 	////////////////////////////////////////////////////////////////////
-	//  Instance fields
+	//  Instance variables
 	////////////////////////////////////////////////////////////////////
 
 		private	int		selectedIndex;
@@ -752,7 +761,7 @@ class MainWindow
 				case ' ':
 					if (buffer.length() > 0)
 					{
-						arguments.add(PropertyString.parsePathname(buffer.toString()));
+						arguments.add(PathnameUtils.parsePathname(buffer.toString()));
 						buffer.setLength(0);
 					}
 					break;
@@ -763,17 +772,26 @@ class MainWindow
 			}
 		}
 		if (buffer.length() > 0)
-			arguments.add(PropertyString.parsePathname(buffer.toString()));
+			arguments.add(PathnameUtils.parsePathname(buffer.toString()));
 
 		// Execute editor command
-		try
+		DaemonFactory.create(EDITOR_THREAD_NAME_PREFIX + ++editorThreadIndex, () ->
 		{
-			new ProcessBuilder(arguments).start();
-		}
-		catch (IOException e)
-		{
-			throw new AppException(ErrorId.FAILED_TO_EXECUTE_EDITOR_COMMAND, e);
-		}
+			try
+			{
+				// Create process and start it
+				ProcessBuilder processBuilder = new ProcessBuilder(arguments);
+				processBuilder.redirectOutput(ProcessBuilder.Redirect.DISCARD);
+				processBuilder.redirectError(ProcessBuilder.Redirect.DISCARD);
+				processBuilder.start();
+			}
+			catch (IOException e)
+			{
+				SwingUtilities.invokeLater(() ->
+						App.INSTANCE.showErrorMessage(App.SHORT_NAME,
+													  new AppException(ErrorId.FAILED_TO_EXECUTE_EDITOR_COMMAND, e)));
+			}
+		}).start();
 	}
 
 	//------------------------------------------------------------------
@@ -1538,7 +1556,13 @@ class MainWindow
 	//------------------------------------------------------------------
 
 ////////////////////////////////////////////////////////////////////////
-//  Instance fields
+//  Class variables
+////////////////////////////////////////////////////////////////////////
+
+	private static	int	editorThreadIndex;
+
+////////////////////////////////////////////////////////////////////////
+//  Instance variables
 ////////////////////////////////////////////////////////////////////////
 
 	private	TextModel			textModel;

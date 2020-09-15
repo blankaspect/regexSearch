@@ -49,16 +49,20 @@ import javax.swing.text.Document;
 
 import uk.blankaspect.common.exception.AppException;
 
-import uk.blankaspect.common.gui.FButton;
-import uk.blankaspect.common.gui.FMenu;
-import uk.blankaspect.common.gui.FMenuItem;
-import uk.blankaspect.common.gui.GuiUtils;
-import uk.blankaspect.common.gui.SingleSelectionListEditor;
+import uk.blankaspect.common.swing.action.KeyAction;
 
-import uk.blankaspect.common.misc.InputModifiers;
-import uk.blankaspect.common.misc.KeyAction;
-import uk.blankaspect.common.misc.ListEditor;
-import uk.blankaspect.common.misc.TextUtils;
+import uk.blankaspect.common.swing.button.FButton;
+
+import uk.blankaspect.common.swing.list.SingleSelectionListEditor;
+
+import uk.blankaspect.common.swing.menu.FMenu;
+import uk.blankaspect.common.swing.menu.FMenuItem;
+
+import uk.blankaspect.common.swing.misc.GuiUtils;
+
+import uk.blankaspect.common.swing.modifiers.InputModifiers;
+
+import uk.blankaspect.common.swing.text.TextUtils;
 
 //----------------------------------------------------------------------
 
@@ -146,8 +150,7 @@ class FilterEditor
 						   FileSet.FilterKind filterKind,
 						   List<String>       elements)
 		{
-			super(parent, new EditorSelectionList(elements, false), FileSet.MAX_NUM_FILTERS,
-				  TOOLTIP_STRS);
+			super(parent, new EditorSelectionList(elements, false), FileSet.MAX_NUM_FILTERS, TOOLTIP_STRS);
 			this.filterKind = filterKind;
 		}
 
@@ -213,7 +216,7 @@ class FilterEditor
 		//--------------------------------------------------------------
 
 	////////////////////////////////////////////////////////////////////
-	//  Instance fields
+	//  Instance variables
 	////////////////////////////////////////////////////////////////////
 
 		private	FileSet.FilterKind	filterKind;
@@ -412,7 +415,7 @@ class FilterEditor
 			}
 			catch (AppException e)
 			{
-				App.INSTANCE.showErrorMessage(App.SHORT_NAME, e );
+				App.INSTANCE.showErrorMessage(App.SHORT_NAME, e);
 			}
 		}
 
@@ -437,7 +440,7 @@ class FilterEditor
 						int                maxNumItems,
 						boolean            suppressEmptyItem)
 	{
-		// Initialise instance fields
+		// Initialise instance variables
 		this.filterKind = filterKind;
 		this.suppressEmptyItem = suppressEmptyItem;
 		editor = new ListEditor(maxNumItems, this);
@@ -694,7 +697,7 @@ class FilterEditor
 	//------------------------------------------------------------------
 
 ////////////////////////////////////////////////////////////////////////
-//  Instance fields
+//  Instance variables
 ////////////////////////////////////////////////////////////////////////
 
 	private	FileSet.FilterKind	filterKind;

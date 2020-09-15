@@ -64,21 +64,31 @@ import javax.swing.text.PlainDocument;
 
 import uk.blankaspect.common.exception.AppException;
 
-import uk.blankaspect.common.gui.Colours;
-import uk.blankaspect.common.gui.FButton;
-import uk.blankaspect.common.gui.FCheckBoxMenuItem;
-import uk.blankaspect.common.gui.FMenu;
-import uk.blankaspect.common.gui.FMenuItem;
-import uk.blankaspect.common.gui.GuiUtils;
-import uk.blankaspect.common.gui.SingleSelectionListEditor;
-import uk.blankaspect.common.gui.SingleTextFieldDialog;
-
-import uk.blankaspect.common.misc.InputModifiers;
 import uk.blankaspect.common.misc.IStringKeyed;
-import uk.blankaspect.common.misc.KeyAction;
-import uk.blankaspect.common.misc.ListEditor;
-import uk.blankaspect.common.misc.StringUtils;
-import uk.blankaspect.common.misc.TextUtils;
+
+import uk.blankaspect.common.string.StringUtils;
+
+import uk.blankaspect.common.swing.action.KeyAction;
+
+import uk.blankaspect.common.swing.button.FButton;
+
+import uk.blankaspect.common.swing.colour.Colours;
+
+import uk.blankaspect.common.swing.dialog.SingleTextFieldDialog;
+
+import uk.blankaspect.common.swing.font.FontUtils;
+
+import uk.blankaspect.common.swing.list.SingleSelectionListEditor;
+
+import uk.blankaspect.common.swing.menu.FCheckBoxMenuItem;
+import uk.blankaspect.common.swing.menu.FMenu;
+import uk.blankaspect.common.swing.menu.FMenuItem;
+
+import uk.blankaspect.common.swing.misc.GuiUtils;
+
+import uk.blankaspect.common.swing.modifiers.InputModifiers;
+
+import uk.blankaspect.common.swing.text.TextUtils;
 
 //----------------------------------------------------------------------
 
@@ -212,7 +222,7 @@ class ParameterEditor
 		//--------------------------------------------------------------
 
 	////////////////////////////////////////////////////////////////////
-	//  Instance fields
+	//  Instance variables
 	////////////////////////////////////////////////////////////////////
 
 		private	String	key;
@@ -414,7 +424,7 @@ class ParameterEditor
 		//--------------------------------------------------------------
 
 	////////////////////////////////////////////////////////////////////
-	//  Instance fields
+	//  Instance variables
 	////////////////////////////////////////////////////////////////////
 
 		private	ParamKind	paramKind;
@@ -610,7 +620,7 @@ class ParameterEditor
 		@Override
 		protected int getColumnWidth()
 		{
-			return GuiUtils.getCharWidth('0', getFontMetrics(getFont()));
+			return FontUtils.getCharWidth('0', getFontMetrics(getFont()));
 		}
 
 		//--------------------------------------------------------------
@@ -767,7 +777,7 @@ class ParameterEditor
 			}
 			catch (AppException e)
 			{
-				App.INSTANCE.showErrorMessage(App.SHORT_NAME, e );
+				App.INSTANCE.showErrorMessage(App.SHORT_NAME, e);
 			}
 		}
 
@@ -793,7 +803,7 @@ class ParameterEditor
 						   char           escapeChar,
 						   EscapeListener escapeListener)
 	{
-		// Initialise instance fields
+		// Initialise instance variables
 		this.paramKind = paramKind;
 		this.escapeListener = escapeListener;
 		editor = new ListEditor(maxNumItems, this);
@@ -944,7 +954,7 @@ class ParameterEditor
 	private static String getEscapeSequence(char escapeChar,
 											char ch)
 	{
-		return new String(new char[]{ escapeChar, ch });
+		return new String(new char[] { escapeChar, ch });
 	}
 
 	//------------------------------------------------------------------
@@ -1277,7 +1287,7 @@ class ParameterEditor
 	//------------------------------------------------------------------
 
 ////////////////////////////////////////////////////////////////////////
-//  Instance fields
+//  Instance variables
 ////////////////////////////////////////////////////////////////////////
 
 	private	ParamKind		paramKind;

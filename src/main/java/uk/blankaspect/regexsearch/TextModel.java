@@ -32,11 +32,12 @@ import javax.swing.event.ChangeListener;
 
 import uk.blankaspect.common.exception.AppException;
 
-import uk.blankaspect.common.gui.TextArea;
-
 import uk.blankaspect.common.misc.LineSeparator;
-import uk.blankaspect.common.misc.StringUtils;
 import uk.blankaspect.common.misc.TextFile;
+
+import uk.blankaspect.common.string.StringUtils;
+
+import uk.blankaspect.common.swing.textarea.TextArea;
 
 //----------------------------------------------------------------------
 
@@ -92,7 +93,7 @@ class TextModel
 		//--------------------------------------------------------------
 
 	////////////////////////////////////////////////////////////////////
-	//  Instance fields
+	//  Instance variables
 	////////////////////////////////////////////////////////////////////
 
 		int	startRow;
@@ -125,7 +126,7 @@ class TextModel
 		//--------------------------------------------------------------
 
 	////////////////////////////////////////////////////////////////////
-	//  Instance fields
+	//  Instance variables
 	////////////////////////////////////////////////////////////////////
 
 		StringBuffer	text;
@@ -143,7 +144,7 @@ class TextModel
 					 StringBuffer text,
 					 char         tabGlyphChar)
 	{
-		// Initialise instance fields
+		// Initialise instance variables
 		this.file = file;
 		this.tabGlyphChar = tabGlyphChar;
 		changeListeners = new ArrayList<>();
@@ -177,7 +178,7 @@ class TextModel
 		throws AppException
 	{
 		// Read the file
-		StringBuffer text = TextFile.readSync(file, getCharacterEncoding());
+		StringBuffer text = TextFile.readSync(file, getCharEncoding());
 
 		// Change line separators to LFs
 		EnumMap<LineSeparator, Integer> lineSeparatorCounts =
@@ -206,12 +207,10 @@ class TextModel
 
 	//------------------------------------------------------------------
 
-	public static String getCharacterEncoding()
+	public static Charset getCharEncoding()
 	{
 		String encodingName = AppConfig.INSTANCE.getCharacterEncoding();
-		if (encodingName == null)
-			encodingName = Charset.defaultCharset().name();
-		return encodingName;
+		return (encodingName == null) ? Charset.defaultCharset() : Charset.forName(encodingName);
 	}
 
 	//------------------------------------------------------------------
@@ -495,8 +494,7 @@ class TextModel
 					break;
 				}
 			}
-			TextFile.write(file, getCharacterEncoding(), outBuffer,
-						   AppConfig.INSTANCE.getFileWritingMode());
+			TextFile.write(file, getCharEncoding(), outBuffer, AppConfig.INSTANCE.getFileWritingMode());
 		}
 	}
 
@@ -564,7 +562,7 @@ class TextModel
 	//------------------------------------------------------------------
 
 ////////////////////////////////////////////////////////////////////////
-//  Instance fields
+//  Instance variables
 ////////////////////////////////////////////////////////////////////////
 
 	private	File					file;

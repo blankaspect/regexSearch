@@ -65,27 +65,40 @@ import javax.swing.Timer;
 import uk.blankaspect.common.exception.AppException;
 import uk.blankaspect.common.exception.FileException;
 
-import uk.blankaspect.common.gui.ArrowButton;
-import uk.blankaspect.common.gui.Colours;
-import uk.blankaspect.common.gui.FCheckBox;
-import uk.blankaspect.common.gui.FComboBox;
-import uk.blankaspect.common.gui.FLabel;
-import uk.blankaspect.common.gui.GuiUtils;
-import uk.blankaspect.common.gui.SingleSelectionListEditor;
-import uk.blankaspect.common.gui.TextRendering;
+import uk.blankaspect.common.filesystem.PathnameUtils;
 
-import uk.blankaspect.common.misc.ColourUtils;
-import uk.blankaspect.common.misc.InputModifiers;
-import uk.blankaspect.common.misc.KeyAction;
 import uk.blankaspect.common.misc.PathnameFilter;
-import uk.blankaspect.common.misc.PropertyString;
-import uk.blankaspect.common.misc.StringUtils;
 import uk.blankaspect.common.misc.TextFile;
 import uk.blankaspect.common.misc.VHPos;
 
 import uk.blankaspect.common.regex.RegexUtils;
 
-import uk.blankaspect.common.textfield.PathnameField;
+import uk.blankaspect.common.string.StringUtils;
+
+import uk.blankaspect.common.swing.action.KeyAction;
+
+import uk.blankaspect.common.swing.button.ArrowButton;
+
+import uk.blankaspect.common.swing.checkbox.FCheckBox;
+
+import uk.blankaspect.common.swing.colour.Colours;
+import uk.blankaspect.common.swing.colour.ColourUtils;
+
+import uk.blankaspect.common.swing.combobox.FComboBox;
+
+import uk.blankaspect.common.swing.font.FontUtils;
+
+import uk.blankaspect.common.swing.label.FLabel;
+
+import uk.blankaspect.common.swing.list.SingleSelectionListEditor;
+
+import uk.blankaspect.common.swing.misc.GuiUtils;
+
+import uk.blankaspect.common.swing.modifiers.InputModifiers;
+
+import uk.blankaspect.common.swing.text.TextRendering;
+
+import uk.blankaspect.common.swing.textfield.PathnameField;
 
 //----------------------------------------------------------------------
 
@@ -259,7 +272,7 @@ class ControlDialog
 		//--------------------------------------------------------------
 
 	////////////////////////////////////////////////////////////////////
-	//  Instance fields
+	//  Instance variables
 	////////////////////////////////////////////////////////////////////
 
 		private	String	message;
@@ -346,7 +359,7 @@ class ControlDialog
 			FontMetrics fontMetrics = gr.getFontMetrics();
 			gr.setColor(TEXT_COLOUR);
 			gr.drawString(str, (width - fontMetrics.stringWidth(str)) / 2,
-						  GuiUtils.getBaselineOffset(height, fontMetrics));
+						  FontUtils.getBaselineOffset(height, fontMetrics));
 
 			// Draw border
 			gr.setColor(BORDER_COLOUR);
@@ -381,7 +394,7 @@ class ControlDialog
 		//--------------------------------------------------------------
 
 	////////////////////////////////////////////////////////////////////
-	//  Instance fields
+	//  Instance variables
 	////////////////////////////////////////////////////////////////////
 
 		private	int	preferredWidth;
@@ -464,7 +477,7 @@ class ControlDialog
 			FontMetrics fontMetrics = gr.getFontMetrics();
 			gr.setColor(TEXT_COLOUR);
 			gr.drawString(text, (width - fontMetrics.stringWidth(text)) / 2,
-						  GuiUtils.getBaselineOffset(height, fontMetrics));
+						  FontUtils.getBaselineOffset(height, fontMetrics));
 
 			// Draw border
 			gr.setColor(BORDER_COLOUR);
@@ -474,14 +487,14 @@ class ControlDialog
 		//--------------------------------------------------------------
 
 	////////////////////////////////////////////////////////////////////
-	//  Class fields
+	//  Class variables
 	////////////////////////////////////////////////////////////////////
 
 		private static	int	preferredWidth;
 		private static	int	preferredHeight;
 
 	////////////////////////////////////////////////////////////////////
-	//  Instance fields
+	//  Instance variables
 	////////////////////////////////////////////////////////////////////
 
 		private	String	text;
@@ -538,7 +551,7 @@ class ControlDialog
 		//--------------------------------------------------------------
 
 	////////////////////////////////////////////////////////////////////
-	//  Instance fields
+	//  Instance variables
 	////////////////////////////////////////////////////////////////////
 
 		private	EscapeIndicator	tabIndicator;
@@ -657,7 +670,7 @@ class ControlDialog
 		//--------------------------------------------------------------
 
 	////////////////////////////////////////////////////////////////////
-	//  Instance fields
+	//  Instance variables
 	////////////////////////////////////////////////////////////////////
 
 		private	ScrollDirection	scrollDirection;
@@ -678,7 +691,7 @@ class ControlDialog
 		// Set icons
 		setIconImages(mainWindow.getIconImages());
 
-		// Initialise instance fields
+		// Initialise instance variables
 		this.mainWindow = mainWindow;
 		scrollTimer = new Timer(SCROLL_INTERVAL, this);
 		scrollTimer.setActionCommand(Command.SCROLL_FILE_SET);
@@ -1350,7 +1363,7 @@ class ControlDialog
 	{
 		// Parse file
 		List<File> files = new ArrayList<>();
-		for (String str : TextFile.readLines(listFile, TextModel.getCharacterEncoding()))
+		for (String str : TextFile.readLines(listFile, TextModel.getCharEncoding()))
 		{
 			// Set index of end of pathname, ignoring any comment
 			int index = str.indexOf(COMMENT_PREFIX_CHAR);
@@ -1368,7 +1381,7 @@ class ControlDialog
 			// Parse pathname and add file to list
 			if (!str.isEmpty())
 			{
-				File file = new File(PropertyString.parsePathname(str));
+				File file = new File(PathnameUtils.parsePathname(str));
 				try
 				{
 					if (!file.isFile() && !file.isDirectory())
@@ -2168,7 +2181,7 @@ class ControlDialog
 	//------------------------------------------------------------------
 
 ////////////////////////////////////////////////////////////////////////
-//  Instance fields
+//  Instance variables
 ////////////////////////////////////////////////////////////////////////
 
 	private	Dimension				initialParameterEditorSize;

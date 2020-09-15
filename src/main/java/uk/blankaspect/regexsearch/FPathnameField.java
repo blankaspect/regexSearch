@@ -25,9 +25,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import uk.blankaspect.common.gui.GuiUtils;
+import uk.blankaspect.common.swing.misc.GuiUtils;
 
-import uk.blankaspect.common.textfield.PathnameField;
+import uk.blankaspect.common.swing.textfield.PathnameField;
 
 //----------------------------------------------------------------------
 
@@ -119,7 +119,7 @@ class FPathnameField
 	//------------------------------------------------------------------
 
 ////////////////////////////////////////////////////////////////////////
-//  Class fields
+//  Class variables
 ////////////////////////////////////////////////////////////////////////
 
 	private static	Map<String, List<FPathnameField>>	observers	= new HashMap<>();

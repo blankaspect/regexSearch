@@ -50,21 +50,28 @@ import javax.swing.SwingUtilities;
 
 import uk.blankaspect.common.exception.AppException;
 
-import uk.blankaspect.common.gui.FButton;
-import uk.blankaspect.common.gui.FMenu;
-import uk.blankaspect.common.gui.FMenuItem;
-import uk.blankaspect.common.gui.GuiUtils;
-import uk.blankaspect.common.gui.SinglePathnameFieldDialog;
-import uk.blankaspect.common.gui.SingleSelectionListEditor;
-
-import uk.blankaspect.common.misc.InputModifiers;
-import uk.blankaspect.common.misc.KeyAction;
-import uk.blankaspect.common.misc.ListEditor;
-import uk.blankaspect.common.misc.Property;
 import uk.blankaspect.common.misc.SystemUtils;
-import uk.blankaspect.common.misc.TextUtils;
 
-import uk.blankaspect.common.textfield.PathnameField;
+import uk.blankaspect.common.property.Property;
+
+import uk.blankaspect.common.swing.action.KeyAction;
+
+import uk.blankaspect.common.swing.button.FButton;
+
+import uk.blankaspect.common.swing.dialog.SinglePathnameFieldDialog;
+
+import uk.blankaspect.common.swing.list.SingleSelectionListEditor;
+
+import uk.blankaspect.common.swing.menu.FMenu;
+import uk.blankaspect.common.swing.menu.FMenuItem;
+
+import uk.blankaspect.common.swing.misc.GuiUtils;
+
+import uk.blankaspect.common.swing.modifiers.InputModifiers;
+
+import uk.blankaspect.common.swing.text.TextUtils;
+
+import uk.blankaspect.common.swing.textfield.PathnameField;
 
 //----------------------------------------------------------------------
 
@@ -493,7 +500,7 @@ class PathnameEditor
 			}
 			catch (AppException e)
 			{
-				App.INSTANCE.showErrorMessage(App.SHORT_NAME, e );
+				App.INSTANCE.showErrorMessage(App.SHORT_NAME, e);
 			}
 		}
 
@@ -516,7 +523,7 @@ class PathnameEditor
 
 	public PathnameEditor(int maxNumItems)
 	{
-		// Initialise instance fields
+		// Initialise instance variables
 		editor = new ListEditor(maxNumItems, this);
 
 		// Initialise actions
@@ -818,13 +825,13 @@ class PathnameEditor
 	//------------------------------------------------------------------
 
 ////////////////////////////////////////////////////////////////////////
-//  Class fields
+//  Class variables
 ////////////////////////////////////////////////////////////////////////
 
 	private static	JFileChooser	fileChooser;
 
 ////////////////////////////////////////////////////////////////////////
-//  Instance fields
+//  Instance variables
 ////////////////////////////////////////////////////////////////////////
 
 	private	ListEditor	editor;

@@ -2,7 +2,7 @@
 
 App.java
 
-Application class.
+Class: RegexSearch application.
 
 \*====================================================================*/
 
@@ -19,27 +19,36 @@ package uk.blankaspect.regexsearch;
 
 
 import java.io.File;
+import java.io.IOException;
+
+import java.time.LocalDateTime;
+
+import java.time.format.DateTimeFormatter;
 
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
+import uk.blankaspect.common.cls.ClassUtils;
+
 import uk.blankaspect.common.exception.AppException;
 import uk.blankaspect.common.exception.ExceptionUtils;
 import uk.blankaspect.common.exception.FileException;
 
-import uk.blankaspect.common.gui.TextRendering;
+import uk.blankaspect.common.exception2.LocationException;
 
-import uk.blankaspect.common.misc.CalendarTime;
-import uk.blankaspect.common.misc.ClassUtils;
-import uk.blankaspect.common.misc.ResourceProperties;
+import uk.blankaspect.common.logging.ErrorLogger;
 
-import uk.blankaspect.common.textfield.TextFieldUtils;
+import uk.blankaspect.common.resource.ResourceProperties;
+
+import uk.blankaspect.common.swing.text.TextRendering;
+
+import uk.blankaspect.common.swing.textfield.TextFieldUtils;
 
 //----------------------------------------------------------------------
 
 
-// APPLICATION CLASS
+// CLASS: APPLICATION
 
 
 public class App
@@ -59,6 +68,8 @@ public class App
 	private static final	String	BUILD_PROPERTY_KEY		= "build";
 	private static final	String	RELEASE_PROPERTY_KEY	= "release";
 
+	private static final	String	VERSION_DATE_TIME_PATTERN	= "uuuuMMdd-HHmmss";
+
 	private static final	String	BUILD_PROPERTIES_FILENAME	= "build.properties";
 
 	private static final	String	CONFIG_ERROR_STR		= "Configuration error";
@@ -72,7 +83,7 @@ public class App
 ////////////////////////////////////////////////////////////////////////
 
 
-	// ERROR IDENTIFIERS
+	// ENUMERATION: ERROR IDENTIFIERS
 
 
 	private enum ErrorId
@@ -85,6 +96,12 @@ public class App
 
 		FILE_DOES_NOT_EXIST
 		("The file does not exist.");
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance variables
+	////////////////////////////////////////////////////////////////////
+
+		private	String	message;
 
 	////////////////////////////////////////////////////////////////////
 	//  Constructors
@@ -101,6 +118,7 @@ public class App
 	//  Instance methods : AppException.IId interface
 	////////////////////////////////////////////////////////////////////
 
+		@Override
 		public String getMessage()
 		{
 			return message;
@@ -108,78 +126,19 @@ public class App
 
 		//--------------------------------------------------------------
 
-	////////////////////////////////////////////////////////////////////
-	//  Instance fields
-	////////////////////////////////////////////////////////////////////
-
-		private	String	message;
-
 	}
 
 	//==================================================================
 
 ////////////////////////////////////////////////////////////////////////
-//  Member classes : inner classes
+//  Instance variables
 ////////////////////////////////////////////////////////////////////////
 
-
-	// INITIALISATION CLASS
-
-
-	/**
-	 * The run() method of this class creates the main window and performs the remaining initialisation of
-	 * the application from the event-dispatching thread.
-	 */
-
-	private class DoInitialisation
-		implements Runnable
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private DoInitialisation()
-		{
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : Runnable interface
-	////////////////////////////////////////////////////////////////////
-
-		public void run()
-		{
-			// Create main window
-			mainWindow = new MainWindow();
-
-			// Create control dialog
-			mainWindow.openControlDialog();
-
-			// Read search parameters
-			try
-			{
-				File file = AppConfig.INSTANCE.getDefaultSearchParamsFile();
-				if (file != null)
-				{
-					if (!file.isFile())
-						throw new FileException(ErrorId.FILE_DOES_NOT_EXIST, file);
-					searchParams = new SearchParameters(file);
-					mainWindow.getControlDialog().updateComponents();
-				}
-			}
-			catch (AppException e)
-			{
-				showErrorMessage(SHORT_NAME + " : " + SEARCH_PARAMS_STR, e);
-			}
-		}
-
-		//--------------------------------------------------------------
-
-	}
-
-	//==================================================================
+	private	ResourceProperties	buildProperties;
+	private	String				versionStr;
+	private	SearchParameters	searchParams;
+	private	TextSearcher		textSearcher;
+	private	MainWindow			mainWindow;
 
 ////////////////////////////////////////////////////////////////////////
 //  Constructors
@@ -262,11 +221,8 @@ public class App
 			}
 			else
 			{
-				long time = System.currentTimeMillis();
 				buffer.append('b');
-				buffer.append(CalendarTime.dateToString(time));
-				buffer.append('-');
-				buffer.append(CalendarTime.hoursMinsToString(time));
+				buffer.append(DateTimeFormatter.ofPattern(VERSION_DATE_TIME_PATTERN).format(LocalDateTime.now()));
 			}
 			versionStr = buffer.toString();
 		}
@@ -313,10 +269,33 @@ public class App
 
 	private void init()
 	{
-		// Read build properties
-		buildProperties = new ResourceProperties(BUILD_PROPERTIES_FILENAME, getClass());
+		// Log stack trace of uncaught exception
+		if (ClassUtils.isFromJar(getClass()))
+		{
+			Thread.setDefaultUncaughtExceptionHandler((thread, exception) ->
+			{
+				try
+				{
+					ErrorLogger.INSTANCE.write(exception);
+				}
+				catch (IOException e)
+				{
+					e.printStackTrace();
+				}
+			});
+		}
 
-		// Initialise instance fields
+		// Read build properties
+		try
+		{
+			buildProperties = new ResourceProperties(BUILD_PROPERTIES_FILENAME);
+		}
+		catch (LocationException e)
+		{
+			e.printStackTrace();
+		}
+
+		// Initialise instance variables
 		searchParams = new SearchParameters();
 		textSearcher = new TextSearcher();
 
@@ -357,20 +336,34 @@ public class App
 			TextFieldUtils.selectAllOnFocusGained();
 
 		// Perform remaining initialisation from event-dispatching thread
-		SwingUtilities.invokeLater(new DoInitialisation());
+		SwingUtilities.invokeLater(() ->
+		{
+			// Create main window
+			mainWindow = new MainWindow();
+
+			// Create control dialog
+			mainWindow.openControlDialog();
+
+			// Read search parameters
+			try
+			{
+				File file = AppConfig.INSTANCE.getDefaultSearchParamsFile();
+				if (file != null)
+				{
+					if (!file.isFile())
+						throw new FileException(ErrorId.FILE_DOES_NOT_EXIST, file);
+					searchParams = new SearchParameters(file);
+					mainWindow.getControlDialog().updateComponents();
+				}
+			}
+			catch (AppException e)
+			{
+				showErrorMessage(SHORT_NAME + " : " + SEARCH_PARAMS_STR, e);
+			}
+		});
 	}
 
 	//------------------------------------------------------------------
-
-////////////////////////////////////////////////////////////////////////
-//  Instance fields
-////////////////////////////////////////////////////////////////////////
-
-	private	ResourceProperties	buildProperties;
-	private	String				versionStr;
-	private	SearchParameters	searchParams;
-	private	TextSearcher		textSearcher;
-	private	MainWindow			mainWindow;
 
 }
 

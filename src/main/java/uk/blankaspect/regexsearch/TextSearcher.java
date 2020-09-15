@@ -37,12 +37,13 @@ import java.util.regex.PatternSyntaxException;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
+import uk.blankaspect.common.collection.ArraySet;
+
 import uk.blankaspect.common.exception.AppException;
 import uk.blankaspect.common.exception.FileException;
 
 import uk.blankaspect.common.indexedsub.IndexedSub;
 
-import uk.blankaspect.common.misc.ArraySet;
 import uk.blankaspect.common.misc.DirectoryFilter;
 import uk.blankaspect.common.misc.FileAttributeUtils;
 import uk.blankaspect.common.misc.LineSeparator;
@@ -174,7 +175,7 @@ class TextSearcher
 		//--------------------------------------------------------------
 
 	////////////////////////////////////////////////////////////////////
-	//  Instance fields
+	//  Instance variables
 	////////////////////////////////////////////////////////////////////
 
 		private	char	key;
@@ -233,7 +234,7 @@ class TextSearcher
 		//--------------------------------------------------------------
 
 	////////////////////////////////////////////////////////////////////
-	//  Instance fields
+	//  Instance variables
 	////////////////////////////////////////////////////////////////////
 
 		private	String	message;
@@ -266,7 +267,7 @@ class TextSearcher
 		//--------------------------------------------------------------
 
 	////////////////////////////////////////////////////////////////////
-	//  Instance fields
+	//  Instance variables
 	////////////////////////////////////////////////////////////////////
 
 		List<File>		files;
@@ -305,7 +306,7 @@ class TextSearcher
 		//--------------------------------------------------------------
 
 	////////////////////////////////////////////////////////////////////
-	//  Instance fields
+	//  Instance variables
 	////////////////////////////////////////////////////////////////////
 
 		File	file;
@@ -341,7 +342,7 @@ class TextSearcher
 		//--------------------------------------------------------------
 
 	////////////////////////////////////////////////////////////////////
-	//  Instance fields
+	//  Instance variables
 	////////////////////////////////////////////////////////////////////
 
 		int	numFiles;
@@ -408,7 +409,7 @@ class TextSearcher
 		//--------------------------------------------------------------
 
 	////////////////////////////////////////////////////////////////////
-	//  Instance fields
+	//  Instance variables
 	////////////////////////////////////////////////////////////////////
 
 		private	String	description;
@@ -484,7 +485,7 @@ class TextSearcher
 		//--------------------------------------------------------------
 
 	////////////////////////////////////////////////////////////////////
-	//  Instance fields
+	//  Instance variables
 	////////////////////////////////////////////////////////////////////
 
 		private	File[]			directories;
@@ -756,7 +757,7 @@ class TextSearcher
 	public void startSearch(Params params)
 		throws AppException
 	{
-		// Initialise instance fields
+		// Initialise instance variables
 		replacementStr = params.replacementStr;
 		regex = params.regex;
 		replaceGlobal = false;
@@ -1301,7 +1302,7 @@ class TextSearcher
 	//------------------------------------------------------------------
 
 ////////////////////////////////////////////////////////////////////////
-//  Instance fields
+//  Instance variables
 ////////////////////////////////////////////////////////////////////////
 
 	private	String				replacementStr;
