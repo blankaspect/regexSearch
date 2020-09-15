@@ -7,8 +7,7 @@ conform to the Maven standard directory layout \(ie, the sources are in `src/mai
 
 The Java version of the source code is 1.8 \(Java SE 8\).
 
-All the source files in this repo have a tab width of 4.  You can set this when viewing individual files on GitHub by
-appending `?ts=4` to the file's URL.  It's almost effortless. 
+All the source files in this repo have a tab width of 4. 
 
 The complete source code of the RegexSearch application is distributed, along with an executable JAR and an
 installer, through SourceForge:  
