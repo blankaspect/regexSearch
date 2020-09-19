@@ -873,7 +873,7 @@ class ParameterEditor
 
 		// Button: previous
 		JButton previousButton = new JButton(editor.getAction(ListEditor.Command.SELECT_PREVIOUS));
-		previousButton.setIcon(AppIcon.ARROW_LEFT);
+		previousButton.setIcon(Icons.ARROW_LEFT);
 		previousButton.setText(null);
 		previousButton.setMargin(ICON_BUTTON_MARGINS);
 		previousButton.setToolTipText(SELECT_PREVIOUS_TOOLTIP_STR);
@@ -881,7 +881,7 @@ class ParameterEditor
 
 		// Button: next
 		JButton nextButton = new JButton(editor.getAction(ListEditor.Command.SELECT_NEXT));
-		nextButton.setIcon(AppIcon.ARROW_RIGHT);
+		nextButton.setIcon(Icons.ARROW_RIGHT);
 		nextButton.setText(null);
 		nextButton.setMargin(ICON_BUTTON_MARGINS);
 		nextButton.setToolTipText(SELECT_NEXT_TOOLTIP_STR);

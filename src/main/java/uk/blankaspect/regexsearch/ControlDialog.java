@@ -810,7 +810,7 @@ class ControlDialog
 		gridX = 0;
 
 		// Button: insert file set
-		insertFileSetButton = new JButton(AppIcon.PLUS);
+		insertFileSetButton = new JButton(Icons.PLUS);
 		insertFileSetButton.setMargin(ICON_BUTTON_MARGINS);
 		insertFileSetButton.setToolTipText(INSERT_FILE_SET_STR);
 		insertFileSetButton.setActionCommand(Command.INSERT_FILE_SET);
@@ -829,7 +829,7 @@ class ControlDialog
 		fileSetCommandPanel.add(insertFileSetButton);
 
 		// Button: duplicate file set
-		duplicateFileSetButton = new JButton(AppIcon.RHOMB_PAIR);
+		duplicateFileSetButton = new JButton(Icons.RHOMB_PAIR);
 		duplicateFileSetButton.setMargin(ICON_BUTTON_MARGINS);
 		duplicateFileSetButton.setToolTipText(DUPLICATE_FILE_SET_STR);
 		duplicateFileSetButton.setActionCommand(Command.DUPLICATE_FILE_SET);
@@ -848,7 +848,7 @@ class ControlDialog
 		fileSetCommandPanel.add(duplicateFileSetButton);
 
 		// Button: delete file set
-		deleteFileSetButton = new JButton(AppIcon.MINUS);
+		deleteFileSetButton = new JButton(Icons.MINUS);
 		deleteFileSetButton.setMargin(ICON_BUTTON_MARGINS);
 		deleteFileSetButton.setToolTipText(DELETE_CURRENT_FILE_SET_STR);
 		deleteFileSetButton.setActionCommand(Command.DELETE_FILE_SET);

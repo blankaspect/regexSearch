@@ -527,9 +527,8 @@ class MainWindow
 
 	public MainWindow()
 	{
-
 		// Set icons
-		setIconImages(AppIcon.getAppIconImages());
+		setIconImages(Images.APP_ICON_IMAGES);
 
 
 		//----  Menu bar
@@ -701,7 +700,6 @@ class MainWindow
 
 		// Make window visible
 		setVisible(true);
-
 	}
 
 	//------------------------------------------------------------------
