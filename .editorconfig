@@ -7,3 +7,7 @@ charset = utf-8
 [*.java]
 indent_style = tab
 indent_size = 4
+
+[*.kts]
+indent_style = tab
+indent_size = 4
