@@ -1,27 +1,38 @@
 ### blankaspect/regexSearch
 
-This repository contains the source code of the RegexSearch application except for packages that are shared between
-Blank Aspect projects, which can be found in the [blankaspect/common](https://github.com/blankaspect/common) repository.
-Not all the classes of the 'common' packages are required to build the RegexSearch application.  Both sets of code
-conform to the Maven standard directory layout \(ie, the sources are in `src/main/java` \).
+This repository contains the source code and resources of the RegexSearch application except for packages that are
+shared between Blank Aspect projects, which can be found in the
+[blankaspect/common](https://github.com/blankaspect/common) repository.  Both repos conform to the Maven standard
+directory layout \(ie, the source code is in `src/main/java` and the resources are in `src/main/resources`\).
+
+Not all the classes of the `common` packages are required to build the RegexSearch application.  The JAR file that is
+created by the `jar` task of the Gradle build script, `build.gradle.kts`, includes only the classes of the `common`
+packages that are required by the application.  The Gradle script expects to find the `common` project in the parent
+directory of the `RegexSearch` project:
+```
+..
+|
++-- common
+|
++-- RegexSearch
+    |
+    +-- build.gradle.kts
+```
 
 The Java version of the source code is 1.8 \(Java SE 8\).
 
 All the source files in this repo have a tab width of 4. 
 
-The complete source code of the RegexSearch application is distributed, along with an executable JAR and an
-installer, through SourceForge:  
+----
+
+The complete source code of the RegexSearch application is distributed, along with an executable JAR and an installer,
+through SourceForge:  
 <http://regexsearch.sourceforge.net/>
 
-The distribution contains an Ant file for building the application from source and creating a JAR file.  The source code
-is published on GitHub so that it can be browsed without the need to download an archive and extract its contents.
+The release tags of this repository and [blankaspect/common](https://github.com/blankaspect/common) mark the points at
+which the source code of the repos is synchronised with the source code of the current distribution of the application.
 
-You may use any of the source code under the terms of the GPL version 3 license.
+----
 
----
-
-<small>This repository doesn't contain anything apart from source code because I didn't want to publish the entire
-contents of my local repo.  Git doesn't allow partial clones, so this repository is managed though a secondary local
-repo and some scripting.  Until I find an efficient way of publishing a specified subset of the contents of my local
-repo, updates of this one will be infrequent, and commits are likely to have collective \(and uninformative\)
-comments.</small>
+You may use the contents of this repository under the terms of the GPL version 3 license.  You may use the contents of
+the [blankaspect/common](https://github.com/blankaspect/common) repository under the terms of the MIT license.
