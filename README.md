@@ -8,13 +8,13 @@ directory layout \(ie, the source code is in `src/main/java` and the resources a
 Not all the classes of the `common` packages are required to build the RegexSearch application.  The JAR file that is
 created by the `jar` task of the Gradle build script, `build.gradle.kts`, includes only the classes of the `common`
 packages that are required by the application.  The Gradle script expects to find the `common` project in the parent
-directory of the `RegexSearch` project:
+directory of the `regexSearch` project:
 ```
 ..
 |
 +-- common
 |
-+-- RegexSearch
++-- regexSearch
     |
     +-- build.gradle.kts
 ```
