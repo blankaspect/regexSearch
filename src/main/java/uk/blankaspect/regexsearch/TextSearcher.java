@@ -464,22 +464,22 @@ class TextSearcher
 
 		public boolean isEmpty()
 		{
-			return ((directories == null) && (files == null));
+			return (directories == null) && (files == null);
 		}
 
 		//--------------------------------------------------------------
 
 		public File getNextDirectory()
 		{
-			return (((directories == null) || (directoryIndex >= directories.length)) ? null
-																					  : directories[directoryIndex++]);
+			return ((directories == null) || (directoryIndex >= directories.length)) ? null
+																					 : directories[directoryIndex++];
 		}
 
 		//--------------------------------------------------------------
 
 		public File getNextFile()
 		{
-			return (((files == null) || (fileIndex >= files.length)) ? null : files[fileIndex++]);
+			return ((files == null) || (fileIndex >= files.length)) ? null : files[fileIndex++];
 		}
 
 		//--------------------------------------------------------------
@@ -747,9 +747,11 @@ class TextSearcher
 
 	public AggregateResult getAggregateResult()
 	{
-		return new AggregateResult((targetFile == null) ? -1 : numFiles,
-								   (targetFile == null) ? -1 : numMatchedFiles, numMatches,
-								   (replacementStr == null) ? -1 : numReplacements);
+		return new AggregateResult(
+			(targetFile == null) ? -1 : numFiles,
+			(targetFile == null) ? -1 : numMatchedFiles, numMatches,
+			(replacementStr == null) ? -1 : numReplacements
+		);
 	}
 
 	//------------------------------------------------------------------

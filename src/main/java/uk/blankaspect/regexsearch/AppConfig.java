@@ -2,7 +2,7 @@
 
 AppConfig.java
 
-Application configuration class.
+Class: application configuration.
 
 \*====================================================================*/
 
@@ -63,7 +63,7 @@ import uk.blankaspect.common.ui.progress.IProgressView;
 //----------------------------------------------------------------------
 
 
-// APPLICATION CONFIGURATION CLASS
+// CLASS: APPLICATION CONFIGURATION
 
 
 class AppConfig
@@ -73,39 +73,37 @@ class AppConfig
 //  Constants
 ////////////////////////////////////////////////////////////////////////
 
-	public static final		AppConfig	INSTANCE;
+	public static final		AppConfig	INSTANCE	= new AppConfig();
 
-	public static final		int	MIN_TEXT_VIEW_NUM_COLUMNS		= 2 * MainWindow.HIGHLIGHT_MARGIN_COLUMNS;
-	public static final		int	MAX_TEXT_VIEW_NUM_COLUMNS		= 256;
-	public static final		int	DEFAULT_TEXT_VIEW_NUM_COLUMNS	= 96;
+	public static final		int		MIN_TEXT_VIEW_NUM_COLUMNS		= 2 * MainWindow.HIGHLIGHT_MARGIN_COLUMNS;
+	public static final		int		MAX_TEXT_VIEW_NUM_COLUMNS		= 256;
+	public static final		int		DEFAULT_TEXT_VIEW_NUM_COLUMNS	= 96;
 
-	public static final		int	MIN_TEXT_VIEW_NUM_ROWS		= 2 * MainWindow.HIGHLIGHT_MARGIN_ROWS;
-	public static final		int	MAX_TEXT_VIEW_NUM_ROWS		= 128;
-	public static final		int	DEFAULT_TEXT_VIEW_NUM_ROWS	= 24;
+	public static final		int		MIN_TEXT_VIEW_NUM_ROWS		= 2 * MainWindow.HIGHLIGHT_MARGIN_ROWS;
+	public static final		int		MAX_TEXT_VIEW_NUM_ROWS		= 128;
+	public static final		int		DEFAULT_TEXT_VIEW_NUM_ROWS	= 24;
 
-	public static final		int	MIN_TEXT_VIEW_MAX_NUM_COLUMNS		= MIN_TEXT_VIEW_NUM_COLUMNS;
-	public static final		int	MAX_TEXT_VIEW_MAX_NUM_COLUMNS		= 4096;
-	public static final		int	DEFAULT_TEXT_VIEW_MAX_NUM_COLUMNS	= 256;
+	public static final		int		MIN_TEXT_VIEW_MAX_NUM_COLUMNS		= MIN_TEXT_VIEW_NUM_COLUMNS;
+	public static final		int		MAX_TEXT_VIEW_MAX_NUM_COLUMNS		= 4096;
+	public static final		int		DEFAULT_TEXT_VIEW_MAX_NUM_COLUMNS	= 256;
 
-	public static final		int	MIN_RESULT_AREA_NUM_ROWS	= 2;
-	public static final		int	MAX_RESULT_AREA_NUM_ROWS	= 32;
+	public static final		int		MIN_RESULT_AREA_NUM_ROWS	= 2;
+	public static final		int		MAX_RESULT_AREA_NUM_ROWS	= 32;
 
-	public static final		int	MAX_NUM_TAB_WIDTH_FILTERS	= 64;
+	public static final		int		MAX_NUM_TAB_WIDTH_FILTERS	= 64;
 
 	public static final		String	PUNCTUATION_CHARS	= "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~";
 
-	private static final	int	VERSION					= 0;
-	private static final	int	MIN_SUPPORTED_VERSION	= 0;
-	private static final	int	MAX_SUPPORTED_VERSION	= 0;
+	private static final	int		VERSION					= 0;
+	private static final	int		MIN_SUPPORTED_VERSION	= 0;
+	private static final	int		MAX_SUPPORTED_VERSION	= 0;
 
 	private static final	String	CONFIG_ERROR_STR	= "Configuration error";
 	private static final	String	CONFIG_DIR_KEY		= Property.APP_PREFIX + "configDir";
-	private static final	String	PROPERTIES_FILENAME	= App.NAME_KEY + "-properties" +
-																			AppConstants.XML_FILE_SUFFIX;
+	private static final	String	PROPERTIES_FILENAME	= App.NAME_KEY + "-properties" + AppConstants.XML_FILE_SUFFIX;
 	private static final	String	FILENAME_STEM		= App.NAME_KEY + "-config";
 	private static final	String	CONFIG_FILENAME		= FILENAME_STEM + AppConstants.XML_FILE_SUFFIX;
-	private static final	String	CONFIG_OLD_FILENAME	= FILENAME_STEM + "-old" +
-																			AppConstants.XML_FILE_SUFFIX;
+	private static final	String	CONFIG_OLD_FILENAME	= FILENAME_STEM + "-old" + AppConstants.XML_FILE_SUFFIX;
 
 	private static final	String	SAVE_CONFIGURATION_FILE_STR	= "Save configuration file";
 	private static final	String	WRITING_STR					= "Writing";
@@ -156,7 +154,7 @@ class AppConfig
 ////////////////////////////////////////////////////////////////////////
 
 
-	// ERROR IDENTIFIERS
+	// ENUMERATON: ERROR IDENTIFIERS
 
 
 	private enum ErrorId
@@ -187,6 +185,12 @@ class AppConfig
 		("Failed to create the directory for the configuration file.");
 
 	////////////////////////////////////////////////////////////////////
+	//  Instance variables
+	////////////////////////////////////////////////////////////////////
+
+		private	String	message;
+
+	////////////////////////////////////////////////////////////////////
 	//  Constructors
 	////////////////////////////////////////////////////////////////////
 
@@ -201,18 +205,13 @@ class AppConfig
 	//  Instance methods : AppException.IId interface
 	////////////////////////////////////////////////////////////////////
 
+		@Override
 		public String getMessage()
 		{
 			return message;
 		}
 
 		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance variables
-	////////////////////////////////////////////////////////////////////
-
-		private	String	message;
 
 	}
 
@@ -223,7 +222,7 @@ class AppConfig
 ////////////////////////////////////////////////////////////////////////
 
 
-	// CONFIGURATION FILE CLASS
+	// CLASS: CONFIGURATION FILE
 
 
 	private static class ConfigFile
@@ -935,7 +934,7 @@ class AppConfig
 		@Override
 		public String toString()
 		{
-			return ((value == null) ? "" : value.x + ", " + value.y);
+			return (value == null) ? "" : value.x + ", " + value.y;
 		}
 
 		//--------------------------------------------------------------
@@ -1018,7 +1017,7 @@ class AppConfig
 		@Override
 		public String toString()
 		{
-			return ((value == null) ? "" : value.x + ", " + value.y);
+			return (value == null) ? "" : value.x + ", " + value.y;
 		}
 
 		//--------------------------------------------------------------
@@ -1205,7 +1204,7 @@ class AppConfig
 		@Override
 		public String toString()
 		{
-			return (value.width + ", " + value.height);
+			return value.width + ", " + value.height;
 		}
 
 		//--------------------------------------------------------------
@@ -1420,7 +1419,7 @@ class AppConfig
 		@Override
 		public String toString()
 		{
-			return (value.width + ", " + value.height);
+			return value.width + ", " + value.height;
 		}
 
 		//--------------------------------------------------------------
@@ -2036,7 +2035,7 @@ class AppConfig
 	public File getDefaultSearchParamsFile()
 	{
 		String pathname = getDefaultSearchParamsPathname();
-		return ((pathname == null) ? null : new File(PathnameUtils.parsePathname(pathname)));
+		return (pathname == null) ? null : new File(PathnameUtils.parsePathname(pathname));
 	}
 
 	//------------------------------------------------------------------
@@ -2052,8 +2051,7 @@ class AppConfig
 //--//  Instance variables : associated variables in enclosing class
 //--////////////////////////////////////////////////////////////////////
 
-	private	CPDefaultSearchParamsPathname	cpDefaultSearchParamsPathname	=
-																	new CPDefaultSearchParamsPathname();
+	private	CPDefaultSearchParamsPathname	cpDefaultSearchParamsPathname	= new CPDefaultSearchParamsPathname();
 
 	//==================================================================
 
@@ -2144,6 +2142,16 @@ class AppConfig
 	//==================================================================
 
 ////////////////////////////////////////////////////////////////////////
+//  Instance variables
+////////////////////////////////////////////////////////////////////////
+
+	private	File			file;
+	private	boolean			fileRead;
+	private	File			selectedFile;
+	private	JFileChooser	fileChooser;
+	private	List<Property>	properties;
+
+////////////////////////////////////////////////////////////////////////
 //  Constructors
 ////////////////////////////////////////////////////////////////////////
 
@@ -2180,8 +2188,8 @@ class AppConfig
 		File jarDirectory = null;
 		try
 		{
-			jarDirectory = new File(AppConfig.class.getProtectionDomain().getCodeSource().getLocation().
-																				toURI()).getParentFile();
+			jarDirectory = new File(AppConfig.class.getProtectionDomain().getCodeSource().getLocation()
+																							.toURI()).getParentFile();
 		}
 		catch (Exception e)
 		{
@@ -2272,8 +2280,7 @@ class AppConfig
 		fileChooser.rescanCurrentDirectory();
 		if (fileChooser.showSaveDialog(parent) == JFileChooser.APPROVE_OPTION)
 		{
-			selectedFile = Utils.appendSuffix(fileChooser.getSelectedFile(),
-											  AppConstants.XML_FILE_SUFFIX);
+			selectedFile = Utils.appendSuffix(fileChooser.getSelectedFile(), AppConstants.XML_FILE_SUFFIX);
 			return selectedFile;
 		}
 		return null;
@@ -2443,25 +2450,6 @@ class AppConfig
 	}
 
 	//------------------------------------------------------------------
-
-////////////////////////////////////////////////////////////////////////
-//  Static initialiser
-////////////////////////////////////////////////////////////////////////
-
-	static
-	{
-		INSTANCE = new AppConfig();
-	}
-
-////////////////////////////////////////////////////////////////////////
-//  Instance variables
-////////////////////////////////////////////////////////////////////////
-
-	private	File			file;
-	private	boolean			fileRead;
-	private	File			selectedFile;
-	private	JFileChooser	fileChooser;
-	private	List<Property>	properties;
 
 }
 

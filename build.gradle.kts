@@ -42,7 +42,7 @@ java {
 
 //----------------------------------------------------------------------
 
-// Compile from source
+// Compile all classes from source
 
 tasks.compileJava {
 	options.sourcepath = files(
