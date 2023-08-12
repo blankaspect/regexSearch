@@ -1,0 +1,285 @@
+/**********************************************************************\
+
+Styles for Blank Aspect project manuals
+
+\**********************************************************************/
+
+@import url("blankaspect-common.css");
+@import url("https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,400;0,700;1,400;1,700&family=Roboto:ital,wght@0,400;0,700;1,400;1,700&display=swap");
+
+.monospace
+{
+  font-family: "Roboto Mono", monospace;
+}
+
+a
+{
+  color: #0000A0;
+}
+a.command, span.command
+{
+  color: #8C4818;
+}
+a.component, span.component
+{
+  color: #800080;
+}
+a.configProperty, span.configProperty
+{
+  color: #009000;
+}
+a.reference
+{
+  text-decoration: none;
+}
+
+body
+{
+  font-family: "Roboto", sans-serif;
+  line-height: 166.7%;
+}
+
+code, code:link, code:visited
+{
+  font-family: "Roboto Mono", monospace;
+  color: #004060;
+  background-color: #E8E8E8;
+  padding-left: 0.25em;
+  padding-right: 0.25em;
+}
+
+code.noBackground
+{
+  background-color: inherit;
+}
+
+div.commandLine
+{
+  color: #404040;
+  background-color: #ECF0F8;
+  border: 1px solid #D4D8E0;
+  margin: 0.4em 0;
+  padding: 0.4em 0.6em;
+  font-weight: bold;
+  font-size: 100%;
+}
+
+div.commandSyntax
+{
+  background-color: #FCFAE8;
+  border: 1px solid #E8E6CC;
+  padding-top: 0.4em;
+  padding-bottom: 0.4em;
+}
+
+div.notes h3
+{
+  margin-top: 2.5em;
+  margin-bottom: 0.6em;
+  padding-bottom: 0.1em;
+  border-bottom: 1px solid #B4B8C8;
+}
+
+div.preferences
+{
+  display: table;
+  border-collapse: collapse;
+  width: 95%;
+  margin: 1.0em 2.5%;
+}
+div.preferences > div
+{
+  display: table-row;
+}
+div.preferences > div > div
+{
+  display: table-cell;
+  border: 1px solid #B4B8C8;
+  padding: 0 0.6em 0.2em 0.6em;
+}
+div.preferences > div > div.sectionTitle
+{
+  background-color: #DEE2F0;
+  font-weight: bold;
+}
+div.preferences dd
+{
+  margin: 0 1.0em;
+}
+div.preferences dd.spaceAbove
+{
+  padding-top: 0.4em;
+}
+div.preferences dl
+{
+  margin: 0.5em 0;
+}
+div.preferences dt
+{
+  margin: 0;
+  padding-bottom: 0.2em;
+  font-weight: bold;
+}
+div.preferences dl.inner1 dd
+{
+  margin-bottom: 0.5em;
+}
+div.preferences dl.inner1 dt
+{
+  line-height: normal;
+  font-weight: normal;
+  font-style: italic;
+}
+
+ol
+{
+  margin-left: -0.7em;
+}
+
+ol.notes
+{
+  font-size: 83%;
+}
+
+p.tocLink a
+{
+  color: #700000;
+}
+
+pre.codeFragment
+{
+  background-color: #F6F4DC;
+  border: 1px solid #E2E0C8;
+  font-family: "Roboto Mono", monospace;
+  line-height: 133.3%;
+  padding: 0.5em 0.8em;
+}
+
+table.basic
+{
+  line-height: 125%;
+  margin: 1.0em 2.5% 0.8em 2.5%;
+}
+table.basic td
+{
+  border: 1px solid #B4B8C8;
+  padding: 0.2em 0.6em;
+}
+table.basic td.shaded
+{
+  background-color: #F8F0D0;
+  color: #004000;
+  white-space: nowrap;
+}
+
+table.commandLine
+{
+  margin: 0.5em 1.0em;
+}
+table.commandLine td
+{
+  padding: 0.3em 0.6em;
+}
+table.commandLine td.command
+{
+  color: #404040;
+  background-color: #ECF0F8;
+  border: 1px solid #D4D8E0;
+  font: bold 100% "Roboto Mono", monospace;
+}
+table.commandLine td.system
+{
+  text-align: right;
+}
+
+table.configProperties
+{
+  line-height: 125%;
+  margin: 0.3em 2.5%;
+}
+table.configProperties td
+{
+  border: 1px solid #B4B8C8;
+  padding: 0.2em 0.6em;
+}
+table.configProperties td.propertyKey
+{
+  color: #004060;
+}
+table.configProperties td.propertyValue
+{
+  font-size: 82%;
+  padding-left: 0.8em;
+}
+table.configProperties th
+{
+  vertical-align: bottom;
+  border: 1px solid #B4B8C8;
+  padding: 0.2em 0.6em;
+}
+
+table.dataStructure
+{
+  line-height: 125%;
+  margin: 1.0em 2.5% 0.8em 2.5%;
+}
+table.dataStructure .shaded1
+{
+  vertical-align: top;
+  background-color: #B0D0B0;
+  white-space: nowrap;
+}
+table.dataStructure .shaded2
+{
+  vertical-align: top;
+  background-color: #D8D8D8;
+  white-space: nowrap;
+}
+table.dataStructure td
+{
+  border: 1px solid #B4B8C8;
+  padding: 0.2em 0.6em;
+}
+table.dataStructure td.name
+{
+  font-style: italic;
+}
+table.dataStructure th
+{
+  border: 1px solid #B4B8C8;
+  padding: 0.2em 0.6em;
+}
+
+table.distribution
+{
+  margin: 0.8em 2.5%;
+}
+table.distribution td
+{
+  border: 1px solid #B4B8C8;
+  padding: 0.2em 0.6em;
+  vertical-align: top;
+}
+table.distribution td.file
+{
+  background-color: #F8F4D8;
+  color: #004000;
+  white-space: nowrap;
+}
+
+table.dataType
+{
+  margin-top: 0.3em;
+  margin-left: 1.0em;
+}
+table.dataType td
+{
+  padding: 0.1em 0.3em;
+}
+
+ul
+{
+  margin-left: -1.0em;
+}
+
+/*--------------------------------------------------------------------*/

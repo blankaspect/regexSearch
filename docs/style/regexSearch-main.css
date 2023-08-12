@@ -1,0 +1,30 @@
+/**********************************************************************\
+
+Styles for RegexSearch project page
+
+\**********************************************************************/
+
+@import url("blankaspect-project.css");
+
+h4
+{
+  padding-bottom: 0.3em;
+  border-bottom: 1px solid #B4B8C8;
+}
+
+ul.list li
+{
+  margin-left: -0.5em;
+}
+
+ul.secondaryList
+{
+  margin-bottom: 0.25em;
+}
+
+ul.secondaryList li
+{
+  margin-top: 0.2em;
+}
+
+/*--------------------------------------------------------------------*/

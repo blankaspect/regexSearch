@@ -1,0 +1,3534 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html
+   PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+   "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html
+   xmlns="http://www.w3.org/1999/xhtml"
+   xml:lang="en">
+
+  <head>
+    <meta
+       http-equiv="content-type"
+       content="application/xhtml+xml;charset=UTF-8"/>
+    <meta
+       content="initial-scale=1"
+       name="viewport"/>
+    <title>RegexSearch : manual</title>
+    <link
+       href="style/blankaspect-common.css"
+       rel="stylesheet"
+       type="text/css"/>
+    <link
+       href="style/blankaspect-manual.css"
+       rel="stylesheet"
+       type="text/css"/>
+    <link
+       href="style/regexSearch-manual.css"
+       rel="stylesheet"
+       type="text/css"/>
+    <link
+       href="images/icon-48x48.png"
+       rel="icon"/>
+    <script
+       src="scripts/Toc.js"
+       type="text/javascript">
+    </script>
+    <script
+       src="scripts/init.js"
+       type="text/javascript">
+    </script>
+  </head>
+
+  <body>
+
+    <!-- Title -->
+
+    <div id="title">
+      <div>
+        <img alt="Icon" src="images/icon-48x48.png"/>
+      </div>
+      <div>
+        RegexSearch : manual
+      </div>
+    </div>
+
+    <!--=====================================================================================-->
+
+    <!-- Table of contents -->
+
+    <div class="section">
+      <h2 id="toc">Table of contents</h2>
+      <div id="tocRoot">
+        <div class="wrap" id="tocPlaceholder">
+          You must have JavaScript enabled in your browser to generate the table of contents.
+        </div>
+      </div>
+    </div>
+
+    <!--=====================================================================================-->
+
+    <!-- Introduction -->
+
+    <div class="section">
+      <h2 id="section1">1&nbsp; Introduction</h2>
+      <p class="tocLink">
+        [ <a href="#toc">Table of contents</a> ]
+      </p>
+
+      <p class="wrap">
+        RegexSearch is a Java application that performs <i>find</i> and <i>find-and-replace</i>
+        searches for regular expressions on multiple text files.
+      </p>
+
+      <h3 id="section1-1">1.1&nbsp; Features</h3>
+
+      <p class="wrap">
+        RegexSearch has the following features:
+      </p>
+      <ul class="list">
+        <li class="spaced wrap">
+          It can search for literal text or regular expressions.
+        </li>
+        <li class="spaced">
+          <div class="wrap">
+            The search can be performed on the following:
+          </div>
+          <ul class="noSpaceAbove">
+            <li class="wrap">
+              a single file,
+            </li>
+            <li class="wrap">
+              a directory, with optional recursion,
+            </li>
+            <li class="wrap">
+              the files and directories listed in a text file,
+            </li>
+            <li class="wrap">
+              the files in which the target was found in a previous search, or
+            </li>
+            <li class="wrap">
+              text on the system clipboard.
+            </li>
+          </ul>
+          <div class="wrap">
+            Files can be included in and excluded from the search by means of pathname filters,
+            which allow bounded recursion.
+          </div>
+        </li>
+        <li class="spaced wrap">
+          Occurrences of the target expression within each file are displayed in a scrollable
+          window, with the matched text highlighted.
+        </li>
+        <li class="spaced wrap">
+          Occurrences of the target expression can be replaced individually or globally.  If the
+          target is a regular expression, the replacement can include arbitrary parts of the
+          matched text.
+        </li>
+        <li class="spaced wrap">
+          Replacements can be previewed, then accepted or rejected.
+        </li>
+        <li class="spaced wrap">
+          The parsing and matching of regular expressions is performed by the robust Java
+          regular-expression engine.  The syntax of Java&apos;s regular expressions is similar
+          to that of Python and Perl.
+        </li>
+        <li class="spaced wrap">
+          The results of a search (number of matches, number of replacements) are displayed for
+          each file in which a match is found.  The results can be copied to the system
+          clipboard in a form that is suitable for use as a list file to limit the scope of a
+          new search.
+        </li>
+        <li class="spaced wrap">
+          Although a file cannot be edited in RegexSearch&apos;s text view, a command can be
+          issued to open the file in an external editor.
+        </li>
+      </ul>
+
+      <h3 id="section1-2">1.2&nbsp; Licence</h3>
+
+      <p class="wrap">
+        RegexSearch is made available under two licences:
+      </p>
+      <ul class="list">
+        <li class="spaced wrap">
+          The contents of the <code>uk.blankaspect.regexsearch</code> package (including
+          resources) may be used under the terms of version 3 of the <a class="external"
+          href="https://www.gnu.org/licenses/gpl-3.0.html">GNU General Public License</a>.
+        </li>
+        <li class="spaced wrap">
+          All other contents of the GitHub <a
+          href="https://github.com/blankaspect/regexSearch">blankaspect/regexSearch</a>
+          repository may be used under the terms of the <a class="external"
+          href="https://mit-license.org/">MIT License</a>.
+        </li>
+      </ul>
+
+    </div>
+
+    <!--=====================================================================================-->
+
+    <!-- Building and running the application -->
+
+    <div class="section">
+      <h2 id="section2">2&nbsp; Building and running the application</h2>
+      <p class="tocLink">
+        [ <a href="#toc">Table of contents</a> ]
+      </p>
+
+      <p class="wrap">
+        This section assumes that you have some experience of building and running a Java
+        application.
+      </p>
+
+      <h3 id="section2-1">2.1&nbsp; Building the application</h3>
+
+      <p class="wrap">
+        A Java Development Kit (JDK) that supports Java 17, such as <a class="external"
+        href="https://adoptium.net/">Eclipse Temurin from Adoptium</a>, is required to build
+        RegexSearch.
+      </p>
+      <p class="wrap">
+        The <code>src</code> directory of the distribution contains all the source code and
+        resources that constitute the application; there are no external dependencies.  The
+        directory conforms to the Maven standard directory layout: the source code is in
+        <code>src/main/java</code> and the resources are in <code>src/main/resources</code>.
+      </p>
+      <p class="wrap">
+        The supplied Kotlin-DSL-based <a class="external" href="https://gradle.org/">Gradle</a>
+        build script, <code>build.gradle.kts</code>, modifies the <code>compileJava</code> and
+        <code>jar</code> tasks (provided by the <code>java</code> plug-in) to compile the
+        application and to create an executable JAR file for it.
+      </p>
+
+      <h3 id="section2-2">2.2&nbsp; Running the application</h3>
+
+      <p class="wrap">
+        The supplied Kotlin-DSL-based Gradle build script, <code>build.gradle.kts</code>,
+        defines two tasks that may be used to run RegexSearch:
+      </p>
+      <dl class="basic">
+        <dt>runMain</dt>
+        <dd class="wrap">
+          Runs the main class from the class files that were generated by the
+          <code>compileJava</code> task.
+        </dd>
+        <dt>runJar</dt>
+        <dd class="wrap">
+          Runs the executable JAR that was generated by the <code>jar</code> task.
+        </dd>
+      </dl>
+      <p class="wrap">
+        Both tasks extend the <code>JavaExec</code> task.
+      </p>
+
+    </div>
+
+    <!--=====================================================================================-->
+
+    <!-- Configuration -->
+
+    <div class="section">
+      <h2 id="section3">3&nbsp; Configuration</h2>
+      <p class="tocLink">
+        [ <a href="#toc">Table of contents</a> ]
+      </p>
+
+      <p class="wrap">
+        When it starts up, RegexSearch is configured with <i>configuration properties</i> that
+        are read from two sources: the <a href="#section3-1">command line</a> of the Java
+        launcher and a <a href="#section3-2">configuration file</a> whose location may be
+        explicitly specified.  If the same property is specified on the command line and in a
+        configuration file, the value from the configuration file takes precedence.
+      </p>
+      <p class="wrap">
+        The recommended method of setting the properties in a configuration file is with the <a
+        class="command" href="#section6-5-1">Options &gt; Preferences</a> command.  For
+        command-line properties, which must be edited manually, the form of the property values
+        is given in an <a href="#sectionB">appendix</a>, and it can also be inferred by
+        generating a configuration file with the desired values and inspecting the contents of
+        the file.
+      </p>
+
+      <h3 id="section3-1">3.1&nbsp; Command-line properties</h3>
+
+      <p class="wrap">
+        When RegexSearch is run, configuration properties may be passed to the <code>java</code>
+        launcher on the command line as system properties; eg,
+        <code>-Dapp.general.mainWindowLocation=&quot;100, 0&quot;</code>.  RegexSearch&apos;s
+        command-line configuration properties all have the prefix <code>app.</code> . A list of
+        all the properties that are recognised by RegexSearch is given in an <a
+        href="#sectionB">appendix</a>.
+      </p>
+      <p class="wrap">
+        System properties can be added to the <a href="#section2-2">two supplied Gradle
+        tasks</a>, <code>runMain</code> and <code>runJar</code>, with the
+        <code>systemProperties(Map&lt;String, ?&gt;)</code> method.
+      </p>
+      <p class="wrap">
+        One particular property, <span class="configProperty">app.configDir</span>, is used to
+        specify the directory that contains a configuration file, as <a
+        href="#section3-2-1">described below</a>.
+      </p>
+
+      <h3 id="section3-2">3.2&nbsp; Configuration file</h3>
+
+      <p class="wrap">
+        The configuration file is named <code>regexSearch-config.xml</code>.  RegexSearch
+        doesn&apos;t require a configuration file: it uses a default value for any configuration
+        property that is missing from the source(s) of configuration.  Similarly, if it finds a
+        property value to be invalid, RegexSearch will display a message to this effect and use
+        the default value of the property.  If the configuration file contains a property that
+        was specified on the command line, the value from the configuration file is used.
+      </p>
+      <p class="wrap">
+        If the configuration has changed when you exit the application normally (ie, using the
+        <a class="command" href="#section6-1-3">File &gt; Exit</a> command or an equivalent),
+        RegexSearch will save its configuration to a configuration file.  If a configuration
+        file was read on startup, it will overwrite that file; otherwise, it will write a
+        configuration file to the default directory described above, unless the value of the
+        <span class="configProperty">app.configDir</span> property was an empty string.
+      </p>
+      <p class="wrap">
+        A configuration file can be written explicitly with the <span class="command">Save
+        configuration</span> command within the <span class="component">Preferences</span>
+        dialog.
+      </p>
+
+      <h4 id="section3-2-1">3.2.1&nbsp; Location of the configuration file</h4>
+      <p class="wrap">
+        When it starts up, RegexSearch is informed of the location of the configuration file
+        with the <span class="configProperty">app.configDir</span> property.  The value of the
+        property may contain <a href="#sectionB">special constructs</a> for system properties,
+        environment variables and the user&apos;s home directory.
+      </p>
+      <p class="noBottomMargin wrap">
+        The <span class="configProperty">app.configDir</span> property may be set in two ways:
+      </p>
+      <ul class="continuationList">
+        <li class="wrap">
+          on the command line that runs the <code>java</code> launcher, or
+        </li>
+        <li class="wrap">
+          in a file named <code>regexSearch-properties.xml</code> that resides in the same
+          directory as the <code>regexSearch.jar</code> JAR file.
+        </li>
+      </ul>
+      <p class="wrap">
+        The <code>regexSearch-properties.xml</code> file is a legacy from the time when
+        RegexSearch was distributed as a JAR file with an installer; the properties file was
+        written by the installer.  If you create a properties file, it should have the following
+        form, with the example pathname replaced by the actual pathname:
+      </p>
+      <pre class="codeFragment">
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;
+&lt;!DOCTYPE properties SYSTEM &quot;http://java.sun.com/dtd/properties.dtd&quot;&gt;
+&lt;properties&gt;
+&lt;entry key=&quot;app.configDir&quot;&gt;/home/slothrop/.blankaspect/regexSearch&lt;/entry&gt;
+&lt;/properties&gt;</pre>
+
+      <p class="wrap">
+        If the <span class="configProperty">app.configDir</span> property is set both on the
+        command line and in the properties file, the value in the properties file takes
+        precedence.
+      </p>
+
+      <p class="wrap">
+        The existence and value of the <span class="configProperty">app.configDir</span>
+        property determines the locations that are searched for a configuration file:
+      </p>
+      <ul class="list">
+        <li class="spaced wrap">
+          If the <span class="configProperty">app.configDir</span> property exists and the
+          property value is an empty string, RegexSearch will start without a configuration
+          file.  No configuration file will be written when the application exits.
+        </li>
+        <li class="spaced wrap">
+          If the <span class="configProperty">app.configDir</span> property exists and the
+          property value is not empty, RegexSearch will look for a configuration file in the
+          directory specified by the property.  An error message is displayed if a configuration
+          file is not found in the specified directory.
+        </li>
+        <li class="spaced">
+          <div class="wrap">
+            If the <span class="configProperty">app.configDir</span> property does not exist,
+            RegexSearch will look for a configuration file at two other locations:
+          </div>
+          <ol class="list">
+            <li class="spaced">
+              <div><i>The current working directory</i></div>
+              <div class="wrap">
+                The current working directory, which is denoted by the environment variable
+                <code>$PWD</code> on Linux/UNIX systems, depends on the system and the way in
+                which RegexSearch was run.
+              </div>
+            </li>
+            <li class="spaced" id="defaultDirectory">
+              <div><i>The default directory</i></div>
+              <div class="wrap">
+                On Linux/UNIX systems, the default directory is
+                <code>$HOME/.blankaspect/regexSearch</code>, where <code>$HOME</code> is the
+                environment variable that denotes the user&apos;s home directory.  On Windows
+                systems, the default directory is
+                <code>%APPDATA%\blankaspect\regexSearch</code>, where <code>%APPDATA%</code> is
+                an environment variable.
+              </div>
+            </li>
+          </ol>
+        </li>
+      </ul>
+
+    </div>
+
+    <!--=====================================================================================-->
+
+    <!-- Search parameters -->
+
+    <div class="section">
+      <h2 id="section4">4&nbsp; Search parameters</h2>
+      <p class="tocLink">
+        [ <a href="#toc">Table of contents</a> ]
+      </p>
+
+      <p class="wrap">
+        The parameters of a search consist of:
+      </p>
+      <ul class="list">
+        <li class="wrap">
+          a <a href="#section4-1">file set</a> that determines the files that are searched,
+        </li>
+        <li class="wrap">
+          the literal text or regular expression that is the <a href="#section4-2">target</a> of
+          the search,
+        </li>
+        <li class="wrap">
+          the <a href="#section4-3">replacement</a> text, if the search is
+          <i>find-and-replace</i>, and
+        </li>
+        <li class="wrap">
+          some flags (<i>replace</i>, <i>regular expression</i>, <i>ignore case</i> and <i>show
+          not found</i>).
+        </li>
+      </ul>
+      <p class="wrap">
+        The search parameters are stored collectively as an XML file.  The DTD of the current
+        version of a search-parameter file (<code>searchParams.dtd</code>) is included in the
+        RegexSearch distribution.  It is provided only for reference because RegexSearch does
+        not validate search-parameter files against the DTD.
+      </p>
+      <p class="wrap">
+        A search-parameter file may contain multiple file sets, targets and replacements, and
+        each file set may contain multiple <a href="#section4-1-1">pathnames</a> and <a
+        href="#section4-1-2">pathname filters</a>, though only a single pathname, inclusion
+        filter, exclusion filter, target and replacement are used in a search.  For each of
+        those five parameters, RegexSearch&apos;s user interface allows you to select from the
+        list of available values, to edit or delete existing values and to add new ones to the
+        list.
+      </p>
+      <p class="wrap">
+        When RegexSearch is run, search parameters are read from the file denoted by the
+        configuration property <a class="configProperty"
+        href="#cp-path-defaultSearchParameters">path.defaultSearchParameters</a>.  The current
+        set of search parameters can be saved with the <a class="command"
+        href="#section6-1-2">File &gt; Save search parameters</a> command, and files saved in
+        this way can be opened with the <a class="command" href="#section6-1-1">File &gt; Open
+        search parameters</a> command.  When you open a new search-parameter file or exit
+        RegexSearch, you will be prompted to save the current search parameters if a
+        search-parameter file was read, either automatically at startup or explicitly, and the
+        parameters have changed since the file was read.  A change to the file-set index or a
+        parameter index is regarded as a change to the file.
+      </p>
+
+      <h3 id="section4-1">4.1&nbsp; File set</h3>
+
+      <p class="wrap">
+        A <i>file set</i> specifies the files that are searched in a <i>find</i> or
+        <i>find-and-replace</i> operation.  A file set has a <a href="#section4-1-3">file-set
+        kind</a> and, depending on its file-set kind, it may also have a <a
+        href="#section4-1-1">pathname</a> and two kinds of <a href="#section4-1-2">pathname
+        filter</a>: an inclusion filter and an exclusion filter.
+      </p>
+
+      <h4 id="section4-1-1">4.1.1&nbsp; Pathname</h4>
+      <p class="wrap">
+        Depending on the file-set kind, the <i>pathname</i> of a file set may be direct or
+        indirect.  A direct pathname denotes either a single file or a base directory that, in
+        conjunction with inclusion and exclusion filters, defines the scope of a search.  An
+        indirect pathname denotes a file that contains a list of files and directories to be
+        searched.  A pathname may be absolute or relative; a relative pathname is relative to
+        the current working directory.
+      </p>
+
+      <h4 id="section4-1-2">4.1.2&nbsp; Pathname filters</h4>
+      <p class="wrap">
+        The inclusion filters and exclusion filters of a file set are two kinds of <i>pathname
+        filter</i>.  A pathname filter is a set of patterns that determines, usually in
+        conjunction with a base pathname, the files that are searched.  A file is included in a
+        search if it matches at least one pattern in the inclusion filter <small>AND</small>
+        none of the patterns in the exclusion filter.  The maximum number of patterns in a
+        filter is 64.
+      </p>
+      <p class="wrap">
+        A pattern is a pathname that may include <i>wildcards</i>.  There are three wildcards:
+        two filename wildcards and a pathname wildcard.
+      </p>
+
+      <h5 id="section4-1-2-1">4.1.2.1&nbsp; Filename wildcards</h5>
+      <p class="wrap">
+        The filename wildcards, <code>?</code> and <code>*</code>, have their usual meaning:
+        <code>?</code> matches a single character and <code>*</code> matches zero or more
+        characters in a pathname component (a filename or directory name).  For example, the
+        pattern &quot;foo*.txt&quot; will match the filenames <code>foo.txt</code>,
+        <code>food.txt</code> and <code>football.txt</code>.  Following the UNIX convention (but
+        differing from the Windows convention), a dot, <code>.</code>, has no special
+        significance in patterns: it is matched by the <code>*</code> wildcard.  Thus, the
+        pattern &quot;foo*&quot; will match the filenames <code>foo</code>,
+        <code>football.txt</code> and <code>food.store.log</code>.
+      </p>
+
+      <h5 id="section4-1-2-2">4.1.2.2&nbsp; Pathname wildcards</h5>
+      <p class="wrap">
+        The pathname wildcard, <code>**</code>, matches zero or more pathname components.  Its
+        use in a pathname pattern is analogous to the use of <code>*</code> in a filename
+        pattern.  By itself, the pattern <code>**</code> is the recursive analogue of
+        <code>*</code>: it matches all files in or below the base directory.  Used as a pathname
+        component in a larger pattern, <code>**</code> denotes a recursive portion of the
+        pathname that may be bounded above or below by a non-recursive pathname.  For example,
+      </p>
+      <ul class="list">
+        <li class="wrap">
+          the pattern &quot;**/*.txt&quot; matches all files with the filename suffix
+          <code>.txt</code> in the base directory and in all directories below the base
+          directory;
+        </li>
+        <li class="wrap">
+          the pattern &quot;editor/**/config/*.xml&quot; matches all files with the filename
+          suffix <code>.xml</code> in all directories named <code>config</code> that are in or
+          below the directory named <code>editor</code> in the base directory;
+        </li>
+        <li class="wrap">
+          the pattern &quot;**/test/**/*.java&quot; matches all files with the filename suffix
+          <code>.java</code> in or below any directory named <code>test</code> that is below the
+          base directory (or in the base directory, if it is named <code>test</code>).
+        </li>
+      </ul>
+      <p class="wrap">
+        A pathname-filter pattern may be either relative to a base directory (in a directory or
+        list file set), or it may be absolute.  The pathname components in a pattern are
+        separated with a <code>/</code> character (U+002F).  (A <code>\</code> may be used as
+        the directory separator on the Windows platform, but <code>/</code> is recommended
+        because <code>\</code> is used as the escape character in <a href="#section5-5-2">filter
+        fields</a>.) A pattern that ends with a directory separator is assumed to be followed by
+        an implicit <code>**</code>.  A pattern that, when appended to its base directory,
+        denotes an existing directory is assumed to be followed by an implicit <code>/**</code>.
+        A pattern may contain dot and double-dot components (<code>.</code> and
+        <code>..</code>), but only if they appear <em>before</em> the first wildcard in the
+        pattern.
+      </p>
+      <p class="wrap">
+        A file is matched against a pathname-filter pattern by converting both the pattern
+        (appended to a base directory, if the pattern is relative) and the pathname of the
+        target file to a canonical form.  An error may occur in converting the pattern to
+        canonical form if, for example, the resulting pathname is illegal or access to part of
+        the file system is not permitted.
+      </p>
+
+      <h4 id="section4-1-3">4.1.3&nbsp; File-set kinds</h4>
+      <p class="wrap">
+        A <i>file-set kind</i> may be one of File, Directory, List, Results or Clipboard.  The
+        five kinds of file set are described below.
+      </p>
+
+      <h5 id="section4-1-3-1">4.1.3.1&nbsp; File</h5>
+      <p class="wrap">
+        The search is performed on the file denoted by the pathname of the file set.  No
+        inclusion filter or exclusion filter is applied.
+      </p>
+
+      <h5 id="section4-1-3-2">4.1.3.2&nbsp; Directory</h5>
+      <p class="wrap">
+        The pathname of the file set denotes the base directory of the search.  (A search is not
+        necessarily confined to this directory and the directories below it because the
+        inclusion filter may contain patterns that denote pathnames outside the base directory.)
+        An inclusion filter and an exclusion filter may be specified.  If no inclusion filter is
+        specified, a filter consisting of the single pattern <code>**</code> (match all
+        recursively) is assumed.  Any relative patterns (see <a href="#section4-1-2">pathname
+        filter</a>) in the inclusion filter and exclusion filter are relative to the base
+        directory.
+      </p>
+      <p class="wrap">
+        The files in a directory are searched in order of filename.  The ordering is
+        lexicographic (ie, the Unicode values of characters in the filename are compared) and
+        platform-dependent: it is case-sensitive on Linux/UNIX systems, but alphabetic case is
+        ignored on Windows systems.  Recursion is specified implicitly by <a
+        href="#section4-1-2-2">pathname wildcards</a>.  A recursive search on a directory is
+        depth-first: files in subdirectories are searched before the files in the directory.
+        Like files, subdirectories are searched in order of name.  If the inclusion filter
+        contains any absolute patterns, the files or directories specified by those patterns are
+        searched <em>after</em> the base directory.
+      </p>
+
+      <h5 id="section4-1-3-3">4.1.3.3&nbsp; List</h5>
+      <p class="wrap">
+        The pathname of the file set is assumed to denote a text file, each of whose non-empty
+        lines denotes the pathname of a file or directory that is to be searched.  A line of the
+        list file may contain a comment, beginning with a <code>;</code> character.  If a line
+        contains a comment, any characters after the last non-space character before the comment
+        are ignored (eg, the line &quot;simple-filename.txt&nbsp;;&nbsp;file #23&quot; is parsed
+        as &quot;simple-filename.txt&quot;).  Empty lines are ignored.  The pathnames are
+        validated before the search starts, and the search will not proceed unless each pathname
+        denotes an existing directory or a regular file.
+      </p>
+      <p class="wrap">
+        An inclusion filter and an exclusion filter may be specified.  If no inclusion filter is
+        specified, a filter consisting of the single pattern <code>**</code> (match all
+        recursively) is assumed.
+      </p>
+      <p class="wrap">
+        The search of the pathnames in the list is equivalent to a sequence of searches on file
+        sets whose file-set kind is either File or Directory according to whether a pathname
+        denotes a file or directory.  If the pathname denotes a directory, the inclusion filter
+        and any exclusion filter are applied to it.  If the inclusion filter contains any
+        absolute patterns, the files or directories specified by those patterns are searched
+        <em>after</em> all the pathnames in the list.
+      </p>
+
+      <h5 id="section4-1-3-4">4.1.3.4&nbsp; Results</h5>
+      <p class="wrap">
+        The files that will be searched are those from the last list of files to be saved with
+        the <a class="command" href="#section6-4-3">Search &gt; Save results</a> command.  The
+        current list of saved results can be viewed with the <a class="command"
+        href="#section6-4-4">Search &gt; View saved results</a> command.  No inclusion filter or
+        exclusion filter is applied.
+      </p>
+
+      <h5 id="section4-1-3-5">4.1.3.5&nbsp; Clipboard</h5>
+      <p class="wrap">
+        This denotes a &quot;pseudo-file&quot;: the contents of the system clipboard.  If the
+        clipboard contains text, the text will be searched in the same way as if it were read
+        from a file.  In a <i>find-and-replace</i> search, if any changes are made to the text,
+        the modified text is put back on the clipboard at the end of the search.  No inclusion
+        filter or exclusion filter is applied.
+      </p>
+
+      <h3 id="section4-2">4.2&nbsp; Target</h3>
+
+      <p class="wrap">
+        The <i>target</i> of the search &mdash; the pattern that you are attempting to match in
+        the files that are searched &mdash; can be either literal text or a regular expression.
+        The corresponding kinds of search are referred to below as <i>literal-text search</i>
+        and <i>regular-expression search</i>.
+      </p>
+
+      <h3 id="section4-3">4.3&nbsp; Replacement</h3>
+
+      <p class="wrap">
+        The <i>replacement</i> is an expression that will be used to replace occurrences of the
+        target pattern in a <i>find-and-replace</i> search.  The interpretation of the
+        replacement differs according to whether the target is literal text or a regular
+        expression.  Both types of replacement may contain <i>metasymbols</i> &mdash; special
+        sequences that are introduced with an escape character.  By default, the escape
+        character is a backslash, <code>\</code>, but it can be changed with the <a
+        class="configProperty"
+        href="#cp-general-replacementEscapeCharacter">general.replacementEscapeCharacter</a>
+        configuration property if, for example, you want to avoid having to escape the
+        backslashes in Windows pathnames.  In a replacement, an escape character must always be
+        escaped by prefixing another escape character to it (eg, <code>\\</code>, if the escape
+        character is <code>\</code>).
+      </p>
+
+      <h4 id="section4-3-1">4.3.1&nbsp; Literal-text replacement</h4>
+      <p class="wrap">
+        The following metasymbols may appear in a literal-text replacement string.  It is
+        assumed that the escape character is <code>\</code>.
+      </p>
+
+      <table class="regex">
+        <tr>
+          <td class="shaded">\t</td>
+          <td>Tab character, U+0009</td>
+        </tr>
+        <tr>
+          <td class="shaded">\n</td>
+          <td>Line-feed character, U+000A</td>
+        </tr>
+        <tr>
+          <td class="shaded">\u<i>nnnn</i></td>
+          <td class="wrap">
+            Unicode character U+<i>nnnn</i>, where <i>n</i> is a hexadecimal digit character,
+            [0-9A-Fa-f]
+          </td>
+        </tr>
+        <tr>
+          <td class="shaded">\\</td>
+          <td>Literal escape character</td>
+        </tr>
+      </table>
+
+      <h4 id="section4-3-2">4.3.2&nbsp; Regular-expression replacement</h4>
+      <p class="wrap">
+        The following metasymbols may appear in a regular-expression replacement string.  It is
+        assumed that the escape character is <code>\</code>.
+      </p>
+
+      <table class="regex">
+        <tr>
+          <td class="shaded">\t</td>
+          <td>Tab character, U+0009</td>
+        </tr>
+        <tr>
+          <td class="shaded">\n</td>
+          <td>Line-feed character, U+000A</td>
+        </tr>
+        <tr>
+          <td class="shaded">\u<i>nnnn</i></td>
+          <td class="wrap">
+            Unicode character U+<i>nnnn</i>, where <i>n</i> is a hexadecimal digit character,
+            [0-9A-Fa-f]
+          </td>
+        </tr>
+        <tr>
+          <td class="shaded">\\</td>
+          <td>Literal escape character</td>
+        </tr>
+        <tr>
+          <td class="shaded">\<i>n</i></td>
+          <td class="wrap">
+            Capturing group in the target pattern, where <i>n</i> is the decimal index of the
+            group
+          </td>
+        </tr>
+        <tr>
+          <td class="shaded">\L<i>n</i></td>
+          <td>
+            <div class="wrap">
+              Capturing group in the target pattern, where <i>n</i> is the decimal index of the
+              group.
+            </div>
+            <div class="wrap">
+              All alphabetic characters in the group are converted to lower case.
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td class="shaded">\U<i>n</i></td>
+          <td>
+            <div class="wrap">
+              Capturing group in the target pattern, where <i>n</i> is the decimal index of the
+              group.
+            </div>
+            <div class="wrap">
+              All alphabetic characters in the group are converted to upper case.
+            </div>
+          </td>
+        </tr>
+      </table>
+
+    </div>
+
+    <!--=====================================================================================-->
+
+    <!-- The display -->
+
+    <div class="section">
+      <h2 id="section5">5&nbsp; The display</h2>
+      <p class="tocLink">
+        [ <a href="#toc">Table of contents</a> ]
+      </p>
+
+      <p class="wrap">
+        The main display consists of two windows:
+      </p>
+      <ul class="list">
+        <li class="wrap">
+          the <i>main window</i>, which is divided into the <a href="#section5-2"><i>text
+          view</i></a> and <a href="#section5-3"><i>result area</i></a>;
+        </li>
+        <li class="wrap">
+          the <i>control dialog</i>.
+        </li>
+      </ul>
+      <p class="wrap">
+        The main window is always visible.  The control dialog may be hidden and made visible
+        with the <a class="command" href="#section6-3-1">Hide control dialog / Show control
+        dialog</a> command.
+      </p>
+
+      <h3 id="section5-1">5.1&nbsp; Column width and row height</h3>
+
+      <p class="wrap">
+        The width and/or height of some text components are specified in logical units of
+        columns and rows.  The width of a column and the height of a row are determined by the
+        font that is used to display text within the component: the height of a row is the
+        height of the font, and the width of a column is the width of a zero character (U+0030),
+        or, if the font doesn&apos;t have a glyph for the zero character, the width of the glyph
+        that is used for characters that are not defined.
+      </p>
+
+      <h3 id="section5-2">5.2&nbsp; Text view</h3>
+
+      <p class="wrap">
+        The text view is the text area at the top of the main window in which the contents of a
+        file are displayed.  <em>The text view is not editable.</em> The following attributes of
+        the text view are configurable:
+      </p>
+      <ul class="list">
+        <li class="wrap">
+          the <a href="#cp-appearance-textViewViewableSize">dimensions of the viewable area</a>
+          (number of columns &times; number of rows),
+        </li>
+        <li class="wrap">
+          the <a href="#cp-appearance-textViewMaxNumColumns">maximum number of columns</a>,
+        </li>
+        <li class="wrap">
+          the <a href="#cp-font">font</a>,
+        </li>
+        <li class="wrap">
+          the type of <a href="#cp-appearance-textViewTextAntialiasing">antialiasing</a> that is
+          performed on the text,
+        </li>
+        <li class="wrap">
+          the <a href="#cp-appearance-textAreaColour">colours</a>.
+        </li>
+      </ul>
+      <p class="wrap">
+        The number of viewable columns in the text view is also used as the number of viewable
+        columns in the <a href="#section5-3">result area</a>.  If the two areas use different
+        fonts, the actual width of the text view and result area is the wider of the two areas.
+      </p>
+      <p class="wrap">
+        The colours of the text view are also applied to the result area and to the fields in
+        the <span class="component">Search options</span> dialog.
+      </p>
+
+      <h4 id="section5-2-1">5.2.1&nbsp; How tab characters are displayed</h4>
+      <p class="wrap">
+        When a file containing tab characters (U+0009) is displayed in the text view,
+        RegexSearch uses two configuration properties &mdash; <a
+        href="#cp-tabWidth-fileFilter"><i>tab-width filters</i></a> and default tab width
+        &mdash; to determine how the tab characters are converted to spaces.  A tab-width filter
+        maps a filename filter (a set of patterns that are used to match filenames) to the
+        number of spaces that will be used to replace tab characters when displaying a matching
+        file.  If none of the defined tab-width filters matches the file, the default tab width
+        is used.  If the tab width is zero, tab characters are not expanded but rendered as a
+        U+2192 (rightwards arrow) character, or as the &quot;not defined&quot; glyph if the font
+        doesn&apos;t contain a glyph for the arrow character.
+      </p>
+      <p class="wrap">
+        The filename-filter part of the tab-width filter consists of one or more filename
+        patterns separated by spaces; for instance, &quot;*.cpp *.h&quot;. If a filename matches
+        one of the patterns, it is included in the search in the case of the inclusive filter or
+        excluded from the search in the case of the exclusive filter.  A pattern may be a
+        literal filename or it may contain the wildcards <code>*</code> and <code>?</code>,
+        which have their usual meaning: <code>*</code> matches zero or more characters and
+        <code>?</code> matches a single character.
+      </p>
+
+      <h3 id="section5-3">5.3&nbsp; Result area</h3>
+
+      <p class="wrap">
+        The result area is the text area at the bottom of the main window in which the results
+        of a search are displayed.  <em>The result area is not editable.</em> The following
+        information is displayed in the result area after a search:
+      </p>
+      <ul class="list">
+        <li class="wrap">
+          A list of files in which the search target was found, along with the number of
+          occurrences that were found, which may be fewer than the total number of occurrences
+          in the file if the search of the file was incomplete.  For a <i>find-and-replace</i>
+          search, the number of replacements that were made is also displayed.
+        </li>
+        <li class="wrap">
+          Some aggregate counts for the search: the number of files searched, the number of
+          files containing matches, and the total number of matches.
+        </li>
+        <li class="wrap">
+          If the <span class="component">Show not found</span> check box of the control dialog
+          is selected, a list of files in which the search target was not found.
+        </li>
+        <li class="wrap">
+          Lists of files that could not be searched or whose attributes could not be set in a
+          <i>find-and-replace</i> search.  (A search will fail if, for example, the canonical
+          pathname of the file cannot be obtained or the file was too long for the file buffer
+          or an error occurred when reading the file.)  The problematic files are listed under
+          an appropriate heading.
+        </li>
+      </ul>
+      <p class="wrap">
+        After a search, files that are listed in the result area can be opened with an external
+        editor as though the <a class="command" href="#section6-2-1">Edit &gt; Edit file</a>
+        command were issued on the file during a search.  The <a class="configProperty"
+        href="#cp-editor-command">command that invokes the external editor</a> is issued by
+        holding down the Ctrl key and clicking the left mouse button on the chosen pathname in
+        the result area.
+      </p>
+      <p class="wrap">
+        The following attributes of the result area are configurable:
+      </p>
+      <ul class="list">
+        <li class="wrap">
+          the <a href="#cp-appearance-resultAreaNumRows">number of rows</a>,
+        </li>
+        <li class="wrap">
+          the <a href="#cp-font">font</a>,
+        </li>
+        <li class="wrap">
+          the <a href="#cp-appearance-textAreaColour">colours</a>.
+        </li>
+      </ul>
+      <p class="wrap">
+        The number of viewable columns in the <a href="#section5-2">text view</a> is also used
+        as the number of viewable columns in the result area.  If the two areas use different
+        fonts, the actual width of the text view and result area is the wider of the two areas.
+      </p>
+      <p class="wrap">
+        The maximum number of columns in the result area is fixed at 1024.
+      </p>
+      <p class="wrap">
+        The colours of the result area are also applied to the text view.
+      </p>
+
+      <h3 id="section5-4">5.4&nbsp; File-set controls</h3>
+
+      <p class="wrap">
+        The file-set controls, which can be found in the top row of the control dialog, consist
+        of a drop-down list for selecting the file-set kind, a group of three buttons for
+        inserting, duplicating and deleting file sets, and a group of four buttons for
+        navigating the list of file sets and changing the position of the current file set in
+        the list.
+      </p>
+      <p class="wrap">
+        The index of the current file set and the number of file sets in the list are shown in a
+        box between the two pairs of navigation buttons.  &quot;End&quot; indicates that the
+        file-set position is at the end of the list; there is no current file set.  A file set
+        may be inserted at the end of the list.
+      </p>
+
+      <h4 id="section5-4-1">5.4.1&nbsp; File-set kind drop-down list</h4>
+      <p class="wrap">
+        The drop-down list is used to select the <a href="#section4-1-3">file-set kind</a>.  The
+        <a href="#section5-5-1"><span class="component">Pathname</span> field</a> and <a
+        href="#section5-5-2"><span class="component">Include</span> and <span
+        class="component">Exclude</span> fields</a> are enabled or disabled according to the
+        file-set kind.
+      </p>
+
+      <h4 id="section5-4-2">5.4.2&nbsp; File-set command buttons</h4>
+      <p class="wrap">
+        A file set can be added to and removed from the list of file sets with the commands that
+        are associated with the group of three buttons in the top row of the control dialog.
+        Each command can also be issued from the keyboard.
+      </p>
+
+      <h5 id="section5-4-2-1">5.4.2.1&nbsp; <span class="command">Insert</span></h5>
+      <p class="wrap">
+        The <span class="command">Insert</span> command inserts a new file set into the list at
+        the current file-set index.  To add a new file set to the end of the list, first
+        navigate to the end of the list.  The <span class="command">Insert</span> command can be
+        issued by pressing the F2 key.
+      </p>
+
+      <h5 id="section5-4-2-2">5.4.2.2&nbsp; <span class="command">Duplicate</span></h5>
+      <p class="wrap">
+        The <span class="command">Duplicate</span> command makes a copy of the current file-set,
+        inserts the copy into the list <em>after</em> the current index, then selects the copy.
+        The <span class="command">Duplicate</span> command can be issued by pressing the F3 key.
+      </p>
+
+      <h5 id="section5-4-2-3">5.4.2.3&nbsp; <span class="command">Delete</span></h5>
+      <p class="wrap">
+        The <span class="command">Delete</span> command deletes the current file-set after you
+        have confirmed the deletion.  The <span class="command">Delete</span> command can be
+        issued by pressing the F4 key.
+      </p>
+
+      <h4 id="section5-4-3">5.4.3&nbsp; File-set navigation buttons</h4>
+      <p class="wrap">
+        The list of file sets can be navigated and the position of the current file set in the
+        list can be changed with the commands that are associated with the group of four arrow
+        buttons and barred-arrow buttons in the top row of the control dialog.  Each command can
+        also be issued from the keyboard.
+      </p>
+      <p class="wrap">
+        The arrow buttons select the previous or next file set in the list.  The current
+        file-set index continues to change while the mouse button is pressed or until the start
+        or end of the list is reached.  Holding down the Ctrl key while clicking on or pressing
+        the arrow buttons will move the current file set up or down the list.  The <span
+        class="command">Go to previous</span> and <span class="command">Go to next</span>
+        commands can be issued by pressing the F6 and F7 keys respectively.  The <span
+        class="command">Move up</span> and <span class="command">Move down</span> commands can
+        be issued by pressing Ctrl+F6 and Ctrl+F7 respectively.
+      </p>
+      <p class="wrap">
+        The barred-arrow buttons select the first file set in the list or go to the end of the
+        list (where no file set is selected).  The <span class="command">Go to start</span> and
+        <span class="command">Go to end</span> commands can be issued by pressing the F5 and F8
+        keys respectively.
+      </p>
+
+      <h3 id="section5-5">5.5&nbsp; Parameter fields</h3>
+
+      <p class="wrap">
+        The five most prominent components in the control dialog are referred to as <i>parameter
+        fields</i>.  Two of the fields &mdash; the <span class="component">Target</span> and
+        <span class="component">Replacement</span> fields &mdash; are text areas rather than
+        fields, and the size of these text areas can be configured with the <a
+        class="configProperty"
+        href="#cp-appearance-parameterEditorSize">appearance.parameterEditorSize</a> property.
+        The width of these two fields determines the width of the other three parameter fields.
+      </p>
+      <p class="wrap">
+        Each parameter field maintains a history list: a list of the most recent values that
+        were entered in the field, up to a maximum of 64 items.  A parameter field is similar in
+        operation to a combo box except that an item is not moved to the top of the list when it
+        is selected.  (The order of items in the list may be changed in the editor; see below.)
+      </p>
+      <p class="noBottomMargin wrap">
+        A value is entered into the field explicitly by pressing Ctrl+Enter or implicitly when
+      </p>
+      <ul class="continuationList">
+        <li class="wrap">
+          the field&apos;s pop-up menu is displayed,
+        </li>
+        <li class="wrap">
+          a file set is inserted or duplicated,
+        </li>
+        <li class="wrap">
+          a different file set is selected,
+        </li>
+        <li class="wrap">
+          a search is performed, or
+        </li>
+        <li class="wrap">
+          the search parameters are saved.
+        </li>
+      </ul>
+      <p class="wrap">
+        When a value is entered in the field, it is inserted at the top of the list.
+      </p>
+      <p class="wrap">
+        A history list can be navigated and edited in several ways.  Navigation and editing
+        commands are available from a pop-up menu that is activated in a system-dependent manner
+        (eg, by pressing or releasing the right mouse button) or by pressing the context-menu
+        key when the field has keyboard focus.  The <span class="command">Select previous
+        item</span> and <span class="command">Select next item</span> commands that are
+        available from the pop-up menu can also be issued by pressing Ctrl+PageUp and
+        Ctrl+PageDown respectively.  The <span class="command">Delete</span> command can be
+        issued by pressing Ctrl+Shift+Delete.
+      </p>
+      <p class="wrap">
+        All the parameter fields have an <span class="command">Edit</span> command that displays
+        an editor in which the items in the field&apos;s history list can be edited.  The
+        command is available from the field&apos;s pop-up menu and can also be issued by
+        pressing Alt+Enter.  (For the filter fields, the command can be issued with the Edit
+        button adjacent to the field.)  Within the list editor, the position of an item in the
+        list can be changed by dragging it with the mouse, or by pressing Ctrl+Shift+Up or
+        Ctrl+Shift+Down when the list has keyboard focus.  The Delete key and Delete button
+        delete the selected item after confirmation, while Shift+Delete and Shift+left-click on
+        the Delete button delete the selected item without confirmation.
+      </p>
+
+      <h4 id="section5-5-1">5.5.1&nbsp; <span class="component">Pathname</span> field</h4>
+      <p class="wrap">
+        A pathname can be entered in the field by typing, by selecting a file using the
+        &quot;<span class="component">&hellip;</span>&quot; button adjacent to the field, or by
+        dragging a file or directory from, for example, a file browser and dropping it onto the
+        field or onto other parts of the control dialog or onto the main window.
+      </p>
+      <ul class="list">
+        <li class="wrap">
+          Dropping a file or directory onto the <span class="component">Pathname</span> field
+          will replace the pathname in the field and add the new item to the history list.
+        </li>
+        <li class="wrap">
+          Dropping a file or directory onto other parts of the control dialog or onto the main
+          window will <em>duplicate the current file set</em> and replace the pathname in the
+          <span class="component">Pathname</span> field in the new file set.
+        </li>
+      </ul>
+
+      <h4 id="section5-5-2">5.5.2&nbsp; <span class="component">Include</span> and
+                                                        <span class="component">Exclude</span> fields</h4>
+      <p class="wrap">
+        The fields contain a pathname filter: a set of patterns separated by spaces.  Within the
+        field, the backslash, <code>\</code>, acts as an escape character to allow the inclusion
+        of space characters in patterns.  The escape convention in the filter fields is that a
+        character following a <code>\</code> is treated as a literal character, and a single
+        trailing <code>\</code> is ignored.  Thus, you would use <code>\&nbsp;</code> for a
+        literal space and <code>\\</code> for a literal backslash.  Because of this, it is
+        recommended that you use a <code>/</code> to separate pathname components in patterns on
+        the Windows platform.
+      </p>
+      <p class="wrap">
+        The individual patterns of a pathname filter can be edited from the <span
+        class="component">Edit pattern</span> dialog &mdash; the third-level editor that is
+        invoked with the <span class="command">Edit</span> command in the <span
+        class="component">Edit filter</span> dialog that is invoked by the <span
+        class="command">Edit</span> command in the list editor that is invoked by the <span
+        class="command">Edit</span> command in the <span class="component">Include</span> or
+        <span class="component">Exclude</span> field.  (Got that?)  Note that no escape
+        character is used in the <span class="component">Pattern</span> field of the <span
+        class="component">Edit pattern</span> dialog.
+      </p>
+      <p class="wrap">
+        The history list of the <span class="component">Exclude</span> field set may contain an
+        empty string (ie, &quot;exclude nothing&quot;).
+      </p>
+
+      <h4 id="section5-5-3">5.5.3&nbsp; <span class="component">Target</span> and
+                            <span class="component">Replacement</span> fields</h4>
+      <p class="wrap">
+        The <span class="component">Target</span> and <span class="component">Replacement</span>
+        fields are actually text areas that can contain multiple lines of text.  The <span
+        class="component">Replacement</span> field is enabled only if the <span
+        class="component">Replace</span> check box is selected.
+      </p>
+      <p class="wrap">
+        Text in the <span class="component">Target</span> and <span
+        class="component">Replacement</span> fields can include tab characters (U+0009) and
+        line-feed characters (U+000A), which are entered in the field by pressing Ctrl+Tab and
+        Enter respectively.  Line feeds are not displayed in a special way in the field, so, if
+        your target or replacement isn&apos;t behaving as you expected, it may be that you have
+        an unwanted &mdash; and invisble &mdash; line feed at the end of the field.
+      </p>
+      <p class="wrap">
+        The fields may use a <a href="#section5-5-3-1">tab surrogate</a> to display tab
+        characters.  Some characters in the fields may be <i>escaped</i> in two different ways:
+        <a href="#section5-5-3-2">tabs and line feeds</a> can be escaped separately, and an
+        <span class="command">Escape</span> command can be applied to the field.  The <span
+        class="command">Escape</span> command behaves differently in the <a
+        href="#section5-5-3-3"><span class="component">Target</span> field</a> and the <a
+        href="#section5-5-3-4"><span class="component">Replacement</span> field</a>.
+      </p>
+
+      <h5 id="section5-5-3-1">5.5.3.1&nbsp; Tab surrogate</h5>
+      <p class="wrap">
+        Within the <span class="component">Target</span> and <span
+        class="component">Replacement</span> fields, tabs are replaced with the character that
+        is denoted by the <a class="configProperty"
+        href="#cp-appearance-tabSurrogate">appearance.tabSurrogate</a> configuration property.
+        The default tab surrogate is the tab character (U+0009) itself; in this case, tabs are
+        displayed as a number of spaces up to the next tab stop, and the tab width is denoted by
+        the <a class="configProperty"
+        href="#cp-tabWidth-targetAndReplacement">tabWidth.targetAndReplacement</a> configuration
+        property.  It is important to understand that the tab surrogate is not just a substitute
+        glyph: it actually replaces each occurrence of the tab character in the field unless
+        tabs are <a href="#section5-5-3-2">escaped</a>.  When the content of the field is used
+        (eg, in a search), the tab surrogate is converted either to a tab character or to a tab
+        sequence (&quot;\t&quot;) as appropriate, so you should choose as tab surrogate a
+        character that is unlikely to appear in any target or replacement text.
+      </p>
+
+      <h5 id="section5-5-3-2">5.5.3.2&nbsp; Escaping tabs and line feeds</h5>
+      <p class="wrap">
+        Tabs and line feeds may be escaped (ie, converted to the escape sequences
+        &quot;<code>\t</code>&quot; and &quot;<code>\n</code>&quot; respectively) in the <span
+        class="component">Target</span> and <span class="component">Replacement</span> fields by
+        selecting the <span class="component">Tabs escaped</span> or <span
+        class="component">Line feeds escaped</span> item in the field&apos;s pop-up menu.  (In
+        reality, it is the tab surrogate that is converted to &quot;<code>\t</code>&quot;, but
+        the existence of tab surrogates is ignored in this section so as not to complicate
+        matters.)  Deselecting the menu item reverses the procedure: each occurrence of
+        &quot;<code>\t</code>&quot; or &quot;<code>\n</code>&quot; is converted to a tab
+        character or line-feed character, even if the <code>\</code> is itself escaped with
+        another backslash.  You will need to be careful about toggling the escaping of tabs and
+        line feeds if the text contains literal &quot;<code>\t</code>&quot; or
+        &quot;<code>\n</code>&quot; sequences.  Within the field, the escaping of tabs and line
+        feeds can be toggled from the keyboard with Ctrl+T and Ctrl+N respectively.  Indicators
+        appear alongside a field in which tabs or line feeds are escaped.
+      </p>
+      <p class="wrap">
+        When a regular-expression search is performed, any tab characters and line-feed
+        characters in the <span class="component">Target</span> field are escaped automatically
+        in the target pattern that is used in the search.  Tabs and line feeds are also escaped
+        in the list of target or replacement items displayed in the editor, in the <span
+        class="component">Select item</span> submenu displayed in the field&apos;s pop-up menu,
+        and when targets and replacements are saved to a search-parameter file.
+      </p>
+
+      <h5 id="section5-5-3-3">5.5.3.3&nbsp; The <span class="command">Escape</span> command for
+                              the <span class="component">Target</span> field</h5>
+      <p class="wrap">
+        The <span class="component">Escape</span> button adjacent to the <span
+        class="component">Target</span> field is enabled only when the <span
+        class="component">Regular expression</span> check box is selected.  The <span
+        class="command">Escape</span> command for the <span class="component">Target</span>
+        field prefixes a <code>\</code> to each metacharacter in the field.  The set of
+        metacharacters on which the command operates is denoted by the <a class="configProperty"
+        href="#cp-general-escapedMetacharacters">general.escapedMetacharacters</a> configuration
+        property.  The default value of the property is the set of characters that are used in
+        metasymbols outside a character class delimited by square brackets:
+      </p>
+      <p class="shaded">
+        <code class="noBackground">$ ( ) * + . ? [ \ ] ^ { | }</code>
+      </p>
+      <p class="wrap">
+        (<code>]</code> and <code>}</code> are not metacharacters but are included in the set
+        for symmetry.)
+      </p>
+      <p class="wrap">
+        If tabs or line feeds are escaped in the <span class="component">Target</span> field and
+        the backspace character is in the set of escaped metacharacters, the <code>\</code>
+        prefix to the escaped tabs and line feeds will itself be escaped by the <span
+        class="command">Escape</span> command.  Unless the text contains literal
+        &quot;<code>\t</code>&quot; or &quot;<code>\n</code>&quot; sequences, it may be best to
+        unescape tabs and line feeds before issuing the <span class="command">Escape</span>
+        command.
+      </p>
+
+      <h5 id="section5-5-3-4">5.5.3.4&nbsp; The <span class="command">Escape</span> command for
+                              the <span class="component">Replacement</span> field</h5>
+      <p class="wrap">
+        The <span class="command">Escape</span> command for the <span
+        class="component">Replacement</span> field, which can be issued with the button adjacent
+        to the field, prefixes an escape character to each escape character in the field.  (The
+        escape character for a replacement is specified by the <a class="configProperty"
+        href="#cp-general-replacementEscapeCharacter">general.replacementEscapeCharacter</a>
+        configuration property.)  If the escape character is <code>\</code>, it may be best to
+        unescape tabs and line feeds before issuing the <span class="command">Escape</span>
+        command unless the text contains literal &quot;<code>\t</code>&quot; or
+        &quot;<code>\n</code>&quot; sequences.
+      </p>
+
+      <h3 id="section5-6">5.6&nbsp; Check boxes</h3>
+
+      <p class="wrap">
+        At the bottom of the control dialog are four check boxes.
+      </p>
+
+      <h4 id="section5-6-1">5.6.1&nbsp; The <span class="component">Replace</span> check box</h4>
+      <p class="wrap">
+        If the <span class="component">Replace</span> check box is selected, the search mode is
+        <i>find</i>.  If the check box is <i>not</i> selected, the search mode is
+        <i>find-and-replace</i>.
+      </p>
+
+      <h4 id="section5-6-2">5.6.2&nbsp; The <span class="component">Regular expression</span> check box</h4>
+      <p class="wrap">
+        If the <span class="component">Regular expression</span> check box is selected, the
+        search target is a regular expression.  If the check box is <i>not</i> selected, the
+        search target is literal text.
+      </p>
+
+      <h4 id="section5-6-3">5.6.3&nbsp; The <span class="component">Ignore case</span> check box</h4>
+      <p class="wrap">
+        If the <span class="component">Ignore case</span> check box is selected, the case of
+        alphabetic characters is ignored when matching a search target.  If the check box is
+        <i>not</i> selected, matching is case-sensitive.
+      </p>
+
+      <h4 id="section5-6-4">5.6.4&nbsp; The <span class="component">Show not found</span> check box</h4>
+      <p class="wrap">
+        If the <span class="component">Show not found</span> check box is selected, the results
+        that are displayed in the <a href="#section5-3">result area</a> at the end of a search
+        will include a list of files that were searched but in which the target was not found.
+        If the check box is <i>not</i> selected, the list of &quot;not found&quot; files will be
+        omitted from the search results.
+      </p>
+
+      <h3 id="section5-7">5.7&nbsp; Window size</h3>
+
+      <p class="wrap">
+        The main window is not directly resizeable but its size can be modified indirectly by
+        means of some of the configuration properties that relate to the <a
+        href="#section5-2">text view</a> and <a href="#section5-3">result area</a>.
+      </p>
+      <p class="wrap">
+        The control dialog is resizeable.  The initial size of the dialog is determined by the
+        <a class="configProperty"
+        href="#cp-appearance-parameterEditorSize">appearance.parameterEditorSize</a>
+        configuration property, which can be edited in the <span
+        class="component">Preferences</span> dialog.  If the control dialog has been resized
+        using the GUI, the value of the <span
+        class="configProperty">appearance.parameterEditorSize</span> property that is written to
+        the configuration file when RegexSearch exits is obtained from the actual dimensions of
+        the <span class="component">Target</span> and <span class="component">Replacement</span>
+        fields, overriding any changes to the configuration property that were made in the <span
+        class="component">Preferences</span> dialog.
+      </p>
+      <p class="wrap">
+        As was mentioned above, the size of some text components &mdash; including the text view
+        and result area &mdash; is determined by the font that they use to display text, as well
+        as any properties that explicitly control their dimensions in terms of columns and rows.
+        Any changes to configuration properties that affect the size of the main window or
+        control dialog will not take effect until the next time that RegexSearch is run.
+      </p>
+
+    </div>
+
+    <!--=====================================================================================-->
+
+    <!-- Commands -->
+
+    <div class="section">
+      <h2 id="section6">6&nbsp; Commands</h2>
+      <p class="tocLink">
+        [ <a href="#toc">Table of contents</a> ]
+      </p>
+
+      <p class="wrap">
+        RegexSearch&apos;s main commands are accessible from its main menu.  Some of the
+        commands are also accessible from a pop-up menu that is activated in a system-dependent
+        manner (eg, by pressing or releasing the right mouse button) while the mouse cursor is
+        over one of the text areas or the background of the control dialog.
+      </p>
+
+      <h3 id="section6-1">6.1&nbsp; <span class="component">File</span> menu</h3>
+
+      <h4 id="section6-1-1">6.1.1&nbsp; <span class="command">Open search parameters</span></h4>
+      <p class="wrap">
+        The <span class="command">Open search parameters</span> command brings up a
+        file-selection dialog in which you can choose the file that you want to open.  If the
+        file has the correct format, the search parameters are loaded from it and the
+        application&apos;s display is updated.  If the current search parameters were read from
+        a file, either automatically at startup or explicitly, and the parameters have changed
+        since the file was read, you will be asked whether you want to save the current
+        parameters before the new parameters are loaded.
+      </p>
+
+      <h4 id="section6-1-2">6.1.2&nbsp; <span class="command">Save search parameters</span></h4>
+      <p class="wrap">
+        The <span class="command">Save search parameters</span> command brings up a
+        file-selection dialog in which you can choose the file to which you want to save the
+        current set of search parameters.  A file that is saved in this way can be specified as
+        the <a href="#cp-path-defaultSearchParameters">default search parameters</a> that will
+        be loaded when RegexSearch starts up.
+      </p>
+
+      <h4 id="section6-1-3">6.1.3&nbsp; <span class="command">Exit</span></h4>
+      <p class="wrap">
+        This command terminates the application.  If you have made changes to search parameters
+        that were read from a file, you will be asked whether you want to save them.
+      </p>
+
+      <h3 id="section6-2">6.2&nbsp; <span class="component">Edit</span> menu</h3>
+
+      <h4 id="section6-2-1">6.2.1&nbsp; <span class="command">Edit file</span></h4>
+      <p class="wrap">
+        The <span class="command">Edit file</span> command executes a specified system command
+        in a separate process.  The command line, which is specified with the <a
+        class="configProperty" href="#cp-editor-command">editor.command</a> configuration
+        property, may include a placeholder for the pathname of the file that is currently
+        displayed in the text view.  The intended purpose of the command line is to open the
+        currently displayed file in a text editor, though it can be used for other purposes.
+      </p>
+      <p class="wrap">
+        When using the <span class="command">Edit file</span> command during a
+        <i>find-and-replace</i> search, remember that the file in the text editor will not be
+        synchronised with the file in RegexSearch&apos;s buffer, which may subsequently be
+        written back to the file system with modifications if replacements have been made in the
+        file, even if the replacements were made before the <span class="command">Edit
+        file</span> command was issued.  (If the <span class="command">Edit file</span> command
+        is issued while the <a class="component" href="#section6-4-1-2">Search options</a>
+        dialog is displayed, the <span class="command">Next file</span> option in the dialog can
+        be used to discard any changes to the current file.)
+      </p>
+      <p class="wrap">
+        After a search has finished, the external editor can be invoked on files that are
+        selected from those listed in the <a href="#section5-3">result area</a>.
+      </p>
+
+      <h4 id="section6-2-2">6.2.2&nbsp; <span class="command">Edit file, deferred</span></h4>
+      <p class="wrap">
+        This command is available only during a <i>find-and-replace</i> search.  It behaves
+        similarly to the <a class="command" href="#section6-2-1">Edit file</a> command except
+        that the associated system command (specified with the <a class="configProperty"
+        href="#cp-editor-command">editor.command</a> configuration property) is not executed
+        until the search of the current file is finished and, if any replacements have been
+        made, the modified file has been written to the file system.
+      </p>
+
+      <h3 id="section6-3">6.3&nbsp; <span class="component">View</span> menu</h3>
+
+      <h4 id="section6-3-1">6.3.1&nbsp; <span class="command">Hide control dialog</span> /
+                            <span class="command">Show control dialog</span></h4>
+      <p class="wrap">
+        If the control dialog is visible, this command is named <span class="command">Hide
+        control dialog</span> and it makes the control dialog invisible.  If the control dialog
+        is hidden, this command is named <span class="command">Show control dialog</span> and it
+        makes the control dialog visible.
+      </p>
+
+      <h3 id="section6-4">6.4&nbsp; <span class="component">Search</span> menu</h3>
+
+      <h4 id="section6-4-1">6.4.1&nbsp; <span class="command">Search</span></h4>
+      <p class="wrap">
+        When you issue a <span class="command">Search</span> command, RegexSearch first
+        validates the search parameters and displays an error message for the first parameter
+        that is invalid.  If the file-set kind is List, the specified list file is read and
+        parsed.  In a search of multiple files, the files are searched in the order described in
+        the <a href="#section4-1-3-2">Directory</a> and <a href="#section4-1-3-3">List</a>
+        file-set kinds.
+      </p>
+      <p class="wrap">
+        Within a file, the search proceeds from the start of the file to the end.  If a match of
+        the target expression is found, the search will resume at the first character after the
+        last character in the matched text, or, if a replacement is made, at the first character
+        after the replacement.
+      </p>
+      <p class="wrap">
+        When the first match of the target expression is found, the file in which the match
+        occurred is displayed in the text view, and the matched text is highlighted.  A <span
+        class="component">Search options</span> dialog box is displayed; the type of dialog
+        depends on the search mode, <i>find</i> or <i>find-and-replace</i>.  Because the <span
+        class="component">Search options</span> dialog is non-modal, the text in the text view
+        can be scrolled while the dialog is displayed.
+      </p>
+      <p class="wrap">
+        The options in the <span class="component">Search options</span> dialog can be selected
+        either by clicking on the appropriate button or by pressing a key or key combination.
+        In addition to the usual Java Alt+<i>&lt;key&gt;</i> combination, each option (apart
+        from <span class="component">Cancel</span>, whose keyboard equivalent is the Escape key)
+        can be selected by pressing the key by itself (ie, without the Alt key).
+      </p>
+      <p class="wrap">
+        At the end of a search, the aggregate results are displayed in the result area.  The
+        results include a list of any files or directories that were not processed because of an
+        error and a list of files or directories whose pathname could not be converted to
+        canonical form.  If the <a href="#cp-general-fileWritingMode">file-writing mode</a> is
+        <i>Use a temporary file, preserve attributes</i>, the results of a
+        <i>find-and-replace</i> search include a separate list of files that were written but
+        whose attributes were not set.
+      </p>
+
+      <h5 id="section6-4-1-1">6.4.1.1&nbsp; The <span class="component">Search options</span>
+                              dialog in <i>find</i> mode</h5>
+      <p class="wrap">
+        In <i>find</i> mode, the <span class="component">Search options</span> dialog has four
+        options:
+      </p>
+      <dl class="basic">
+        <dt>Yes</dt>
+        <dd class="wrap">
+          The search is resumed in the current file.  If no more matches are found in the
+          current file, the search proceeds to the next file.  If another occurrence is found,
+          the matched text is highlighted and the <span class="component">Search options</span>
+          dialog is displayed again.
+        </dd>
+
+        <dt>Global</dt>
+        <dd class="wrap">
+          The search is resumed in the current file, and proceeds through all the files in the
+          file set without displaying the <span class="component">Search options</span> dialog
+          again.  As each file is searched, if any matches are found in the file, the number of
+          matches for that file is displayed in the result area.  To make the search faster,
+          files are not displayed in the text view during a global search.
+        </dd>
+        <dd class="wrap">
+          A global search in <i>find</i> mode can be used to generate a list of files in which a
+          match of the target expression was found.
+        </dd>
+
+        <dt>Next file</dt>
+        <dd class="wrap">
+          The current file is skipped, and the search is resumed with the next file.  If another
+          occurrence is found, the matched text is highlighted and the <span
+          class="component">Search options</span> dialog is displayed again.
+        </dd>
+
+        <dt>Cancel</dt>
+        <dd class="wrap">
+          The search is terminated.
+        </dd>
+      </dl>
+
+      <h5 id="section6-4-1-2">6.4.1.2&nbsp; The <span class="component">Search options</span>
+                              dialog in <i>find-and-replace</i> mode</h5>
+      <p class="wrap">
+        In <i>find-and-replace</i> mode, the <span class="component">Search options</span>
+        dialog has seven options:
+      </p>
+      <dl class="basic">
+        <dt>Yes</dt>
+        <dd class="wrap">
+          The occurrence of the matched text is replaced, and the search is resumed in the
+          current file.  If no more matches are found in the current file, the search proceeds
+          to the next file.  If another occurrence is found, the matched text is highlighted and
+          the <span class="component">Search options</span> dialog is displayed again.
+        </dd>
+
+        <dt>No</dt>
+        <dd class="wrap">
+          The occurrence of the matched text is not replaced, and the search is resumed in the
+          current file.  If no more matches are found in the current file, the search proceeds
+          to the next file.  If another occurrence is found, the matched text is highlighted and
+          the <span class="component">Search options</span> dialog is displayed again.
+        </dd>
+
+        <dt>Preview</dt>
+        <dd class="wrap">
+          The occurrence of the matched text is replaced.  The replacement is displayed in the
+          text view, highlighted.  Another dialog box is displayed in which you are asked
+          whether you want to keep the replacement, to restore the original text or to cancel
+          the search.  In that dialog, the <span class="command">Keep</span>, <span
+          class="command">Restore</span> and <span class="command">Cancel</span> options are
+          equivalent respectively to the <span class="command">Yes</span>, <span
+          class="command">No</span> and <span class="command">Cancel</span> options in the <span
+          class="component">Search options</span> dialog.
+        </dd>
+
+        <dt>This file</dt>
+        <dd class="wrap">
+          The occurrence of the matched text is replaced, along with all remaining occurrences
+          in the current file.  The current file is saved, and the search proceeds to the next
+          file.  If another occurrence is found in a subsequent file, the matched text is
+          highlighted and the <span class="component">Search options</span> dialog is displayed
+          again.
+        </dd>
+
+        <dt>Global</dt>
+        <dd class="wrap">
+          The occurrence of the matched text is replaced, along with all remaining occurrences
+          in the current file and any subsequent files.  The search proceeds through all the
+          files in the file set without displaying the <span class="component">Search
+          options</span> dialog again.  To make the search faster, the text view is not updated
+          during a global search.
+        </dd>
+
+        <dt>Next file</dt>
+        <dd class="wrap">
+          The occurrence of the matched text is not replaced.  Any changes to the current file
+          are saved and the search is resumed with the next file.  If another occurrence is
+          found, the matched text is highlighted and the <span class="component">Search
+          options</span> dialog is displayed again.
+        </dd>
+
+        <dt>Cancel</dt>
+        <dd class="wrap">
+          The search is terminated.  Any changes to the current file are discarded.
+        </dd>
+      </dl>
+
+      <h5 id="section6-4-1-3">6.4.1.3&nbsp; How files are processed</h5>
+      <p class="wrap">
+        Some aspects of RegexSearch&apos;s behaviour when processing files are worth noting in
+        order that you may avoid the unintended consequences of that behaviour.  RegexSearch
+        assumes that the files it reads during a search are text files that have a specified
+        character set and encoding.  It also assumes that certain characters or character
+        sequences in the files are line separators.  The implications of these two assumptions
+        are discussed below.
+      </p>
+      <p class="wrap">
+        When a file is read during a search, the bytes of the file are converted to 16-bit
+        Unicode according to the configuration property <a class="configProperty"
+        href="#cp-general-characterEncoding">general.characterEncoding</a>.  A character
+        encoding, such as UTF-8, maps between sequences of bytes and 16-bit Unicode values.
+      </p>
+      <p class="wrap">
+        Within the file, all occurrences of the characters LF (U+000A) and CR (U+000D), and the
+        character sequence (CR, LF) are treated as line separators.  The kind of line separator
+        is recorded for possible later use.  If the file contains more than one kind of line
+        separator, the most numerous kind of line separator prevails.  If the numbers of
+        different kinds are equal, the precedence from highest to lowest is: LF &ndash; CR
+        &ndash; CR+LF.
+      </p>
+      <p class="wrap">
+        In <i>find</i> mode, the processing of a file ends at this point: the processing is
+        internal, and no physical changes are made to the stored file.  In
+        <i>find-and-replace</i> mode, a file may be modified as a result of a replacement, and
+        the file written back to the file system.  If the <a class="configProperty"
+        href="#cp-general-preserveLineSeparator">general.preserveLineSeparator</a> configuration
+        property has the value <code>true</code>, the file is written with the kind of line
+        separator that was detected when it was read; otherwise, it is written with an LF line
+        separator.
+      </p>
+      <p class="wrap">
+        The way in which a modified file is written to the file system is determined by the <a
+        class="configProperty" href="#cp-general-fileWritingMode">general.fileWritingMode</a>
+        configuration property.  A file may be written directly, or it may be written first to a
+        temporary file that is renamed after the entire file has been written.  If a temporary
+        file is used, the owner, group and permissions of the file may be set to those of the
+        original file on systems that support it.  (Linux is the only system that is known to do
+        so.)  See the description of the <a class="configProperty"
+        href="#cp-general-fileWritingMode">general.fileWritingMode</a> property for more details
+        on its use.
+      </p>
+
+
+      <h4 id="section6-4-2">6.4.2&nbsp; <span class="command">Copy results</span></h4>
+      <p class="wrap">
+        The <span class="command">Copy results</span> command copies the contents of the result
+        area to the system clipboard.  The <a class="configProperty"
+        href="#cp-general-copyResultsAsListFile">general.copyResultsAsListFile</a> configuration
+        property controls the format of the text that is placed on the clipboard: the results
+        can be either in the form in which they appear in the result area or in a form that is
+        suitable for use as a <a href="#section4-1-3-3">list file</a> in a new search, with
+        match/replacement counts converted to comments.
+      </p>
+
+      <h4 id="section6-4-3">6.4.3&nbsp; <span class="command">Save results</span></h4>
+      <p class="wrap">
+        The <span class="command">Save results</span> command saves the list of files from the
+        results of the last search (ie, the files in which an occurrence of the target was
+        found).  A list of files that is saved with this command can be used as the file set for
+        a further search if you select Results as the file-set kind.
+      </p>
+
+      <h4 id="section6-4-4">6.4.4&nbsp; <span class="command">View saved results</span></h4>
+      <p class="wrap">
+        The <span class="command">View saved results</span> command displays the last list of
+        files to be saved with the <span class="command">Save results</span> command, which
+        allows you to see the files that will comprise the file set if Results is selected as
+        the file-set kind.
+      </p>
+
+      <h3 id="section6-5">6.5&nbsp; <span class="component">Options</span> menu</h3>
+
+      <h4 id="section6-5-1">6.5.1&nbsp; <span class="command">Preferences</span></h4>
+      <p class="wrap">
+        The <span class="command">Preferences</span> command brings up a tabbed dialog box in
+        which the configuration properties of RegexSearch can be edited.  The properties on the
+        various tabbed pages are described below.
+      </p>
+      <p class="wrap">
+        Some of the configuration properties in the <span class="component">Preferences</span>
+        dialog are edited with a <i>spinner</i> &mdash; a graphical component that consists of a
+        text field adjacent to a pair of small buttons.  The value in the text field may be
+        edited manually, or it may be incremented and decremented by one of the following
+        methods:
+      </p>
+      <ul class="list">
+        <li class="wrap">
+          clicking on the small up/down buttons;
+        </li>
+        <li class="wrap">
+          pressing the up/down arrow keys;
+        </li>
+        <li class="wrap">
+          rotating the mouse wheel with the mouse cursor over the spinner when the text field
+          has keyboard focus (ie, the caret is displayed in the field).
+        </li>
+      </ul>
+      <p class="wrap">
+        Using the last two methods, the amount by which the value is incremented or decremented
+        can be modified by holding down the Ctrl, Shift or Ctrl+Shift keys, which correspond to
+        increments of 10, 100 and 1000 respectively.
+      </p>
+
+      <div class="preferences">
+        <div>
+          <div class="sectionTitle" id="section6-5-1-a">General</div>
+        </div>
+
+        <div>
+          <div id="cp-general-characterEncoding">
+            <dl>
+              <dt>Character encoding</dt>
+              <dd class="wrap">
+                This property denotes the character encoding that is used to map between the
+                bytes of a file and Unicode values when reading and writing files.  Different
+                implementations of Java may support different character encodings, though every
+                implementation must support a few common encodings, including ISO 8859-1
+                (Latin-1) and UTF-8.  The drop-down list contains the character encodings that
+                are available in the current implementation.  At the top of the list is the
+                value <code>&lt;default encoding&gt;</code>, which denotes the platform- and
+                locale-dependent default character encoding.
+              </dd>
+              <dd class="spaceAbove wrap">
+                The default value is determined at runtime by the Java virtual machine,
+                depending on the locale and platform.
+              </dd>
+            </dl>
+          </div>
+        </div>
+        <div>
+          <div id="cp-general-escapedMetacharacters">
+            <dl>
+              <dt>Escaped metacharacters</dt>
+              <dd class="wrap">
+                This is the set of characters that will be escaped (ie, characters that will
+                have <code>\</code> prefixed to them) when the <a class="command"
+                href="#section5-5-3-3">Escape</a> command is applied to a regular-expression
+                target.
+              </dd>
+              <dd class="spaceAbove wrap">
+                The default value is <code>$()*+.?[\]^{|}</code>
+              </dd>
+            </dl>
+          </div>
+        </div>
+        <div>
+          <div id="cp-general-replacementEscapeCharacter">
+            <dl>
+              <dt>Replacement escape character</dt>
+              <dd class="wrap">
+                This is the character that is used as the escape character in <a
+                href="#section4-3">replacement</a> expressions.  Your choice of character is
+                limited to the punctuation characters that are displayed in the drop-down list.
+              </dd>
+              <dd class="spaceAbove wrap">
+                The default value is <code>\</code> (backslash, U+005C).
+              </dd>
+            </dl>
+          </div>
+        </div>
+        <div>
+          <div id="cp-general-ignoreFilenameCase">
+            <dl>
+              <dt>Ignore case of filenames</dt>
+              <dd class="wrap">
+                If you select <code>Yes</code>, alphabetic case will be ignored when matching
+                pathnames against the patterns in an inclusion or exclusion filter and when
+                matching filenames against the patterns in a tab-width filter (eg, the filename
+                pattern &quot;*.txt&quot; will match the filenames <code>foo.txt</code> and
+                <code>BAR.TXT</code>).
+              </dd>
+              <dd class="spaceAbove wrap">
+                The default value is <code>No</code>.
+              </dd>
+            </dl>
+          </div>
+        </div>
+        <div>
+          <div id="cp-general-fileWritingMode">
+            <dl>
+              <dt>File-writing mode</dt>
+              <dd>
+                <div class="wrap">
+                  This property determines how files that are modified during a
+                  <i>find-and-replace</i> search are written back to the file system.
+                </div>
+                <dl class="inner1">
+                  <dt>Direct</dt>
+                  <dd class="wrap">
+                    The file is written directly to an existing file (ie, the existing file is
+                    overwritten).  Using this method, the file attributes are preserved but
+                    there is a risk that the existing file may be corrupted if there is a system
+                    failure while the file is being written.
+                  </dd>
+
+                  <dt>Use a temporary file</dt>
+                  <dd class="wrap">
+                    The file is first written to a temporary file.  When the temporary file has
+                    been written and closed, the existing file is deleted and the temporary file
+                    renamed.  This is safer than the direct-writing mode but it does not
+                    preserve the file attributes on Linux/UNIX.  (Files were always written in
+                    this way by RegexSearch prior to the introduction of this configuration
+                    property in version 2.2.)
+                  </dd>
+
+                  <dt>Use a temporary file, preserve attributes</dt>
+                  <dd class="wrap">
+                    With this option, the file is first written to a temporary file, as with the
+                    previous option.  After the temporary file has been renamed, the Linux/UNIX
+                    <code>chmod</code>, <code>chgrp</code> and <code>chown</code> commands are
+                    issued with the <code>--reference</code> option, which should set the
+                    file&apos;s permissions, group and owner to those of the original file.
+                    Linux is known to support the <code>--reference</code> option for these
+                    three commands; other UNIX-like systems may support it.  Because it involves
+                    the additional execution of three system commands, this file-writing mode is
+                    slower than the other two.
+                  </dd>
+                </dl>
+              </dd>
+              <dd class="spaceAbove wrap">
+                The default value is <code>Use a temporary file</code>.
+              </dd>
+            </dl>
+          </div>
+        </div>
+        <div>
+          <div id="cp-general-preserveLineSeparator">
+            <dl>
+              <dt>Preserve line-separator kind</dt>
+              <dd class="wrap">
+                If you select <code>Yes</code>, a file in which replacements are made during a
+                <i>find-and-replace</i> search will be written with the same kind of line
+                separator &mdash; LF (U+000A), CR (U+000D) or CR+LF &mdash; that it had when it
+                was read.  (Files that have more than one kind of line separator will be written
+                with the kind of line separator that is most numerous.)  If this property has
+                the value <code>No</code>, files modified by RegexSearch will be written with LF
+                (UNIX-style) line separators.
+              </dd>
+              <dd class="spaceAbove wrap">
+                The default value is <code>Yes</code>.
+              </dd>
+            </dl>
+          </div>
+        </div>
+        <div>
+          <div id="cp-general-showUnixPathnames">
+            <dl>
+              <dt>Display UNIX-style pathnames</dt>
+              <dd>
+                <div class="wrap">
+                  If you select <code>Yes</code>, pathnames are displayed in a reduced
+                  &quot;UNIX style&quot; in some parts of the GUI.  A pathname is converted from
+                  its platform-specific form in two steps:
+                </div>
+                <ol class="noTopMargin">
+                  <li class="wrap">
+                    If the pathname starts with the user&apos;s home directory, the latter is
+                    replaced by <code>~</code>.
+                  </li>
+                  <li class="wrap">
+                    The file-separator character (<code>\</code> on Windows systems) is replaced
+                    by <code>/</code>.
+                  </li>
+                </ol>
+              </dd>
+              <dd class="spaceAbove wrap">
+                The default value is <code>No</code>.
+              </dd>
+            </dl>
+          </div>
+        </div>
+        <div>
+          <div id="cp-general-selectTextOnFocusGained">
+            <dl>
+              <dt>Select text when focus is gained</dt>
+              <dd class="wrap">
+                If you select <code>Yes</code>, all the text in a text field will be
+                automatically selected when the field gains keyboard focus, regardless of how
+                the focus is transferred.
+              </dd>
+              <dd class="spaceAbove wrap">
+                The default value is <code>Yes</code>.
+              </dd>
+            </dl>
+          </div>
+        </div>
+        <div>
+          <div id="cp-general-mainWindowLocation">
+            <dl>
+              <dt>Save location of main window</dt>
+              <dd class="wrap">
+                If you select <code>Yes</code>, the location of the main window on the screen
+                will be saved to the configuration file when you exit the application.  The next
+                time that RegexSearch is run, its main window will be positioned at the
+                previously saved location.
+              </dd>
+              <dd class="spaceAbove wrap">
+                The default value is <code>No</code>.
+              </dd>
+            </dl>
+          </div>
+        </div>
+        <div>
+          <div id="cp-general-hideControlDialogWhenSearching">
+            <dl>
+              <dt>Hide control dialog when searching</dt>
+              <dd class="wrap">
+                If this property has the value <code>Yes</code> and the control dialog has not
+                been explicitly hidden, it is automatically hidden during a search and made
+                visible again when the search ends.  If the control dialog is hidden in this
+                way, the <a class="command" href="#section6-3-1">Show control dialog</a> command
+                can be used to make it visible during a search.
+              </dd>
+              <dd class="spaceAbove wrap">
+                The default value is <code>No</code>.
+              </dd>
+            </dl>
+          </div>
+        </div>
+        <div>
+          <div id="cp-general-copyResultsAsListFile">
+            <dl>
+              <dt>Copy search results as list file</dt>
+              <dd class="wrap">
+                This property controls the format of the text that the <a class="command"
+                href="#section6-4-2">Copy results</a> command places on the system clipboard.
+                If you select <code>No</code>, the results are in the form in which they appear
+                in the result area of the main window.  If you select <code>Yes</code>, the
+                results are converted into a form that is suitable for use as a <a
+                href="#section4-1-3-3">list file</a> in a new search.
+              </dd>
+              <dd class="spaceAbove wrap">
+                The default value is <code>No</code>.
+              </dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+
+      <div class="preferences">
+        <div>
+          <div class="sectionTitle" id="section6-5-1-b">Appearance</div>
+        </div>
+
+        <div>
+          <div id="cp-appearance-lookAndFeel">
+            <dl>
+              <dt>Look-and-feel</dt>
+              <dd class="wrap">
+                The look-and-feel (LAF) can be selected from a list of the LAFs that are
+                available on the current system.
+              </dd>
+              <dd class="spaceAbove wrap">
+                The default value is the cross-platform LAF, currently called Metal.
+              </dd>
+            </dl>
+          </div>
+        </div>
+        <div>
+          <div id="cp-appearance-textAntialiasing">
+            <dl>
+              <dt>Text antialiasing</dt>
+              <dd class="wrap">
+                This determines the kind of antialiasing that is performed when text is drawn in
+                custom or partially customised user-interface components (eg, in drop-down
+                lists).  Note that antialiasing is only a hint in Java; the implementation is
+                not required to perform the chosen antialiasing.
+              </dd>
+              <dd class="spaceAbove wrap">
+                This property has no effect on the antialiasing of text in standard UI
+                components, such as labels and menus, which is determined by the Java
+                implementation and the desktop setting for antialiasing text (often referred to
+                as &quot;font smoothing&quot;).  You can override the desktop setting with the
+                unsupported system property <code><a class="external"
+                href="https://docs.oracle.com/javase/7/docs/technotes/guides/2d/flags.html#aaFonts">awt.useSystemAAFontSettings</a></code>.
+              </dd>
+              <dd class="spaceAbove wrap">
+                This property does not control text antialiasing in the text view, which is
+                configured independently with the property <a class="configProperty"
+                href="#cp-appearance-textViewTextAntialiasing">appearance.textViewTextAntialiasing</a>.
+              </dd>
+              <dd class="spaceAbove wrap">
+                The text antialiasing property can have the following values:
+              </dd>
+              <dd>
+                <dl class="inner1">
+                  <dt>Default</dt>
+                  <dd class="wrap">
+                    The desktop setting for text antialiasing (font smoothing) is used, if the
+                    Java implementation recognises one; otherwise, no antialiasing is performed.
+                  </dd>
+
+                  <dt>None</dt>
+                  <dd class="wrap">
+                    No antialiasing is performed.
+                  </dd>
+
+                  <dt>Standard</dt>
+                  <dd class="wrap">
+                    This selects pixel-oriented antialiasing rather than subpixel antialiasing.
+                    It is suitable for non-LCD displays.
+                  </dd>
+
+                  <dt>Subpixel, horizontal RGB</dt>
+                  <dt>Subpixel, horizontal BGR</dt>
+                  <dt>Subpixel, vertical RGB</dt>
+                  <dt>Subpixel, vertical BGR</dt>
+                  <dd class="wrap">
+                    These four options are intended to optimise the rendering of text for LCD
+                    displays using subpixel antialiasing with subpixels in the chosen
+                    arrangement.  Selecting an option that does not correspond to the actual
+                    arrangement of subpixels in your LCD display may result in blurred text.
+                    The most common arrangement of subpixels is horizontal RGB.
+                  </dd>
+                </dl>
+              </dd>
+              <dd class="wrap">
+                The default value is <code>Default</code>.
+              </dd>
+            </dl>
+          </div>
+        </div>
+        <div>
+          <div id="cp-appearance-parameterEditorSize">
+            <dl>
+              <dt>Size of parameter editor</dt>
+              <dd class="wrap">
+                These are the dimensions (number of columns &times; number of rows) of the <span
+                class="component">Target</span> and <span class="component">Replacement</span>
+                fields in the control dialog.  The width of a column is the width of a zero
+                character (U+0030) in the field&apos;s font.  If the control dialog is resized
+                using the GUI, the size of the parameter editor that was set in the <span
+                class="component">Preferences</span> dialog is overridden by the actual size of
+                the <span class="component">Target</span> and <span
+                class="component">Replacement</span> fields when the configuration properties
+                are saved on exiting RegexSearch.
+              </dd>
+              <dd class="spaceAbove wrap">
+                The default dimensions are 80 &times; 4.
+              </dd>
+            </dl>
+          </div>
+        </div>
+        <div>
+          <div id="cp-appearance-resultAreaNumRows">
+            <dl>
+              <dt>Number of rows in result area</dt>
+              <dd class="wrap">
+                This determines the viewable height of the result area.
+              </dd>
+              <dd class="spaceAbove wrap">
+                The default value is 4.
+              </dd>
+            </dl>
+          </div>
+        </div>
+        <div>
+          <div id="cp-appearance-tabSurrogate">
+            <dl>
+              <dt>Tab surrogate</dt>
+              <dd class="wrap">
+                This is the character that is used in place of a tab character in the <span
+                class="component">Target</span> and <span class="component">Replacement</span>
+                fields.  Its role is described in the section on the <a
+                href="#section5-5-3-1">tab surrogate</a>.  You can enter either a single
+                character or four hexadecimal-digit characters in the <span
+                class="component">Tab surrogate</span> field.  The hexadecimal digits will be
+                interpreted as a Unicode value.  If a character is a control code or it cannot
+                be displayed in the field&apos;s font, it is displayed in the field as its
+                four-digit Unicode value.
+              </dd>
+              <dd class="spaceAbove wrap">
+                The default value is the tab character, U+0009.
+              </dd>
+            </dl>
+          </div>
+        </div>
+        <div>
+          <div id="cp-appearance-textViewViewableSize">
+            <dl>
+              <dt>Text view: viewable size</dt>
+              <dd class="wrap">
+                These are the dimensions (number of columns &times; number of rows) of the area
+                in which the contents of a file are displayed.  The physical size of the text
+                view is also determined by its font.
+              </dd>
+              <dd class="spaceAbove wrap">
+                The default dimensions are 96 &times; 24.
+              </dd>
+            </dl>
+          </div>
+        </div>
+        <div>
+          <div id="cp-appearance-textViewMaxNumColumns">
+            <dl>
+              <dt>Text view: maximum number of columns</dt>
+              <dd class="wrap">
+                This is the upper bound of the width of the text view; lines of text displayed
+                in the text view are truncated at this bound.  The bound applies only to
+                <em>displayed</em> text: the actual text is not truncated.  (The use of this
+                property makes the display of text more efficient.)
+              </dd>
+              <dd class="spaceAbove wrap">
+                The default value is 256.
+              </dd>
+            </dl>
+          </div>
+        </div>
+        <div>
+          <div id="cp-appearance-textViewTextAntialiasing">
+            <dl>
+              <dt>Text view: text antialiasing</dt>
+              <dd class="wrap">
+                This determines the kind of antialiasing that is performed when text is drawn in
+                the text view.  It is independent from the general text antialiasing property in
+                order to allow, for example, a bitmap font to be used in the text view.  The
+                values that this property may have are described for the <a
+                class="configProperty"
+                href="#cp-appearance-textAntialiasing">appearance.textAntialiasing</a> property.
+              </dd>
+              <dd class="wrap">
+                The default value is <code>Default</code>.
+              </dd>
+            </dl>
+          </div>
+        </div>
+        <div>
+          <div id="cp-appearance-textAreaColour">
+            <dl>
+              <dt>Text area colours</dt>
+              <dd class="wrap">
+                These are the four colours that are used when drawing text in the text view, the
+                result area and the fields in the <span class="component">Search options</span>
+                dialog.  Clicking on a colour button brings up a colour-selection dialog.
+              </dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+
+      <div class="preferences">
+        <div>
+          <div class="sectionTitle" id="section6-5-1-d">Tab width</div>
+        </div>
+
+        <div>
+          <div id="cp-tabWidth-fileFilter">
+            <dl>
+              <dt>Text view: tab-width filters, default tab width</dt>
+              <dd class="wrap">
+                When a file containing tab characters (U+0009) is displayed, RegexSearch uses
+                two properties &mdash; a list of tab-width filters and a default tab width
+                &mdash; to determine how the tab characters are converted to spaces.  A
+                tab-width filter is a filename filter that is mapped to a tab width.  The
+                filename filter consists of one or more space-separated filename patterns (eg,
+                &quot;*.c *.cpp *.h *.hpp&quot;).  Up to 64 tab-width filters can be specified.
+                Filters are applied in the order in which they appear in the list.  The default
+                tab width is used for a file whose name does not match any filter.
+              </dd>
+              <dd class="spaceAbove wrap">
+                New filters can be added to the list, and items in the list can be edited,
+                deleted or their position in the list changed.  The Delete key and Delete button
+                delete the selected item after confirmation, while Shift+Delete and
+                Shift+left-click on the Delete button delete the selected item without
+                confirmation.  The position of an item in the list can be changed by dragging it
+                with the mouse, or by pressing Ctrl+Shift+Up or Ctrl+Shift+Down when the list
+                has keyboard focus.
+              </dd>
+              <dd class="spaceAbove wrap">
+                The default value of the default tab width is 8.
+              </dd>
+            </dl>
+          </div>
+        </div>
+        <div>
+          <div id="cp-tabWidth-targetAndReplacement">
+            <dl>
+              <dt>Target and replacement editors: tab width</dt>
+              <dd class="wrap">
+                This is the tab width that is used in the target and replacement editors if the
+                tab surrogate is the tab character (U+0009) itself.
+              </dd>
+              <dd class="spaceAbove wrap">
+                The default value of the tab width in the target and replacement editors is 8.
+              </dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+
+      <div class="preferences">
+        <div>
+          <div class="sectionTitle" id="section6-5-1-e">Editor</div>
+        </div>
+
+        <div>
+          <div id="cp-editor-command">
+            <dl>
+              <dt>Command</dt>
+              <dd>
+                <div class="wrap">
+                  This property can be used to specify a command line that will invoke a text
+                  editor, either
+                </div>
+                <ul class="continuationList">
+                  <li class="wrap">
+                    during a search, on the current file, in response to the <a class="command"
+                    href="#section6-2-1">Edit &gt; Edit file</a> and <a class="command"
+                    href="#section6-2-2">Edit &gt; Edit file, deferred</a> commands, or
+                  </li>
+                  <li class="wrap">
+                    after a search, by selecting a file from the results of a search that are
+                    listed in the <a href="#section5-3">result area</a>.
+                  </li>
+                </ul>
+                <div class="wrap">
+                  The pathname of the file to be edited can be included in the command line so
+                  that the file will be opened in the text editor.
+                </div>
+              </dd>
+              <dd class="spaceAbove wrap">
+                Within the command line, arguments must be separated with one or more spaces,
+                and <code>%</code> (U+0025) acts as an escape character.  <code>%f</code> is a
+                placeholder for the pathname of the file that is to be edited.  All other
+                characters that follow <code>%</code> are treated as themselves; thus, a literal
+                space is represented by <code>%&nbsp;</code> (ie, U+0025, U+0020), and a literal
+                <code>%</code> is represented by <code>%%</code>.
+              </dd>
+              <dd class="spaceAbove wrap">
+                Pathnames in the command line may contain <a href="#sectionA">special
+                constructs</a> for system properties, environment variables and the user&apos;s
+                home directory.
+              </dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+
+      <div class="preferences">
+        <div>
+          <div class="sectionTitle" id="section6-5-1-f">File locations</div>
+        </div>
+
+        <div>
+          <div id="cp-path-defaultSearchParameters">
+            <dl>
+              <dt>Default search parameters</dt>
+              <dd class="wrap">
+                This is the pathname of the search-parameter file that will be loaded
+                automatically when RegexSearch starts up.  The pathname may contain <a
+                href="#sectionA">special constructs</a> for system properties, environment
+                variables and the user&apos;s home directory.
+              </dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+
+      <div class="preferences">
+        <div>
+          <div class="sectionTitle" id="section6-5-1-g">Fonts</div>
+        </div>
+
+        <div>
+          <div id="cp-font">
+            <dl>
+              <dd class="wrap">
+                These are the fonts that are used in RegexSearch&apos;s display.  Remember that
+                font names may be platform-dependent, so that a configuration that specifies
+                font names may not work across platforms.
+              </dd>
+              <dd class="spaceAbove wrap">
+                The <i>main</i> font is used for various components including labels (static
+                text), menus, buttons and list boxes.
+              </dd>
+              <dd class="spaceAbove wrap">
+                The <i>text field</i> font is used for text fields, spinners and some other text
+                components.
+              </dd>
+              <dd class="spaceAbove wrap">
+                The <i>combo box</i> font is used for drop-down lists and related components.
+              </dd>
+              <dd class="spaceAbove wrap">
+                The <i>parameter editor</i> font is used for the <a href="#section5-5-3"><span
+                class="component">Target</span> and <span class="component">Replacement</span>
+                fields</a>.
+              </dd>
+              <dd class="spaceAbove wrap">
+                The <i>text view</i> and <i>result area</i> fonts are used for the respective
+                text areas.
+              </dd>
+              <dd class="spaceAbove wrap">
+                The default values of all the font properties are those of the default fonts for
+                the platform and look-and-feel.  A default font size is specified by leaving the
+                <span class="component">Size</span> field empty (the minimum position on the
+                spinner).  A default font is used if no font name is specified in
+                RegexSearch&apos;s configuration or if the named font is not available.
+              </dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+
+      <p class="wrap">
+        Some of the configuration properties will take effect when the <span
+        class="component">Preferences</span> dialog is accepted (by closing it with <i>OK</i>);
+        other properties (eg, the look-and-feel and fonts) will not take effect until the next
+        time that RegexSearch is run.
+      </p>
+      <p class="wrap">
+        The <a href="#section3-2">configuration file</a> is normally saved automatically when
+        RegexSearch exits, if the configuration has changed.  The <span class="command">Save
+        configuration</span> command in the <span class="component">Preferences</span> dialog
+        can be used to save a configuration file explicitly.
+      </p>
+
+    </div>
+
+    <!--=====================================================================================-->
+
+    <!-- Regular expressions -->
+
+    <div class="section">
+      <h2 id="section7">7&nbsp; Regular expressions</h2>
+      <p class="tocLink">
+        [ <a href="#toc">Table of contents</a> ]
+      </p>
+
+      <p class="wrap">
+        Within RegexSearch, the parsing and matching of regular expressions is performed by the
+        Java regex engine.  The purpose of this section is to present a summary of the syntax of
+        Java&apos;s regular expressions, which is similar to that of Perl and Python.  This
+        section is not intended to be a tutorial on the use of regular expressions; see the <a
+        href="#section7-6">references</a> at the end of this section for suggested sources of
+        further information.
+      </p>
+      <p class="wrap">
+        <strong>Note:</strong> There are several differences between the syntax of regular
+        expressions in Java and the syntax of regular expressions in Linux/UNIX tools such as
+        <i>sed</i> and <i>(g)awk</i>.
+      </p>
+      <p class="wrap">
+        In a search, the target pattern, replacement pattern and file are all composed of
+        Unicode characters.  RegexSearch converts files from bytes to 16-bit Unicode characters
+        according to the scheme described in <a href="#section6-4-1-3">How files are
+        processed</a>.  In particular, the line separators CR and CR+LF are converted to LF
+        before a file is searched.  Thereafter, by default, the only line separator recognised
+        during a search is the line feed character (U+000A) unless the <code>(?-d)</code> flag
+        appears in the target pattern.
+      </p>
+      <p class="wrap">
+        When selected, the <span class="component">Ignore case</span> check box in the control
+        dialog enables the default form of case-insensitive matching, which applies only to
+        characters in the US-ASCII character encoding.  To apply case-insensitive matching to
+        all Unicode characters, use the <code>(?u)</code> flag in the target pattern.
+      </p>
+      <p class="wrap">
+        Within a regular expression, all characters are treated as literal characters except for
+        twelve <i>metacharacters</i> &mdash; characters that have a special meaning and
+        don&apos;t behave normally in regular expressions.  The metacharacters are:
+      </p>
+      <p class="shaded">
+        <code class="noBackground">$ ( ) * + . ? [ \ ^ { |</code>
+      </p>
+      <p class="wrap">
+        A metacharacter can be <i>escaped</i> &mdash; that is, its special meaning can be
+        removed &mdash; by prefixing a backslash, <code>\</code>, to it.  An escaped
+        metacharacter represents its corresponding literal character; thus, <code>\?</code>
+        represents the character <code>?</code>, and <code>\\</code> represents a literal
+        backslash.
+      </p>
+      <p class="wrap">
+        Some metacharacters are used by theselves within regular expressions; others are used to
+        create special sequences called <i>metasymbols</i>.  (In the documentation for
+        <code>java.util.regex.Pattern</code>, metasymbols are referred to as <i>constructs</i>.)
+        For example, several alphanumeric characters become metasymbols when preceded by a
+        backslash.
+      </p>
+
+      <h3 id="section7-1">7.1&nbsp; Simple metacharacters and structural metasymbols</h3>
+
+      <table class="regex">
+        <tr>
+          <td class="shaded">.</td>
+          <td class="wrap">
+            By default, a dot matches any single character except a newline.  The
+            <code>(?s)</code> flag enables a mode in which a dot matches any character
+            <em>including</em> a newline.
+          </td>
+        </tr>
+        <tr>
+          <td class="shaded">^</td>
+          <td>
+            <div class="wrap">
+              Matches the beginning of a line.
+            </div>
+            <div class="wrap">
+              Example: <code>^#</code> matches a <code>#</code> character at the beginning of a
+              line.
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td class="shaded">$</td>
+          <td>
+            <div class="wrap">
+              Matches the end of a line or the end of the input string (in RegexSearch, the end
+              of a file).
+            </div>
+            <div class="wrap">
+              Example: <code>;$</code> matches a <code>;</code> character at the end of a line
+              or at the end of a file.
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td class="shaded">\</td>
+          <td>
+            The backslash has two roles:
+            <ol class="noTopBottomMargin">
+              <li>
+                <div class="wrap">
+                  When it precedes a metacharacter (including itself), it <i>escapes</i> the
+                  metacharacter (ie, removes the special meaning of the metacharacter).
+                </div>
+                <div class="wrap">
+                  Example: <code>\*</code> matches a <code>*</code> character.
+                </div>
+              </li>
+              <li>
+                <div class="wrap">
+                  When it precedes some alphanumeric characters, it introduces a metasymbol.
+                  (Placing a backslash in front of an alphabetic character for which no
+                  metasymbol is defined will result in an error.)
+                </div>
+                <div class="wrap">
+                  Example: <code>\t</code> matches a tab character (U+0009).
+                </div>
+              </li>
+            </ol>
+          </td>
+        </tr>
+        <tr>
+          <td class="shaded">|</td>
+          <td>
+            <div class="wrap">
+              The vertical bar separates alternatives.
+            </div>
+            <div class="wrap">
+              Example: <code>his|her|its</code> matches any one of the strings &quot;his&quot;,
+              &quot;her&quot; or &quot;its&quot;.
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td class="shaded">[&nbsp;]</td>
+          <td>
+            Matches one character from a <i>character class</i> &mdash; a set
+            of characters enclosed within the square brackets.  The set of
+            characters can be specified in a number of ways.  It may be:
+            <ul class="noTopBottomMargin">
+              <li>
+                <div class="wrap">
+                  An enumeration of characters.
+                </div>
+                <div class="wrap">
+                  Example: <code>[abc]</code>.
+                </div>
+              </li>
+              <li>
+                <div class="wrap">
+                  One or more ranges of characters, in which a hyphen, <code>-</code>, separates
+                  the inclusive start and end of a range of contiguous characters.
+                </div>
+                <div class="wrap">
+                  Example: <code>[a-z]</code>, or <code>[A-Za-z]</code>.
+                </div>
+              </li>
+              <li>
+                <div class="wrap">
+                  A union.
+                </div>
+                <div class="wrap">
+                  Example: <code>[0-9[A-F]]</code>, which is equivalent to
+                  <code>[0-9A-F]</code>.
+                </div>
+              </li>
+              <li>
+                <div class="wrap">
+                  An intersection, in which the string &quot;&amp;&amp;&quot; separates sets of
+                  characters.
+                </div>
+                <div class="wrap">
+                  Example: <code>[a-e&amp;&amp;d-h]</code>, which is equivalent to
+                  <code>[de]</code>).
+                </div>
+              </li>
+            </ul>
+            <div class="wrap">
+              If the first character within the square brackets is a circumflex, <code>^</code>,
+              the set of characters is negated; that is, the character class matches one
+              character that is <em>not</em> in the set of characters that follows the
+              <code>^</code>.
+            </div>
+            <div class="wrap">
+              Example: <code>[^0-9]</code> matches any character except a (Western) decimal
+              digit; <code>[a-z&amp;&amp;[^ij]]</code> is equivalent to <code>[a-hk-z]</code>.
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td class="shaded">(&nbsp;)</td>
+          <td>
+            <div class="wrap">
+              Encloses a <i>capturing group</i>.  The set of characters within the parentheses
+              is treated as a unit; eg, <code>^(foo|bar)</code> matches either &quot;foo&quot;
+              or &quot;bar&quot; at the beginning of a line.  The group is called
+              <i>capturing</i> because the text that it matched can be included later in the
+              target pattern or in the replacement by specifying the index of the group in a
+              metasymbol (see <code>\<i>n</i></code> in <a href="#section7-3">Alphanumeric
+              metasymbols</a>).
+            </div>
+            <div class="wrap">
+              A <i>cluster</i> &mdash; a non-capturing group &mdash; can be specified by
+              enclosing a set of characters between <code>(?:</code> and <code>)</code> (eg,
+              <code>(?:foo|bar)</code> matches either &quot;foo&quot; or &quot;bar&quot; without
+              capturing it).
+            </div>
+          </td>
+        </tr>
+      </table>
+
+      <h3 id="section7-2">7.2&nbsp; Quantifiers</h3>
+
+      <p class="wrap">
+        Quantifiers specify how many times the preceding character or group should match.  The
+        different types of quantifier are available in three flavours, which Java refers to as
+        <i>greedy</i>, <i>reluctant</i> and <i>possessive</i>.  (Greedy quantifiers are also
+        known as <i>maximal</i>, and reluctant quantifiers are also known as <i>lazy</i> or
+        <i>minimal</i>.)
+      </p>
+      <p class="wrap">
+        A greedy (maximal) quantifier starts by matching as much as possible of the input
+        string.  If this doesn&apos;t allow the whole pattern to be matched, the greedy
+        quantifier matches progressively less of the input string until either the whole pattern
+        is matched or the match fails.
+      </p>
+      <p class="wrap">
+        A reluctant (minimal) quantifier starts by matching as little as possible of the input
+        string.  If this doesn&apos;t allow the whole pattern to be matched, the reluctant
+        quantifier matches progressively more of the input string until either the whole pattern
+        is matched or the match fails.
+      </p>
+      <p class="wrap">
+        A possessive quantifier starts, like a greedy quantifier, by matching as much as
+        possible of the input string.  However, if this doesn&apos;t allow the whole pattern to
+        be matched, no backing-up is performed, and the match fails.
+      </p>
+
+      <table class="regex">
+        <tr>
+          <th class="alignCentre" colspan="3">
+            Quantifiers
+          </th>
+          <th rowspan="2">
+            Meaning
+          </th>
+        </tr>
+        <tr>
+          <th>Greedy</th>
+          <th>Reluctant</th>
+          <th>Possessive</th>
+        </tr>
+        <tr>
+          <td class="shaded">*</td>
+          <td class="shaded">*?</td>
+          <td class="shaded">*+</td>
+          <td>Matches zero or more times</td>
+        </tr>
+        <tr>
+          <td class="shaded">+</td>
+          <td class="shaded">+?</td>
+          <td class="shaded">++</td>
+          <td>Matches one or more times</td>
+        </tr>
+        <tr>
+          <td class="shaded">?</td>
+          <td class="shaded">??</td>
+          <td class="shaded">?+</td>
+          <td>Matches once or not at all</td>
+        </tr>
+        <tr>
+          <td class="shaded">{<i>n</i>}</td>
+          <td class="shaded">{<i>n</i>}?</td>
+          <td class="shaded">{<i>n</i>}+</td>
+          <td>Matches exactly <i>n</i> times</td>
+        </tr>
+        <tr>
+          <td class="shaded">{<i>n</i>,}</td>
+          <td class="shaded">{<i>n</i>,}?</td>
+          <td class="shaded">{<i>n</i>,}+</td>
+          <td>Matches at least <i>n</i> times</td>
+        </tr>
+        <tr>
+          <td class="shaded">{<i>n</i>,<i>m</i>}</td>
+          <td class="shaded">{<i>n</i>,<i>m</i>}?</td>
+          <td class="shaded">{<i>n</i>,<i>m</i>}+</td>
+          <td>Matches at least <i>n</i> times but not more than <i>m</i> times</td>
+        </tr>
+      </table>
+
+      <h3 id="section7-3">7.3&nbsp; Alphanumeric metasymbols</h3>
+
+      <table class="regex">
+        <tr>
+          <td class="shaded">\0<i>n</i></td>
+          <td>
+            The character with octal value 0<i>n</i>, where <i>n</i> is in [0-7]
+          </td>
+        </tr>
+        <tr>
+          <td class="shaded">\0<i>nn</i></td>
+          <td>
+            The character with octal value 0<i>nn</i>, where <i>n</i> is in [0-7]
+          </td>
+        </tr>
+        <tr>
+          <td class="shaded">\0<i>mnn</i></td>
+          <td class="wrap">
+            The character with octal value 0<i>mnn</i>, where <i>m</i> is in [0-3] and <i>n</i>
+            is in [0-7]
+          </td>
+        </tr>
+        <tr>
+          <td class="shaded">\<i>n</i></td>
+          <td>
+            The sequence matched by the <i>n</i>th capturing group
+          </td>
+        </tr>
+        <tr>
+          <td class="shaded">\a</td>
+          <td>
+            The alert character (BEL), U+0007
+          </td>
+        </tr>
+        <tr>
+          <td class="shaded">\A</td>
+          <td>
+            The beginning of the input string (in RegexSearch, the beginning of a file)
+          </td>
+        </tr>
+        <tr>
+          <td class="shaded">\b</td>
+          <td>
+            A word boundary
+          </td>
+        </tr>
+        <tr>
+          <td class="shaded">\B</td>
+          <td>
+            Not a word boundary
+          </td>
+        </tr>
+        <tr>
+          <td class="shaded">\c<i>X</i></td>
+          <td>
+            The control character, Control-<i>X</i>
+          </td>
+        </tr>
+        <tr>
+          <td class="shaded">\d</td>
+          <td>
+            A digit, [0-9]
+          </td>
+        </tr>
+        <tr>
+          <td class="shaded">\D</td>
+          <td>
+            A non-digit, [^0-9]
+          </td>
+        </tr>
+        <tr>
+          <td class="shaded">\e</td>
+          <td>
+            The escape character (ESC), U+001B
+          </td>
+        </tr>
+        <tr>
+          <td class="shaded">\E</td>
+          <td>
+            End the quotation of metacharacters started by \Q
+          </td>
+        </tr>
+        <tr>
+          <td class="shaded">\f</td>
+          <td>
+            The form feed character (FF), U+000C
+          </td>
+        </tr>
+        <tr>
+          <td class="shaded">\n</td>
+          <td>
+            The line feed character (LF), U+000A
+          </td>
+        </tr>
+        <tr>
+          <td class="shaded">\p{<i>prop</i>}</td>
+          <td>
+            Any character in the character class named <i>prop</i>
+          </td>
+        </tr>
+        <tr>
+          <td class="shaded">\P{<i>prop</i>}</td>
+          <td>
+            Any character not in the character class named <i>prop</i>
+          </td>
+        </tr>
+        <tr>
+          <td class="shaded">\Q</td>
+          <td>
+            Quote (escape) metacharacters until \E
+          </td>
+        </tr>
+        <tr>
+          <td class="shaded">\r</td>
+          <td>
+            The carriage return character (CR), U+000D
+          </td>
+        </tr>
+        <tr>
+          <td class="shaded">\s</td>
+          <td>
+            A whitespace character, [ \t\n\x0B\f\r]
+          </td>
+        </tr>
+        <tr>
+          <td class="shaded">\S</td>
+          <td>
+            A non-whitespace character, [^\s]
+          </td>
+        </tr>
+        <tr>
+          <td class="shaded">\t</td>
+          <td>
+            The tab character (HT), U+0009
+          </td>
+        </tr>
+        <tr>
+          <td class="shaded">\u<i>nnnn</i></td>
+          <td class="wrap">
+            The Unicode character U+<i>nnnn</i>, where <i>n</i> is a hexdecimal digit character,
+            [0-9A-Fa-f]
+          </td>
+        </tr>
+        <tr>
+          <td class="shaded">\w</td>
+          <td>
+            A word character, [0-9A-Za-z_]
+          </td>
+        </tr>
+        <tr>
+          <td class="shaded">\W</td>
+          <td>
+            A non-word character, [^\w]
+          </td>
+        </tr>
+        <tr>
+          <td class="shaded">\x<i>nn</i></td>
+          <td>
+            The character with hexdecimal value 0x<i>nn</i>
+          </td>
+        </tr>
+        <tr>
+          <td class="shaded">\z</td>
+          <td>
+            The end of the input string (in RegexSearch, the end of a file)
+          </td>
+        </tr>
+        <tr>
+          <td class="shaded">\Z</td>
+          <td class="wrap">
+            The end of the input string (in RegexSearch, the end of a file), apart from a final
+            <code>\n</code> .
+          </td>
+        </tr>
+      </table>
+
+      <h3 id="section7-4">7.4&nbsp; Named character classes</h3>
+
+      <p class="wrap">
+        Named character classes are metasymbols of the form <code>\p{<i>name</i>}</code> or
+        <code>\P{<i>name</i>}</code>.  There are three types of named character class: POSIX,
+        Unicode and Java.
+      </p>
+
+      <h4 id="section7-4-1">7.4.1&nbsp; POSIX character classes</h4>
+
+      <table class="regex">
+        <tr>
+          <td class="shaded">Lower</td>
+          <td>
+            A lowercase alphabetic character, [a-z]
+          </td>
+        </tr>
+        <tr>
+          <td class="shaded">Upper</td>
+          <td>
+            An uppercase alphabetic character, [A-Z]
+          </td>
+        </tr>
+        <tr>
+          <td class="shaded">ASCII</td>
+          <td>
+            An ASCII character, [\x00-\x7F]
+          </td>
+        </tr>
+        <tr>
+          <td class="shaded">Alpha</td>
+          <td>
+            An alphabetic character, [\p{Lower}\p{Upper}]
+          </td>
+        </tr>
+        <tr>
+          <td class="shaded">Digit</td>
+          <td>
+            A decimal digit character, [0-9]
+          </td>
+        </tr>
+        <tr>
+          <td class="shaded">Alnum</td>
+          <td>
+            An alphanumeric character, [\p{Alpha}\p{Digit}]
+          </td>
+        </tr>
+        <tr>
+          <td class="shaded">Punct</td>
+          <td>
+            Punctuation: one of !&quot;#$%&amp;&apos;()*+,-./:;&lt;=&gt;?@[\]^_`{|}~
+          </td>
+        </tr>
+        <tr>
+          <td class="shaded">Graph</td>
+          <td>
+            A visible character, [\p{Alnum}\p{Punct}]
+          </td>
+        </tr>
+        <tr>
+          <td class="shaded">Print</td>
+          <td>
+            A printable character, [\p{Graph}\x20]
+          </td>
+        </tr>
+        <tr>
+          <td class="shaded">Blank</td>
+          <td>
+            A space or a tab character, [ \t]
+          </td>
+        </tr>
+        <tr>
+          <td class="shaded">Cntrl</td>
+          <td>
+            A control character, [\x00-\x1F\x7F]
+          </td>
+        </tr>
+        <tr>
+          <td class="shaded">XDigit</td>
+          <td>
+            A hexadecimal digit character [0-9a-fA-F]
+          </td>
+        </tr>
+        <tr>
+          <td class="shaded">Space</td>
+          <td>
+            A whitespace character, [ \t\n\x0B\f\r]
+          </td>
+        </tr>
+      </table>
+
+      <h4 id="section7-4-2">7.4.2&nbsp; Unicode character classes</h4>
+
+      <p class="wrap">
+        The Unicode character classes are too numerous to list all of them here.  They include
+        Unicode character blocks (eg, Greek) and character categories (eg, uppercase letters).
+        When forming a metasymbol, <code>In</code> is prefixed to the name of a Unicode block
+        (eg, <code>\p{InGreek}</code> ), and <code>Is</code> is optionally prefixed to the name
+        of a Unicode category is (eg, <code>\p{Lu}</code> or <code>\p{IsLu}</code> ).
+      </p>
+      <p class="wrap">
+        The following table lists abbreviations for values in the Unicode General Category:
+      </p>
+
+      <table class="regex">
+        <tr>
+          <td class="shaded">L</td>
+          <td>
+            Letter
+          </td>
+        </tr>
+        <tr>
+          <td class="shaded">Lu</td>
+          <td>
+            Letter, uppercase
+          </td>
+        </tr>
+        <tr>
+          <td class="shaded">Ll</td>
+          <td>
+            Letter, lowercase
+          </td>
+        </tr>
+        <tr>
+          <td class="shaded">Lt</td>
+          <td>
+            Letter, titlecase
+          </td>
+        </tr>
+        <tr>
+          <td class="shaded">Lm</td>
+          <td>
+            Letter, modifier
+          </td>
+        </tr>
+        <tr>
+          <td class="shaded">Lo</td>
+          <td>
+            Letter, other
+          </td>
+        </tr>
+        <tr>
+          <td class="shaded">M</td>
+          <td>
+            Mark
+          </td>
+        </tr>
+        <tr>
+          <td class="shaded">Mn</td>
+          <td>
+            Mark, non-spacing
+          </td>
+        </tr>
+        <tr>
+          <td class="shaded">Mc</td>
+          <td>
+            Mark, spacing combining
+          </td>
+        </tr>
+        <tr>
+          <td class="shaded">Me</td>
+          <td>
+            Mark, enclosing
+          </td>
+        </tr>
+        <tr>
+          <td class="shaded">N</td>
+          <td>
+            Number
+          </td>
+        </tr>
+        <tr>
+          <td class="shaded">Nd</td>
+          <td>
+            Number, decimal digit
+          </td>
+        </tr>
+        <tr>
+          <td class="shaded">Nl</td>
+          <td>
+            Number, letter
+          </td>
+        </tr>
+        <tr>
+          <td class="shaded">No</td>
+          <td>
+            Number, other
+          </td>
+        </tr>
+        <tr>
+          <td class="shaded">P</td>
+          <td>
+            Punctuation
+          </td>
+        </tr>
+        <tr>
+          <td class="shaded">Pc</td>
+          <td>
+            Punctuation, connector
+          </td>
+        </tr>
+        <tr>
+          <td class="shaded">Pd</td>
+          <td>
+            Punctuation, dash
+          </td>
+        </tr>
+        <tr>
+          <td class="shaded">Ps</td>
+          <td>
+            Punctuation, open
+          </td>
+        </tr>
+        <tr>
+          <td class="shaded">Pe</td>
+          <td>
+            Punctuation, close
+          </td>
+        </tr>
+        <tr>
+          <td class="shaded">Pi</td>
+          <td class="wrap">
+            Punctuation, initial quote (may behave like <code>Ps</code> or <code>Pe</code>
+            depending on usage)
+          </td>
+        </tr>
+        <tr>
+          <td class="shaded">Pf</td>
+          <td class="wrap">
+            Punctuation, final quote (may behave like <code>Ps</code> or <code>Pe</code>
+            depending on usage)
+          </td>
+        </tr>
+        <tr>
+          <td class="shaded">Po</td>
+          <td>
+            Punctuation, other
+          </td>
+        </tr>
+        <tr>
+          <td class="shaded">S</td>
+          <td>
+            Symbol
+          </td>
+        </tr>
+        <tr>
+          <td class="shaded">Sm</td>
+          <td>
+            Symbol, mathematical
+          </td>
+        </tr>
+        <tr>
+          <td class="shaded">Sc</td>
+          <td>
+            Symbol, currency
+          </td>
+        </tr>
+        <tr>
+          <td class="shaded">Sk</td>
+          <td>
+            Symbol, modifier
+          </td>
+        </tr>
+        <tr>
+          <td class="shaded">So</td>
+          <td>
+            Symbol, other
+          </td>
+        </tr>
+        <tr>
+          <td class="shaded">Z</td>
+          <td>
+            Separator
+          </td>
+        </tr>
+        <tr>
+          <td class="shaded">Zs</td>
+          <td>
+            Separator, space
+          </td>
+        </tr>
+        <tr>
+          <td class="shaded">Zl</td>
+          <td>
+            Separator, line
+          </td>
+        </tr>
+        <tr>
+          <td class="shaded">Zp</td>
+          <td>
+            Separator, paragraph
+          </td>
+        </tr>
+        <tr>
+          <td class="shaded">Cc</td>
+          <td>
+            Other, control
+          </td>
+        </tr>
+        <tr>
+          <td class="shaded">Cf</td>
+          <td>
+            Other, format
+          </td>
+        </tr>
+        <tr>
+          <td class="shaded">Cs</td>
+          <td>
+            Other, surrogate
+          </td>
+        </tr>
+        <tr>
+          <td class="shaded">Co</td>
+          <td>
+            Other, private use
+          </td>
+        </tr>
+        <tr>
+          <td class="shaded">Cn</td>
+          <td class="wrap">
+            Other, not assigned
+          </td>
+        </tr>
+      </table>
+
+      <h4 id="section7-4-3">7.4.3&nbsp; Java character classes</h4>
+
+      <p class="wrap">
+        The Java character classes will probably be of interest only to Java programmers.  The
+        name of the character class is formed by substituting <code>java</code> for
+        <code>is</code> in the name of a method of the <code><a class="external"
+        href="https://docs.oracle.com/javase/7/docs/api/java/lang/Character.html">java.lang.Character</a></code>
+        class that begins with <code>is</code>.  For example, the character class
+        <code>javaLetterOrDigit</code> is equivalent to
+        <code>java.lang.Character.isLetterOrDigit()</code>.
+      </p>
+
+      <h3 id="section7-5">7.5&nbsp; Extended sequences</h3>
+
+      <p class="wrap">
+        Extended sequences are metasymbols of the form <code>(?...)</code>.  The modifiers,
+        <code>[dimsux]</code>, and their &quot;off&quot; versions (preceded by a minus sign) can
+        be concatenated within an extended sequence; for example, <code>(?iu-ms)</code> switches
+        on <code>i</code> and <code>u</code> and switches off <code>m</code> and <code>s</code>.
+      </p>
+
+      <table class="regex">
+        <tr>
+          <td class="shaded">(?:&hellip;)</td>
+          <td>
+            Non-capturing group (<i>cluster</i>).
+          </td>
+        </tr>
+        <tr>
+          <td class="shaded">(?&gt;&hellip;)</td>
+          <td class="wrap">
+            Non-capturing group referred to in Perl as a <i>nonbacktracking subpattern</i>.
+          </td>
+        </tr>
+        <tr>
+          <td class="shaded"><div>(?d)</div><div>(?-d)</div></td>
+          <td>
+            <div class="wrap">
+              Enable/disable UNIX lines mode.
+            </div>
+            <div class="wrap">
+              If enabled, only the UNIX line separator (<code>\n</code>, U+000A) is recognised
+              by the metacharacters <code>.</code>, <code>^</code> and <code>$</code>;
+              otherwise, the following characters and character sequences are recognised as line
+              separators: <code>\n</code> (U+000A), <code>\r</code> (U+000D), <code>\r\n</code>
+              (U+000D, U+000A), U+0085, U+2028, U+2029.
+            </div>
+            <div class="wrap">
+              UNIX linesmode is enabled by default.
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td class="shaded"><div>(?i)</div><div>(?-i)</div></td>
+          <td>
+            <div class="wrap">
+              Enable/disable case-insensitive matching.
+            </div>
+            <div class="wrap">
+              Case sensitivity is initially denoted by the <i>ignore case</i> search parameter,
+              but it can be changed within the target pattern by means of this flag.  By
+              default, case-insensitive matching applies only to characters in the US-ASCII
+              character encoding, but this can be extended to all Unicode characters with the
+              <code>(?u)</code> flag.
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td class="shaded"><div>(?m)</div><div>(?-m)</div></td>
+          <td>
+            <div class="wrap">
+              Enable/disable multiline mode.
+            </div>
+            <div class="wrap">
+              In multiline mode, the metacharacters <code>^</code> and <code>$</code> match at
+              the beginning and end, respectively, of a line; otherwise, they match only at the
+              beginning and end of the input string (ie, the file).
+            </div>
+            <div class="wrap">
+              Multiline mode is enabled by default.
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td class="shaded"><div>(?s)</div><div>(?-s)</div></td>
+          <td>
+            <div class="wrap">
+              Enable/disable dotall mode.
+            </div>
+            <div class="wrap">
+              In dotall mode (known in Perl as <i>single-line mode</i>), the <code>.</code>
+              (dot) metacharacter matches any one character <i>including</i> a line separator;
+              otherwise, <code>.</code> matches any one character <i>except for</i> a line
+              separator.
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td class="shaded"><div>(?u)</div><div>(?-u)</div></td>
+          <td class="wrap">
+            By default, the case-insensitive matching that is control by the <i>ignore case</i>
+            search parameters and the <code>(?i)</code> flag applies only to characters in the
+            US-ASCII character encoding.  Using the <code>(?u)</code> flag, case-insensitive
+            matching can be extended to all Unicode characters.
+          </td>
+        </tr>
+        <tr>
+          <td class="shaded"><div>(?x)</div><div>(?-x)</div></td>
+          <td>
+            <div class="wrap">
+              Enable/disable comments mode.
+            </div>
+            <div class="wrap">
+              In comments mode, whitespace and comments in the target pattern are ignored.  A
+              comment starts with a <code>#</code> character and ends at the end of the pattern.
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td class="shaded">(?=<i>pattern</i>)</td>
+          <td class="wrap">
+            Positive lookahead: a zero-width assertion that is true if <i>pattern</i>
+            immediately follows the assertion.
+          </td>
+        </tr>
+        <tr>
+          <td class="shaded">(?!<i>pattern</i>)</td>
+          <td class="wrap">
+            Negative lookahead: a zero-width assertion that is true if <i>pattern</i> does not
+            immediately follow the assertion.
+          </td>
+        </tr>
+        <tr>
+          <td class="shaded">(?&lt;=<i>pattern</i>)</td>
+          <td class="wrap">
+            Positive lookbehind: a zero-width assertion that is true if <i>pattern</i>
+            immediately precedes the assertion.
+          </td>
+        </tr>
+        <tr>
+          <td class="shaded">(?&lt;!<i>pattern</i>)</td>
+          <td class="wrap">
+            Negative lookbehind: a zero-width assertion that is true if <i>pattern</i> does not
+            immediately precede the assertion.
+          </td>
+        </tr>
+      </table>
+
+      <h3 id="section7-6">7.6&nbsp; References</h3>
+
+      <p class="wrap">
+        The following sources were used in writing this section:
+      </p>
+      <ul class="list">
+        <li class="wrap">
+          The Java documentation of the <code><a class="external"
+          href="https://docs.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html">java.util.regex.Pattern</a></code>
+          class.
+        </li>
+        <li class="wrap">
+          The section in the <a class="external"
+          href="https://docs.oracle.com/javase/tutorial/essential/regex/index.html">Java
+          Tutorial</a> on the use of regular expressions.
+        </li>
+        <li class="wrap">
+          Wall, Larry, et al, <i>Programming Perl</i> 3rd ed., O&apos;Reilly, 2000.  ISBN
+          0596000278.
+        </li>
+      </ul>
+      <p class="noBottomMargin wrap">
+        The Java documentation recommends the following book as providing a detailed treatment
+        of the use of regular expressions:
+      </p>
+      <p class="noTopMargin wrap">
+        &nbsp;&nbsp;Friedl, Jeffrey, <i>Mastering regular expressions</i> 3rd ed.,
+        O&apos;Reilly, 2006.  ISBN 0596528124.
+      </p>
+
+    </div>
+
+    <!--=====================================================================================-->
+
+    <!-- Special constructs in pathnames -->
+
+    <div class="section">
+      <h2 id="sectionA">Appendix A:&nbsp; Special constructs in pathnames</h2>
+      <p class="tocLink">
+        [ <a href="#toc">Table of contents</a> ]
+      </p>
+
+      <p class="wrap">
+        Where indicated elsewhere in this document, pathname parameters and properties in
+        RegexSearch can contain special constructs for system properties, environment variables
+        and the user&apos;s home directory.  The special constructs are expanded when the
+        pathname is used.
+      </p>
+
+      <dl class="basic">
+        <dt>System properties and environment variables</dt>
+        <dd class="wrap">
+          Java system properties (eg, the user&apos;s home directory, <code>user.home</code>)
+          and environment variables (eg, <code>PATH</code>) are referenced by enclosing them
+          between <code>${</code> and <code>}</code>; that is, they must have the form
+          <code>${&lt;<i>name</i>&gt;}</code>.  A Java system property takes precedence over an
+          environment variable with the same name.
+        </dd>
+        <dd class="wrap">
+          &bull; Example: <code>${user.home}/projects</code>
+        </dd>
+        <dd class="wrap">
+          &bull; Example: <code>${HOME}/projects</code>
+        </dd>
+        <dd class="wrap">
+          A Java system property can be specified by prefixing <code>sys.</code> to it.
+        </dd>
+        <dd class="wrap">
+          &bull; Example: <code>${sys.user.home}/projects</code>
+        </dd>
+        <dd class="wrap">
+          An environment variable can be specified by prefixing <code>env.</code> to it.
+        </dd>
+        <dd class="wrap">
+          &bull; Example: <code>${env.HOME}/projects</code>
+        </dd>
+
+        <dt>User&apos;s home directory</dt>
+        <dd class="wrap">
+          A leading <code>~</code> in a pathname is expanded into the user&apos;s home directory
+          using the <code>user.home</code> system property, which is usually equivalent to the
+          environment variable <code>$HOME</code> on Linux/UNIX systems or
+          <code>%USERPROFILE%</code> on Windows systems.
+        </dd>
+        <dd class="wrap">
+          &bull; Example: <code>~/projects</code>
+        </dd>
+      </dl>
+
+    </div>
+
+    <!--=====================================================================================-->
+
+    <!-- Configuration properties -->
+
+    <div class="section">
+      <h2 id="sectionB">Appendix B:&nbsp; Configuration properties</h2>
+      <p class="tocLink">
+        [ <a href="#toc">Table of contents</a> ]
+      </p>
+
+      <p class="wrap">
+        The table below lists the configuration properties of RegexSearch.  Apart from the <span
+        class="configProperty">app.configDir</span> property, which, for obvious reasons, cannot
+        be used within a configuration file, all properties can be used in the two configuration
+        locations: command-line properties and configuration file.
+      </p>
+      <p class="wrap">
+        When used in a <code>-D</code> command-line property, <code>app.</code> must be prefixed
+        to the property key (eg, <span
+        class="configProperty">app.general.mainWindowLocation</span>).
+      </p>
+      <p class="wrap">
+        The <i>&lt;index&gt;</i> of a indexed property must be a three-digit decimal-string
+        representation of the zero-based index of the property (eg, the third tab-width filter
+        would be <span class="configProperty">app.tabWidth.fileFilter.002</span>).
+      </p>
+      <p class="wrap">
+        When used in a configuration file, the components of the property keys become element
+        names in the XML document hierarchy.  (The <code>app</code> prefix of the property key
+        in command-line properties corresponds to the root element of the XML document.)  The
+        form of properties in a configuration file was changed in version 2.1 of RegexSearch.
+        Configuration files in the old format can be read, but files are written in the new
+        format.
+      </p>
+      <p class="wrap">
+        Any commas (<code>,</code>) or backslash characters (<code>\</code>) in the name of a
+        font must be escaped by prefixing a <code>\</code> character to them.
+      </p>
+      <p class="noBottomMargin wrap">
+        In the table below, the initial character of an italicised component of a property value
+        denotes its data type according to the following convention:
+      </p>
+
+      <table class="dataType">
+        <tr>
+          <td><i>i</i></td>
+          <td>integer</td>
+        </tr>
+        <tr>
+          <td><i>p</i></td>
+          <td>
+            platform-specific pathname, which may contain <a href="#sectionA">special
+            constructs</a>
+          </td>
+        </tr>
+        <tr>
+          <td><i>s</i></td>
+          <td>string</td>
+        </tr>
+        <tr>
+          <td><i>c</i></td>
+          <td>character</td>
+        </tr>
+      </table>
+
+      <table class="configProperties">
+        <tr>
+          <th>Property key</th>
+          <th>Property value</th>
+        </tr>
+
+        <tr>
+          <td class="propertyKey">configDir</td>
+          <td class="propertyValue"><i>pPathname</i></td>
+        </tr>
+
+        <tr>
+          <td class="propertyKey">appearance.lookAndFeel</td>
+          <td class="propertyValue"><i>sName</i></td>
+        </tr>
+        <tr>
+          <td class="propertyKey">appearance.parameterEditorSize</td>
+          <td class="propertyValue">
+            <i>iNumColumns</i>, <i>iNumRows</i>
+          </td>
+        </tr>
+        <tr>
+          <td class="propertyKey">appearance.resultAreaNumRows</td>
+          <td class="propertyValue"><i>iNumRows</i></td>
+        </tr>
+        <tr>
+          <td class="propertyKey">appearance.tabSurrogate</td>
+          <td class="propertyValue"><i>sUnicode4</i></td>
+        </tr>
+        <tr>
+          <td class="propertyKey">appearance.textAntialiasing</td>
+          <td class="propertyValue">
+            default | none | normal | subpixelHRgb | subpixelHBgr | subpixelVRgb | subpixelVBgr
+          </td>
+        </tr>
+        <tr>
+          <td class="propertyKey">appearance.textAreaColour.background</td>
+          <td class="propertyValue">
+            <i>iRed</i>, <i>iGreen</i>, <i>iBlue</i>
+          </td>
+        </tr>
+        <tr>
+          <td class="propertyKey">appearance.textAreaColour.highlightBackground</td>
+          <td class="propertyValue">
+            <i>iRed</i>, <i>iGreen</i>, <i>iBlue</i>
+          </td>
+        </tr>
+        <tr>
+          <td class="propertyKey">appearance.textAreaColour.highlightText</td>
+          <td class="propertyValue">
+            <i>iRed</i>, <i>iGreen</i>, <i>iBlue</i>
+          </td>
+        </tr>
+        <tr>
+          <td class="propertyKey">appearance.textAreaColour.text</td>
+          <td class="propertyValue">
+            <i>iRed</i>, <i>iGreen</i>, <i>iBlue</i>
+          </td>
+        </tr>
+        <tr>
+          <td class="propertyKey">appearance.textViewMaxNumColumns</td>
+          <td class="propertyValue"><i>iNumColumns</i></td>
+        </tr>
+        <tr>
+          <td class="propertyKey">appearance.textViewTextAntialiasing</td>
+          <td class="propertyValue">
+            default | none | normal | subpixelHRgb | subpixelHBgr | subpixelVRgb | subpixelVBgr
+          </td>
+        </tr>
+        <tr>
+          <td class="propertyKey">appearance.textViewViewableSize</td>
+          <td class="propertyValue">
+            <i>iNumColumns</i>, <i>iNumRows</i>
+          </td>
+        </tr>
+
+        <tr>
+          <td class="propertyKey">editor.command</td>
+          <td class="propertyValue"><i>sCommand</i></td>
+        </tr>
+
+        <tr>
+          <td class="propertyKey">font.comboBox</td>
+          <td class="propertyValue">
+            <i>sName</i>, plain | bold | italic | boldItalic, <i>iSize</i>
+          </td>
+        </tr>
+        <tr>
+          <td class="propertyKey">font.main</td>
+          <td class="propertyValue">
+            <i>sName</i>, plain | bold | italic | boldItalic, <i>iSize</i>
+          </td>
+        </tr>
+        <tr>
+          <td class="propertyKey">font.parameterEditor</td>
+          <td class="propertyValue">
+            <i>sName</i>, plain | bold | italic | boldItalic, <i>iSize</i>
+          </td>
+        </tr>
+        <tr>
+          <td class="propertyKey">font.resultArea</td>
+          <td class="propertyValue">
+            <i>sName</i>, plain | bold | italic | boldItalic, <i>iSize</i>
+          </td>
+        </tr>
+        <tr>
+          <td class="propertyKey">font.textField</td>
+          <td class="propertyValue">
+            <i>sName</i>, plain | bold | italic | boldItalic, <i>iSize</i>
+          </td>
+        </tr>
+        <tr>
+          <td class="propertyKey">font.textView</td>
+          <td class="propertyValue">
+            <i>sName</i>, plain | bold | italic | boldItalic, <i>iSize</i>
+          </td>
+        </tr>
+
+        <tr>
+          <td class="propertyKey">general.characterEncoding</td>
+          <td class="propertyValue"><i>sName</i></td>
+        </tr>
+        <tr>
+          <td class="propertyKey">general.controlDialogLocation</td>
+          <td class="propertyValue">
+            <i>iX</i>, <i>iY</i>
+          </td>
+        </tr>
+        <tr>
+          <td class="propertyKey">general.copyResultsAsListFile</td>
+          <td class="propertyValue">false | true</td>
+        </tr>
+        <tr>
+          <td class="propertyKey">general.escapedMetacharacters</td>
+          <td class="propertyValue"><i>sCharacters</i></td>
+        </tr>
+        <tr>
+          <td class="propertyKey">general.ignoreFilenameCase</td>
+          <td class="propertyValue">false | true</td>
+        </tr>
+        <tr>
+          <td class="propertyKey">general.fileWritingMode</td>
+          <td class="propertyValue">direct | useTempFile | useTempFilePreserveAttributes</td>
+        </tr>
+        <tr>
+          <td class="propertyKey">general.hideControlDialogWhenSearching</td>
+          <td class="propertyValue">false | true</td>
+        </tr>
+        <tr>
+          <td class="propertyKey">general.mainWindowLocation</td>
+          <td class="propertyValue">
+            <i>iX</i>, <i>iY</i>
+          </td>
+        </tr>
+        <tr>
+          <td class="propertyKey">general.preserveLineSeparator</td>
+          <td class="propertyValue">false | true</td>
+        </tr>
+        <tr>
+          <td class="propertyKey">general.replacementEscapeCharacter</td>
+          <td class="propertyValue"><i>cCharacter</i></td>
+        </tr>
+        <tr>
+          <td class="propertyKey">general.selectTextOnFocusGained</td>
+          <td class="propertyValue">false | true</td>
+        </tr>
+        <tr>
+          <td class="propertyKey">general.showUnixPathnames</td>
+          <td class="propertyValue">false | true</td>
+        </tr>
+
+        <tr>
+          <td class="propertyKey">path.defaultSearchParameters</td>
+          <td class="propertyValue"><i>pPathname</i></td>
+        </tr>
+
+        <tr>
+          <td class="propertyKey">tabWidth.default</td>
+          <td class="propertyValue"><i>iNumChars</i></td>
+        </tr>
+        <tr>
+          <td class="propertyKey">tabWidth.fileFilter.<i>&lt;index&gt;</i></td>
+          <td class="propertyValue">
+            <i>sPatterns</i> : <i>iNumChars</i>
+          </td>
+        </tr>
+        <tr>
+          <td class="propertyKey">tabWidth.targetAndReplacement</td>
+          <td class="propertyValue"><i>iNumChars</i></td>
+        </tr>
+
+      </table>
+
+    </div>
+
+    <!--=====================================================================================-->
+
+    <!-- Footer -->
+
+    <div id="lastModified">
+      <div>
+        <div>
+          Last modified: 2023-08-12
+        </div>
+        <div class="image">
+          <a class="hideHover" href="http://validator.w3.org/check?uri=referer">
+            <img alt="XHTML 1.1" src="images/valid-xhtml11-blue.png"/>
+          </a>
+        </div>
+      </div>
+    </div>
+
+  </body>
+</html>

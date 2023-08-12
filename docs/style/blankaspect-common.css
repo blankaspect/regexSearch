@@ -1,0 +1,327 @@
+/**********************************************************************\
+
+Common styles for Blank Aspect pages
+
+\**********************************************************************/
+
+.alignCentre
+{
+  text-align: center;
+}
+
+.alignLeft
+{
+  text-align: left;
+}
+
+.alignRight
+{
+  text-align: right;
+}
+
+.continuationList
+{
+  margin-top: 0;
+  margin-bottom: 0.5em;
+  padding-top: 0.1em;
+}
+
+.hiddenText
+{
+  color: #F0F0E4;
+}
+
+.list
+{
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+}
+
+.monospace
+{
+  font-family: monospace;
+}
+
+.noBottomMargin
+{
+  margin-bottom: 0;
+}
+
+.noTopBottomMargin
+{
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.noTopMargin
+{
+  margin-top: 0;
+}
+
+a:hover
+{
+  background-color: #FCE880;
+}
+
+a.external
+{
+  padding-right: 1.3em;
+  background-position: 100% 50%;
+  background-repeat: no-repeat;
+  background-image: url("../images/externalLink.svg");
+}
+
+a.hideHover:hover
+{
+  background-color: transparent;
+}
+
+a img
+{
+  border-style: none;
+}
+
+abbr
+{
+  border-bottom: 1px dotted #808080;
+}
+
+body
+{
+  color: #000000;
+  background-color: #F6F6F2;
+  margin: 1.5em 3.0em;
+  line-height: 150%;
+}
+
+div.example
+{
+  background-color: #F6F4DC;
+  border: 1px solid #E2E0C8;
+  margin: 0.4em 0;
+  padding: 0.3em 0.6em;
+  font-weight: bold;
+  font-size: 100%;
+}
+div.example code
+{
+  color: #404040;
+}
+
+div.figure
+{
+  margin: 2.0em 2.0em;
+  font-style: italic;
+  font-size: 83%;
+}
+
+div.image
+{
+  margin-left: 2.0em;
+}
+
+div#lastModified
+{
+  display: table;
+  width: 100%;
+  font-style: italic;
+  font-size: 83%;
+}
+div#lastModified > div
+{
+  display: table-row;
+}
+div#lastModified > div > div
+{
+  display: table-cell;
+  vertical-align: middle;
+  padding: 0.6em 0;
+}
+div#lastModified > div > div.image
+{
+  text-align: right;
+}
+
+div.section
+{
+  margin-top: 2.0em;
+  padding-bottom: 1.5em;
+  border-bottom: 3px solid #B4B8C8;
+}
+
+div#title
+{
+  display: flex;
+  align-items: center;
+  background-color: #E8ECF0;
+  padding: 0.5em 1.5em;
+  border-top: 1px solid #D0D4D8;
+  border-bottom: 1px solid #D0D4D8;
+}
+div#title > div
+{
+  display: block;
+  color: #304868;
+  font-size: 160%;
+  font-weight: bold;
+  padding-right: 0.75em;
+}
+
+div#tocPlaceholder
+{
+  border: 1px solid #C0C0C0;
+  padding: 1.0em;
+}
+
+dl.basic
+{
+  margin-top: 0;
+  margin-bottom: 0.7em;
+}
+dl.basic dd
+{
+  margin-left: 2.0em;
+}
+dl.basic dt
+{
+  margin-top: 0.4em;
+  margin-left: 1.0em;
+  font-weight: bold;
+}
+dl.basic dt.noBold
+{
+  font-weight: normal;
+}
+
+h1
+{
+  color: #304868;
+  font-weight: bold;
+  font-size: 160%;
+  text-align: center;
+  margin-bottom: 1.5em;
+}
+
+h2
+{
+  color: #304868;
+  font-weight: bold;
+  font-size: 144%;
+  margin-top: 1.5em;
+  margin-bottom: 1.0em;
+}
+
+h3
+{
+  color: #304868;
+  font-weight: bold;
+  font-size: 128%;
+  margin-top: 1.5em;
+  margin-bottom: 1.0em;
+}
+
+h4
+{
+  color: #304868;
+  font-weight: bold;
+  font-size: 112%;
+  margin-top: 1.5em;
+  margin-bottom: 0.8em;
+}
+
+h5
+{
+  color: #304868;
+  font-weight: bold;
+  font-size: 100%;
+  margin-top: 1.2em;
+  margin-bottom: 0.5em;
+}
+
+li.spaced
+{
+  margin-bottom: 0.3em;
+}
+
+li.tocLevel1
+{
+  padding-left: 0;
+  font-weight: bold;
+}
+
+li.tocLevel2
+{
+  font-weight: normal;
+}
+
+li.tocLevel3
+{
+  font-weight: normal;
+}
+
+ol.decimal
+{
+  list-style-type: decimal;
+}
+
+ol.lowerAlpha
+{
+  list-style-type: lower-alpha;
+}
+
+p
+{
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+}
+
+p.tableId
+{
+  font-style: italic;
+  font-size: 83%;
+  margin: 0  2.5% 1.5em 2.5%;
+}
+
+p.tocLink
+{
+  font-size: 82%;
+  margin-top: 0;
+  margin-bottom: 1.5em;
+}
+
+sub
+{
+  font-size: 80%;
+}
+
+sup
+{
+  font-size: 80%;
+}
+
+table
+{
+  border-collapse: collapse;
+  margin-top: 0.8em;
+  margin-bottom: 0.8em;
+  line-height: 150%;
+}
+
+th
+{
+  background-color: #DEE2F0;
+  border: 1px solid #B4B8C8;
+  padding: 0.2em 0.6em;
+  text-align: left;
+}
+
+ul.toc
+{
+  list-style: none;
+}
+ul.toc li
+{
+  margin-left: -1.0em;
+}
+
+/*--------------------------------------------------------------------*/
