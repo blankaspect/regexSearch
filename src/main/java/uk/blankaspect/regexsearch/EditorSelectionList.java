@@ -24,12 +24,12 @@ import java.awt.Graphics2D;
 
 import java.util.List;
 
-import uk.blankaspect.common.swing.font.FontUtils;
+import uk.blankaspect.ui.swing.font.FontUtils;
 
-import uk.blankaspect.common.swing.list.SingleSelectionList;
+import uk.blankaspect.ui.swing.list.SingleSelectionList;
 
-import uk.blankaspect.common.swing.text.TextRendering;
-import uk.blankaspect.common.swing.text.TextUtils;
+import uk.blankaspect.ui.swing.text.TextRendering;
+import uk.blankaspect.ui.swing.text.TextUtils;
 
 //----------------------------------------------------------------------
 

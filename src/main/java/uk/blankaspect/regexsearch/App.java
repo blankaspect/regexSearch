@@ -21,13 +21,11 @@ package uk.blankaspect.regexsearch;
 import java.io.File;
 import java.io.IOException;
 
-import java.time.LocalDateTime;
-
-import java.time.format.DateTimeFormatter;
-
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
+
+import uk.blankaspect.common.build.BuildUtils;
 
 import uk.blankaspect.common.cls.ClassUtils;
 
@@ -42,9 +40,9 @@ import uk.blankaspect.common.logging.ErrorLogger;
 import uk.blankaspect.common.resource.ResourceProperties;
 import uk.blankaspect.common.resource.ResourceUtils;
 
-import uk.blankaspect.common.swing.text.TextRendering;
+import uk.blankaspect.ui.swing.text.TextRendering;
 
-import uk.blankaspect.common.swing.textfield.TextFieldUtils;
+import uk.blankaspect.ui.swing.textfield.TextFieldUtils;
 
 //----------------------------------------------------------------------
 
@@ -64,12 +62,6 @@ public class App
 	public static final		String	SHORT_NAME	= "RegexSearch";
 	public static final		String	LONG_NAME	= "Regular-expression search tool";
 	public static final		String	NAME_KEY	= "regexSearch";
-
-	private static final	String	VERSION_PROPERTY_KEY	= "version";
-	private static final	String	BUILD_PROPERTY_KEY		= "build";
-	private static final	String	RELEASE_PROPERTY_KEY	= "release";
-
-	private static final	String	VERSION_DATE_TIME_PATTERN	= "uuuuMMdd-HHmmss";
 
 	private static final	String	BUILD_PROPERTIES_FILENAME	= "build.properties";
 
@@ -180,54 +172,16 @@ public class App
 
 	//------------------------------------------------------------------
 
-	public MainWindow getMainWindow()
+	public String getVersionString()
 	{
-		return mainWindow;
+		return versionStr;
 	}
 
 	//------------------------------------------------------------------
 
-	/**
-	 * Returns a string representation of the version of this application.  If this class was loaded from a JAR, the
-	 * string is created from the values of properties that are defined in a resource named 'build.properties';
-	 * otherwise, the string is created from the date and time when this method is first called.
-	 *
-	 * @return a string representation of the version of this application.
-	 */
-
-	public String getVersionString()
+	public MainWindow getMainWindow()
 	{
-		if (versionStr == null)
-		{
-			StringBuilder buffer = new StringBuilder(32);
-			if (ClassUtils.isFromJar(getClass()))
-			{
-				// Append version number
-				String str = buildProperties.get(VERSION_PROPERTY_KEY);
-				if (str != null)
-					buffer.append(str);
-
-				// If this is not a release, append build
-				boolean release = Boolean.parseBoolean(buildProperties.get(RELEASE_PROPERTY_KEY));
-				if (!release)
-				{
-					str = buildProperties.get(BUILD_PROPERTY_KEY);
-					if (str != null)
-					{
-						if (buffer.length() > 0)
-							buffer.append(' ');
-						buffer.append(str);
-					}
-				}
-			}
-			else
-			{
-				buffer.append('b');
-				buffer.append(DateTimeFormatter.ofPattern(VERSION_DATE_TIME_PATTERN).format(LocalDateTime.now()));
-			}
-			versionStr = buffer.toString();
-		}
-		return versionStr;
+		return mainWindow;
 	}
 
 	//------------------------------------------------------------------
@@ -286,10 +240,11 @@ public class App
 			});
 		}
 
-		// Read build properties
+		// Read build properties and initialise version string
 		try
 		{
-			buildProperties = new ResourceProperties(ResourceUtils.absoluteName(getClass(), BUILD_PROPERTIES_FILENAME));
+			buildProperties = new ResourceProperties(ResourceUtils.normalisedPathname(getClass(), BUILD_PROPERTIES_FILENAME));
+			versionStr = BuildUtils.versionString(getClass(), buildProperties);
 		}
 		catch (LocationException e)
 		{

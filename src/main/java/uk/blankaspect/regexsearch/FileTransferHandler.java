@@ -32,7 +32,7 @@ import javax.swing.TransferHandler;
 
 import uk.blankaspect.common.exception.AppException;
 
-import uk.blankaspect.common.swing.transfer.DataImporter;
+import uk.blankaspect.ui.swing.transfer.DataImporter;
 
 //----------------------------------------------------------------------
 

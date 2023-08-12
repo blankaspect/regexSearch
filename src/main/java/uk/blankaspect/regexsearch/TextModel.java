@@ -35,9 +35,7 @@ import uk.blankaspect.common.exception.AppException;
 import uk.blankaspect.common.misc.LineSeparator;
 import uk.blankaspect.common.misc.TextFile;
 
-import uk.blankaspect.common.string.StringUtils;
-
-import uk.blankaspect.common.swing.textarea.TextArea;
+import uk.blankaspect.ui.swing.textarea.TextArea;
 
 //----------------------------------------------------------------------
 
@@ -237,7 +235,7 @@ class TextModel
 		int i1 = Math.min(Math.max(0, endIndex), lineOffsets.length - 1);
 		TextArea.Line[] lines = new TextArea.Line[i1 - i0];
 		StringBuilder lineBuffer = new StringBuilder(1024);
-		char[] spaces = StringUtils.createCharArray(' ', tabWidth);
+		String spaces = " ".repeat(tabWidth);
 		int index = 0;
 		for (int i = i0; i < i1; i++)
 		{
@@ -286,8 +284,7 @@ class TextModel
 				if (selEndOffset == 0)
 					selEndOffset = outIndex;
 				boolean eol = ((selectionEnd > endOffset) && (buffer.charAt(endOffset) == '\n'));
-				lines[index] = new TextArea.Line(lineBuffer.toString(), selStartOffset, selEndOffset,
-												 eol);
+				lines[index] = new TextArea.Line(lineBuffer.toString(), selStartOffset, selEndOffset, eol);
 			}
 			else
 				lines[index] = new TextArea.Line(lineBuffer.toString());

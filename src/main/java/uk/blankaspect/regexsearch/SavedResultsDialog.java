@@ -2,7 +2,7 @@
 
 SavedResultsDialog.java
 
-Saved results dialog box class.
+Saved results dialog class.
 
 \*====================================================================*/
 
@@ -21,14 +21,14 @@ package uk.blankaspect.regexsearch;
 import java.awt.Component;
 import java.awt.Window;
 
-import uk.blankaspect.common.swing.dialog.NonEditableTextAreaDialog;
+import uk.blankaspect.ui.swing.dialog.NonEditableTextAreaDialog;
 
-import uk.blankaspect.common.swing.misc.GuiUtils;
+import uk.blankaspect.ui.swing.misc.GuiUtils;
 
 //----------------------------------------------------------------------
 
 
-// SAVED RESULTS DIALOG BOX CLASS
+// SAVED RESULTS DIALOG CLASS
 
 
 class SavedResultsDialog

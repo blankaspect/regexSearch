@@ -23,8 +23,8 @@ import java.awt.Font;
 
 import uk.blankaspect.common.misc.IStringKeyed;
 
-import uk.blankaspect.common.swing.font.FontEx;
-import uk.blankaspect.common.swing.font.FontUtils;
+import uk.blankaspect.ui.swing.font.FontEx;
+import uk.blankaspect.ui.swing.font.FontUtils;
 
 //----------------------------------------------------------------------
 

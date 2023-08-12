@@ -25,9 +25,9 @@ import java.awt.event.KeyEvent;
 
 import javax.swing.KeyStroke;
 
-import uk.blankaspect.common.swing.action.KeyAction;
+import uk.blankaspect.ui.swing.action.KeyAction;
 
-import uk.blankaspect.common.swing.colour.Colours;
+import uk.blankaspect.ui.swing.colour.Colours;
 
 //----------------------------------------------------------------------
 
@@ -54,9 +54,6 @@ interface AppConstants
 	String	ALREADY_EXISTS_STR	= "\nThe file already exists.\nDo you want to replace it?";
 	String	XML_VERSION_STR		= "1.0";
 	String	CLIPBOARD_STR		= "// Clipboard //";
-
-	// Temporary-file prefix
-	String	TEMP_FILE_PREFIX	= "_$_";
 
 	// Filename suffixes
 	String	XML_FILE_SUFFIX	= ".xml";

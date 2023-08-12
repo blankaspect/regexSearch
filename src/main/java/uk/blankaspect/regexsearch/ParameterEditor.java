@@ -2,7 +2,7 @@
 
 ParameterEditor.java
 
-Parameter editor class.
+Class: parameter editor.
 
 \*====================================================================*/
 
@@ -68,32 +68,32 @@ import uk.blankaspect.common.misc.IStringKeyed;
 
 import uk.blankaspect.common.string.StringUtils;
 
-import uk.blankaspect.common.swing.action.KeyAction;
+import uk.blankaspect.ui.swing.action.KeyAction;
 
-import uk.blankaspect.common.swing.button.FButton;
+import uk.blankaspect.ui.swing.button.FButton;
 
-import uk.blankaspect.common.swing.colour.Colours;
+import uk.blankaspect.ui.swing.colour.Colours;
 
-import uk.blankaspect.common.swing.dialog.SingleTextFieldDialog;
+import uk.blankaspect.ui.swing.dialog.SingleTextFieldDialog;
 
-import uk.blankaspect.common.swing.font.FontUtils;
+import uk.blankaspect.ui.swing.font.FontUtils;
 
-import uk.blankaspect.common.swing.list.SingleSelectionListEditor;
+import uk.blankaspect.ui.swing.list.SingleSelectionListEditor;
 
-import uk.blankaspect.common.swing.menu.FCheckBoxMenuItem;
-import uk.blankaspect.common.swing.menu.FMenu;
-import uk.blankaspect.common.swing.menu.FMenuItem;
+import uk.blankaspect.ui.swing.menu.FCheckBoxMenuItem;
+import uk.blankaspect.ui.swing.menu.FMenu;
+import uk.blankaspect.ui.swing.menu.FMenuItem;
 
-import uk.blankaspect.common.swing.misc.GuiUtils;
+import uk.blankaspect.ui.swing.misc.GuiUtils;
 
-import uk.blankaspect.common.swing.modifiers.InputModifiers;
+import uk.blankaspect.ui.swing.modifiers.InputModifiers;
 
-import uk.blankaspect.common.swing.text.TextUtils;
+import uk.blankaspect.ui.swing.text.TextUtils;
 
 //----------------------------------------------------------------------
 
 
-// PARAMETER EDITOR CLASS
+// CLASS: PARAMETER EDITOR
 
 
 class ParameterEditor
@@ -169,639 +169,32 @@ class ParameterEditor
 	};
 
 ////////////////////////////////////////////////////////////////////////
-//  Enumerated types
+//  Instance variables
 ////////////////////////////////////////////////////////////////////////
 
-
-	// PARAMETER KIND
-
-
-	enum ParamKind
-		implements IStringKeyed
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constants
-	////////////////////////////////////////////////////////////////////
-
-		TARGET      ("target"),
-		REPLACEMENT ("replacement");
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private ParamKind(String key)
-		{
-			this.key = key;
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : IStringKeyed interface
-	////////////////////////////////////////////////////////////////////
-
-		public String getKey()
-		{
-			return key;
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : overriding methods
-	////////////////////////////////////////////////////////////////////
-
-		@Override
-		public String toString()
-		{
-			return StringUtils.firstCharToUpperCase(key);
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance variables
-	////////////////////////////////////////////////////////////////////
-
-		private	String	key;
-
-	}
-
-	//==================================================================
-
-////////////////////////////////////////////////////////////////////////
-//  Member interfaces
-////////////////////////////////////////////////////////////////////////
-
-
-	// ESCAPE LISTENER INTERFACE
-
-
-	interface EscapeListener
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Methods
-	////////////////////////////////////////////////////////////////////
-
-		void setTabsEscaped(boolean escaped);
-
-		//--------------------------------------------------------------
-
-		void setLineFeedsEscaped(boolean escaped);
-
-		//--------------------------------------------------------------
-
-	}
-
-	//==================================================================
-
-////////////////////////////////////////////////////////////////////////
-//  Member classes : non-inner classes
-////////////////////////////////////////////////////////////////////////
-
-
-	// LIST DIALOG CLASS
-
-
-	private static class ListDialog
-		extends SingleSelectionListEditor<String>
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constants
-	////////////////////////////////////////////////////////////////////
-
-		private static final	String	DELETE_MESSAGE_STR	= "Do you want to delete the selected ";
-
-		private static final	String[]	TOOLTIP_STRS	=
-		{
-			"Add a new ",
-			"Edit the selected ",
-			"Delete the selected "
-		};
-
-	////////////////////////////////////////////////////////////////////
-	//  Member classes : non-inner classes
-	////////////////////////////////////////////////////////////////////
-
-
-		// ITEM DIALOG CLASS
-
-
-		private static class ItemDialog
-			extends SingleTextFieldDialog
-		{
-
-		////////////////////////////////////////////////////////////////
-		//  Constants
-		////////////////////////////////////////////////////////////////
-
-			private static final	String	KEY	= ItemDialog.class.getCanonicalName();
-
-		////////////////////////////////////////////////////////////////
-		//  Constructors
-		////////////////////////////////////////////////////////////////
-
-			private ItemDialog(Window    owner,
-							   String    titleStr,
-							   ParamKind paramKind,
-							   String    pattern)
-			{
-				super(owner, titleStr, KEY + "." + paramKind.getKey(), paramKind.toString(), pattern);
-			}
-
-			//----------------------------------------------------------
-
-		////////////////////////////////////////////////////////////////
-		//  Class methods
-		////////////////////////////////////////////////////////////////
-
-			private static String showDialog(Component parent,
-											 String    titleStr,
-											 ParamKind paramKind,
-											 String    pattern)
-			{
-				ItemDialog dialog = new ItemDialog(GuiUtils.getWindow(parent), titleStr, paramKind,
-												   pattern);
-				dialog.setVisible(true);
-				return dialog.getText();
-			}
-
-			//----------------------------------------------------------
-
-		}
-
-		//==============================================================
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private ListDialog(Component    parent,
-						   ParamKind    paramKind,
-						   List<String> elements,
-						   int          maxNumElements)
-		{
-			super(parent, new EditorSelectionList(elements, false), maxNumElements,
-				  getTooltipStrings(paramKind));
-			this.paramKind = paramKind;
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Class methods
-	////////////////////////////////////////////////////////////////////
-
-		public static List<String> showDialog(Component    parent,
-											  ParamKind    paramKind,
-											  List<String> elements,
-											  int          maxNumElements)
-		{
-			ListDialog dialog = new ListDialog(parent, paramKind, elements, maxNumElements);
-			dialog.setVisible(true);
-			return dialog.getElements();
-		}
-
-		//--------------------------------------------------------------
-
-		private static String[] getTooltipStrings(ParamKind paramKind)
-		{
-			String[] strs = new String[TOOLTIP_STRS.length];
-			for (int i = 0; i < strs.length; i++)
-				strs[i] = TOOLTIP_STRS[i] + paramKind.getKey();
-			return strs;
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : overriding methods
-	////////////////////////////////////////////////////////////////////
-
-		@Override
-		protected String getAddElement()
-		{
-			return ItemDialog.showDialog(this, getTitleString(ADD_STR), paramKind, null);
-		}
-
-		//--------------------------------------------------------------
-
-		@Override
-		protected String getEditElement(int index)
-		{
-			return ItemDialog.showDialog(this, getTitleString(EDIT_STR), paramKind,
-										 getElement(index));
-		}
-
-		//--------------------------------------------------------------
-
-		@Override
-		protected boolean confirmDelete()
-		{
-			String[] optionStrs = Utils.getOptionStrings(DELETE_STR);
-			return (JOptionPane.showOptionDialog(this, DELETE_MESSAGE_STR + paramKind.getKey() + "?",
-												 getTitleString(DELETE_STR),
-												 JOptionPane.OK_CANCEL_OPTION,
-												 JOptionPane.QUESTION_MESSAGE, null, optionStrs,
-												 optionStrs[1]) == JOptionPane.OK_OPTION);
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods
-	////////////////////////////////////////////////////////////////////
-
-		private String getTitleString(String actionStr)
-		{
-			return (actionStr + " " + paramKind.getKey());
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance variables
-	////////////////////////////////////////////////////////////////////
-
-		private	ParamKind	paramKind;
-
-	}
-
-	//==================================================================
-
-////////////////////////////////////////////////////////////////////////
-//  Member classes : inner classes
-////////////////////////////////////////////////////////////////////////
-
-
-	// PARAMETER EDITOR TEXT AREA CLASS
-
-
-	private class TextArea
-		extends JTextArea
-		implements MouseListener
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constants
-	////////////////////////////////////////////////////////////////////
-
-		private static final	int	MARGIN	= 4;
-
-	////////////////////////////////////////////////////////////////////
-	//  Member classes : inner classes
-	////////////////////////////////////////////////////////////////////
-
-
-		// TEXT AREA DOCUMENT CLASS
-
-
-		private class TextAreaDocument
-			extends PlainDocument
-		{
-
-		////////////////////////////////////////////////////////////////
-		//  Constructors
-		////////////////////////////////////////////////////////////////
-
-			private TextAreaDocument()
-			{
-			}
-
-			//----------------------------------------------------------
-
-		////////////////////////////////////////////////////////////////
-		//  Instance methods : overriding methods
-		////////////////////////////////////////////////////////////////
-
-			@Override
-			public void insertString(int          offset,
-									 String       str,
-									 AttributeSet attrSet)
-				throws BadLocationException
-			{
-				str = tabsEscaped ? str.replace("\t", getEscapeSequence('t'))
-								  : str.replace('\t', tabSurrogate);
-				if (lineFeedsEscaped)
-					str = str.replace("\n", getEscapeSequence('n'));
-				super.insertString(offset, str, attrSet);
-				setCaretPosition(offset + str.length());
-			}
-
-			//----------------------------------------------------------
-
-		}
-
-		//==============================================================
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private TextArea(int tabWidth)
-		{
-			// Set attributes
-			AppFont.PARAMETER_EDITOR.apply(this);
-			setBorder(null);
-			setForeground(AppConstants.TEXT_COLOUR);
-			setDisabledTextColor(Utils.getDisabledTextColour());
-			setTabSize(tabWidth);
-			setCaretPosition(getText().length());
-
-			// Set Tab and Shift+Tab as focus traversal keys
-			setFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS,
-								  Collections.singleton(KeyStroke.
-																getKeyStroke(KeyEvent.VK_TAB, 0)));
-			setFocusTraversalKeys(KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS,
-								  Collections.singleton(KeyStroke.
-																getKeyStroke(KeyEvent.VK_TAB,
-																			 KeyEvent.SHIFT_DOWN_MASK)));
-
-			// Add listeners
-			addMouseListener(this);
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : MouseListener interface
-	////////////////////////////////////////////////////////////////////
-
-		public void mouseClicked(MouseEvent event)
-		{
-			// do nothing
-		}
-
-		//--------------------------------------------------------------
-
-		public void mouseEntered(MouseEvent event)
-		{
-			// do nothing
-		}
-
-		//--------------------------------------------------------------
-
-		public void mouseExited(MouseEvent event)
-		{
-			// do nothing
-		}
-
-		//--------------------------------------------------------------
-
-		public void mousePressed(MouseEvent event)
-		{
-			if (SwingUtilities.isLeftMouseButton(event))
-			{
-				if (isEnabled() && (InputModifiers.forEvent(event) == InputModifiers.CTRL))
-					showListDialog();
-			}
-
-			else if (SwingUtilities.isRightMouseButton(event))
-				requestFocusInWindow();
-
-			showContextMenu(event);
-		}
-
-		//--------------------------------------------------------------
-
-		public void mouseReleased(MouseEvent event)
-		{
-			showContextMenu(event);
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : overriding methods
-	////////////////////////////////////////////////////////////////////
-
-		/**
-		 * Increases the preferred width to allow the caret to be viewable at the trailing end of the
-		 * longest line, if the width exceeds the viewport width.
-		 */
-
-		@Override
-		public Dimension getPreferredSize()
-		{
-			Dimension size = super.getPreferredSize();
-			return new Dimension(size.width + MARGIN, size.height);
-		}
-
-		//--------------------------------------------------------------
-
-		@Override
-		public Color getBackground()
-		{
-			Color colour = AppConstants.BACKGROUND_COLOUR;
-			if (!isEnabled())
-			{
-				colour = getParent().getBackground();
-				if (colour == null)
-					colour = AppConstants.DISABLED_BACKGROUND_COLOUR;
-			}
-			return colour;
-		}
-
-		//--------------------------------------------------------------
-
-		@Override
-		public void setEnabled(boolean enabled)
-		{
-			super.setEnabled(enabled);
-			GuiUtils.setViewportBorder(textAreaScrollPane, VERTICAL_MARGIN, HORIZONTAL_MARGIN);
-		}
-
-		//--------------------------------------------------------------
-
-		@Override
-		protected int getColumnWidth()
-		{
-			return FontUtils.getCharWidth('0', getFontMetrics(getFont()));
-		}
-
-		//--------------------------------------------------------------
-
-		@Override
-		protected int getRowHeight()
-		{
-			return getFontMetrics(getFont()).getHeight();
-		}
-
-		//--------------------------------------------------------------
-
-		@Override
-		protected Document createDefaultModel()
-		{
-			return new TextAreaDocument();
-		}
-
-		//--------------------------------------------------------------
-
-		@Override
-		protected boolean processKeyBinding(KeyStroke keyStroke,
-											KeyEvent  event,
-											int       condition,
-											boolean   pressed)
-		{
-			// Replace Ctrl+Tab with Tab
-			if ((event.getKeyCode() == KeyEvent.VK_TAB) &&
-				 (InputModifiers.forEvent(event) == InputModifiers.CTRL))
-			{
-				event = new KeyEvent(event.getComponent(), event.getID(), event.getWhen(), 0,
-									 event.getKeyCode(), event.getKeyChar(), event.getKeyLocation());
-				keyStroke = KeyStroke.getKeyStrokeForEvent(event);
-			}
-
-			// Process key as normal
-			return super.processKeyBinding(keyStroke, event, condition, pressed);
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods
-	////////////////////////////////////////////////////////////////////
-
-		public void snapViewPosition(JViewport viewport)
-		{
-			int rowHeight = getRowHeight();
-			Point viewPosition = viewport.getViewPosition();
-			int y = Math.max(0, viewPosition.y + rowHeight / 2) / rowHeight * rowHeight;
-			if (viewPosition.y != y)
-			{
-				viewPosition.y = y;
-				viewport.setViewPosition(viewPosition);
-			}
-		}
-
-		//--------------------------------------------------------------
-
-	}
-
-	//==================================================================
-
-
-	// COMMAND ACTION CLASS
-
-
-	private class CommandAction
-		extends AbstractAction
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private CommandAction(String command,
-							  String text)
-		{
-			super(text);
-			putValue(Action.ACTION_COMMAND_KEY, command);
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : ActionListener interface
-	////////////////////////////////////////////////////////////////////
-
-		public void actionPerformed(ActionEvent event)
-		{
-			String command = event.getActionCommand();
-
-			if (command.equals(Command.TOGGLE_TABS_ESCAPED))
-				onToggleTabsEscaped();
-
-			else if (command.equals(Command.TOGGLE_LINE_FEEDS_ESCAPED))
-				onToggleLineFeedsEscaped();
-
-			else if (command.equals(Command.EDIT))
-				onEdit();
-
-			else if (command.equals(Command.COPY))
-				onCopy();
-
-			else if (command.equals(Command.SHOW_CONTEXT_MENU))
-				onShowContextMenu();
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods
-	////////////////////////////////////////////////////////////////////
-
-		public void setSelected(boolean selected)
-		{
-			putValue(Action.SELECTED_KEY, selected);
-		}
-
-		//--------------------------------------------------------------
-
-		private void onToggleTabsEscaped()
-		{
-			String str = getText();
-			tabsEscaped = !tabsEscaped;
-			setText(str);
-			escapeListener.setTabsEscaped(tabsEscaped);
-		}
-
-		//--------------------------------------------------------------
-
-		private void onToggleLineFeedsEscaped()
-		{
-			String str = getText();
-			lineFeedsEscaped = !lineFeedsEscaped;
-			setText(str);
-			escapeListener.setLineFeedsEscaped(lineFeedsEscaped);
-		}
-
-		//--------------------------------------------------------------
-
-		private void onEdit()
-		{
-			showListDialog();
-		}
-
-		//--------------------------------------------------------------
-
-		private void onCopy()
-		{
-			try
-			{
-				Utils.putClipboardText(textArea.getText());
-			}
-			catch (AppException e)
-			{
-				App.INSTANCE.showErrorMessage(App.SHORT_NAME, e);
-			}
-		}
-
-		//--------------------------------------------------------------
-
-		private void onShowContextMenu()
-		{
-			showContextMenu(null);
-		}
-
-		//--------------------------------------------------------------
-
-	}
-
-	//==================================================================
+	private	ParamKind		paramKind;
+	private	EscapeListener	escapeListener;
+	private	ListEditor		editor;
+	private	boolean			tabsEscaped;
+	private	boolean			lineFeedsEscaped;
+	private	char			escapeChar;
+	private	char			tabSurrogate;
+	private	ActionMap		actionMap;
+	private	TextArea		textArea;
+	private	JScrollPane		textAreaScrollPane;
+	private	JButton			escapeButton;
+	private	JPopupMenu		contextMenu;
+	private	JMenu			itemsSubmenu;
 
 ////////////////////////////////////////////////////////////////////////
 //  Constructors
 ////////////////////////////////////////////////////////////////////////
 
-	public ParameterEditor(ParamKind      paramKind,
-						   int            maxNumItems,
-						   char           escapeChar,
-						   EscapeListener escapeListener)
+	public ParameterEditor(
+		ParamKind		paramKind,
+		int				maxNumItems,
+		char			escapeChar,
+		EscapeListener	escapeListener)
 	{
 		// Initialise instance variables
 		this.paramKind = paramKind;
@@ -941,8 +334,10 @@ class ParameterEditor
 
 		// Add commands to action map
 		for (KeyAction.KeyCommandPair command : KEY_COMMANDS)
+		{
 			KeyAction.create(this, JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT, command.keyStroke,
 							 getAction(command.command));
+		}
 	}
 
 	//------------------------------------------------------------------
@@ -951,19 +346,20 @@ class ParameterEditor
 //  Class methods
 ////////////////////////////////////////////////////////////////////////
 
-	private static String getEscapeSequence(char escapeChar,
-											char ch)
+	private static String getEscapeSequence(
+		char	escapeChar,
+		char	ch)
 	{
 		return new String(new char[] { escapeChar, ch });
 	}
 
 	//------------------------------------------------------------------
 
-	private static String escape(String str,
-								 char   escapeChar)
+	private static String escape(
+		String	str,
+		char	escapeChar)
 	{
-		return str.replace("\t", getEscapeSequence(escapeChar, 't')).
-													replace("\n", getEscapeSequence(escapeChar, 'n'));
+		return str.replace("\t", getEscapeSequence(escapeChar, 't')).replace("\n", getEscapeSequence(escapeChar, 'n'));
 	}
 
 	//------------------------------------------------------------------
@@ -972,7 +368,9 @@ class ParameterEditor
 //  Instance methods : ChangeListener interface
 ////////////////////////////////////////////////////////////////////////
 
-	public void stateChanged(ChangeEvent event)
+	@Override
+	public void stateChanged(
+		ChangeEvent	event)
 	{
 		if (!textAreaScrollPane.getVerticalScrollBar().getValueIsAdjusting())
 			textArea.snapViewPosition(textAreaScrollPane.getViewport());
@@ -984,6 +382,7 @@ class ParameterEditor
 //  Instance methods : ListEditor.ITextModel interface
 ////////////////////////////////////////////////////////////////////////
 
+	@Override
 	public String getText()
 	{
 		String str = textArea.getText();
@@ -1001,21 +400,23 @@ class ParameterEditor
 
 	//------------------------------------------------------------------
 
-	public void setText(String text)
+	@Override
+	public void setText(
+		String	text)
 	{
 		textArea.setText(text);
 	}
 
 	//------------------------------------------------------------------
 
-	public String toActionText(String str)
+	@Override
+	public String toActionText(
+		String	str)
 	{
-		return ((itemsSubmenu == null)
+		return (itemsSubmenu == null)
 					? str
-					: TextUtils.getLimitedWidthString(escape(str), itemsSubmenu.getFontMetrics(
-																				itemsSubmenu.getFont()),
-													  MAX_MENU_ITEM_WIDTH,
-													  TextUtils.RemovalMode.END));
+					: TextUtils.getLimitedWidthString(escape(str), itemsSubmenu.getFontMetrics(itemsSubmenu.getFont()),
+													  MAX_MENU_ITEM_WIDTH, TextUtils.RemovalMode.END);
 	}
 
 	//------------------------------------------------------------------
@@ -1025,7 +426,8 @@ class ParameterEditor
 ////////////////////////////////////////////////////////////////////////
 
 	@Override
-	public void setEnabled(boolean enabled)
+	public void setEnabled(
+		boolean	enabled)
 	{
 		super.setEnabled(enabled);
 		for (Component component : getComponents())
@@ -1069,42 +471,48 @@ class ParameterEditor
 
 	//------------------------------------------------------------------
 
-	public String getText(boolean escape)
+	public String getText(
+		boolean	escape)
 	{
 		return (escape ? escape(getText()) : getText());
 	}
 
 	//------------------------------------------------------------------
 
-	public void setItems(List<String> items)
+	public void setItems(
+		List<String>	items)
 	{
 		editor.setItems(items);
 	}
 
 	//------------------------------------------------------------------
 
-	public void setIndex(int index)
+	public void setIndex(
+		int	index)
 	{
 		editor.setItemIndex(index);
 	}
 
 	//------------------------------------------------------------------
 
-	public void setCaretPosition(int index)
+	public void setCaretPosition(
+		int	index)
 	{
 		textArea.setCaretPosition(getTextIndex(index));
 	}
 
 	//------------------------------------------------------------------
 
-	public void setTabWidth(int value)
+	public void setTabWidth(
+		int	value)
 	{
 		textArea.setTabSize(value);
 	}
 
 	//------------------------------------------------------------------
 
-	public void setTabSurrogate(char tabSurrogate)
+	public void setTabSurrogate(
+		char	tabSurrogate)
 	{
 		if (this.tabSurrogate != tabSurrogate)
 		{
@@ -1121,7 +529,8 @@ class ParameterEditor
 
 	//------------------------------------------------------------------
 
-	public void setEscapeChar(char escapeChar)
+	public void setEscapeChar(
+		char	escapeChar)
 	{
 		if (this.escapeChar != escapeChar)
 		{
@@ -1149,21 +558,24 @@ class ParameterEditor
 
 	//------------------------------------------------------------------
 
-	private String getEscapeSequence(char ch)
+	private String getEscapeSequence(
+		char	ch)
 	{
 		return getEscapeSequence(escapeChar, ch);
 	}
 
 	//------------------------------------------------------------------
 
-	private String escape(String str)
+	private String escape(
+		String	str)
 	{
 		return escape(str, escapeChar);
 	}
 
 	//------------------------------------------------------------------
 
-	private int getTextIndex(int index)
+	private int getTextIndex(
+		int	index)
 	{
 		String str = getText();
 		index = Math.min(index, str.length());
@@ -1184,20 +596,22 @@ class ParameterEditor
 					++increment;
 			}
 		}
-		return (index + increment);
+		return index + increment;
 	}
 
 	//------------------------------------------------------------------
 
-	private CommandAction getAction(String key)
+	private CommandAction getAction(
+		String	key)
 	{
 		return (CommandAction)actionMap.get(key);
 	}
 
 	//------------------------------------------------------------------
 
-	private void addAction(String key,
-						   String text)
+	private void addAction(
+		String	key,
+		String	text)
 	{
 		actionMap.put(key, new CommandAction(key, text));
 	}
@@ -1224,8 +638,7 @@ class ParameterEditor
 		{
 			for (int i = 0; i < items.size(); i++)
 			{
-				String str = items.get(i).replace(getEscapeSequence('t'), "\t").
-															replace(getEscapeSequence('n'), "\n");
+				String str = items.get(i).replace(getEscapeSequence('t'), "\t").replace(getEscapeSequence('n'), "\n");
 				items.set(i, str);
 			}
 			setItems(items);
@@ -1234,7 +647,8 @@ class ParameterEditor
 
 	//------------------------------------------------------------------
 
-	private void showContextMenu(MouseEvent event)
+	private void showContextMenu(
+		MouseEvent	event)
 	{
 		if (isEnabled() && ((event == null) || event.isPopupTrigger()))
 		{
@@ -1287,22 +701,658 @@ class ParameterEditor
 	//------------------------------------------------------------------
 
 ////////////////////////////////////////////////////////////////////////
-//  Instance variables
+//  Enumerated types
 ////////////////////////////////////////////////////////////////////////
 
-	private	ParamKind		paramKind;
-	private	EscapeListener	escapeListener;
-	private	ListEditor		editor;
-	private	boolean			tabsEscaped;
-	private	boolean			lineFeedsEscaped;
-	private	char			escapeChar;
-	private	char			tabSurrogate;
-	private	ActionMap		actionMap;
-	private	TextArea		textArea;
-	private	JScrollPane		textAreaScrollPane;
-	private	JButton			escapeButton;
-	private	JPopupMenu		contextMenu;
-	private	JMenu			itemsSubmenu;
+
+	// ENUMERATION: PARAMETER KIND
+
+
+	enum ParamKind
+		implements IStringKeyed
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Constants
+	////////////////////////////////////////////////////////////////////
+
+		TARGET
+		(
+			"target"
+		),
+
+		REPLACEMENT
+		(
+			"replacement"
+		);
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance variables
+	////////////////////////////////////////////////////////////////////
+
+		private	String	key;
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private ParamKind(
+			String	key)
+		{
+			this.key = key;
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : IStringKeyed interface
+	////////////////////////////////////////////////////////////////////
+
+		@Override
+		public String getKey()
+		{
+			return key;
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : overriding methods
+	////////////////////////////////////////////////////////////////////
+
+		@Override
+		public String toString()
+		{
+			return StringUtils.firstCharToUpperCase(key);
+		}
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
+
+////////////////////////////////////////////////////////////////////////
+//  Member interfaces
+////////////////////////////////////////////////////////////////////////
+
+
+	// INTERFACE: ESCAPE LISTENER
+
+
+	interface EscapeListener
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Methods
+	////////////////////////////////////////////////////////////////////
+
+		void setTabsEscaped(
+			boolean	escaped);
+
+		//--------------------------------------------------------------
+
+		void setLineFeedsEscaped(
+			boolean	escaped);
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
+
+////////////////////////////////////////////////////////////////////////
+//  Member classes : non-inner classes
+////////////////////////////////////////////////////////////////////////
+
+
+	// CLASS: LIST DIALOG
+
+
+	private static class ListDialog
+		extends SingleSelectionListEditor<String>
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Constants
+	////////////////////////////////////////////////////////////////////
+
+		private static final	String	DELETE_MESSAGE_STR	= "Do you want to delete the selected ";
+
+		private static final	String[]	TOOLTIP_STRS	=
+		{
+			"Add a new ",
+			"Edit the selected ",
+			"Delete the selected "
+		};
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance variables
+	////////////////////////////////////////////////////////////////////
+
+		private	ParamKind	paramKind;
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private ListDialog(
+			Component		parent,
+			ParamKind		paramKind,
+			List<String>	elements,
+			int				maxNumElements)
+		{
+			super(parent, new EditorSelectionList(elements, false), maxNumElements, getTooltipStrings(paramKind));
+			this.paramKind = paramKind;
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Class methods
+	////////////////////////////////////////////////////////////////////
+
+		public static List<String> showDialog(
+			Component		parent,
+			ParamKind		paramKind,
+			List<String>	elements,
+			int				maxNumElements)
+		{
+			ListDialog dialog = new ListDialog(parent, paramKind, elements, maxNumElements);
+			dialog.setVisible(true);
+			return dialog.getElements();
+		}
+
+		//--------------------------------------------------------------
+
+		private static String[] getTooltipStrings(
+			ParamKind	paramKind)
+		{
+			String[] strs = new String[TOOLTIP_STRS.length];
+			for (int i = 0; i < strs.length; i++)
+				strs[i] = TOOLTIP_STRS[i] + paramKind.getKey();
+			return strs;
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : overriding methods
+	////////////////////////////////////////////////////////////////////
+
+		@Override
+		protected String getAddElement()
+		{
+			return ItemDialog.showDialog(this, getTitleString(ADD_STR), paramKind, null);
+		}
+
+		//--------------------------------------------------------------
+
+		@Override
+		protected String getEditElement(
+			int	index)
+		{
+			return ItemDialog.showDialog(this, getTitleString(EDIT_STR), paramKind, getElement(index));
+		}
+
+		//--------------------------------------------------------------
+
+		@Override
+		protected boolean confirmDelete()
+		{
+			String[] optionStrs = Utils.getOptionStrings(DELETE_STR);
+			return (JOptionPane.showOptionDialog(this, DELETE_MESSAGE_STR + paramKind.getKey() + "?",
+												 getTitleString(DELETE_STR), JOptionPane.OK_CANCEL_OPTION,
+												 JOptionPane.QUESTION_MESSAGE, null, optionStrs,
+												 optionStrs[1]) == JOptionPane.OK_OPTION);
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods
+	////////////////////////////////////////////////////////////////////
+
+		private String getTitleString(
+			String	actionStr)
+		{
+			return actionStr + " " + paramKind.getKey();
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Member classes : non-inner classes
+	////////////////////////////////////////////////////////////////////
+
+
+		// CLASS: ITEM DIALOG
+
+
+		private static class ItemDialog
+			extends SingleTextFieldDialog
+		{
+
+		////////////////////////////////////////////////////////////////
+		//  Constants
+		////////////////////////////////////////////////////////////////
+
+			private static final	String	KEY	= ItemDialog.class.getCanonicalName();
+
+		////////////////////////////////////////////////////////////////
+		//  Constructors
+		////////////////////////////////////////////////////////////////
+
+			private ItemDialog(
+				Window		owner,
+				String		titleStr,
+				ParamKind	paramKind,
+				String		pattern)
+			{
+				super(owner, titleStr, KEY + "." + paramKind.getKey(), paramKind.toString(), pattern);
+			}
+
+			//----------------------------------------------------------
+
+		////////////////////////////////////////////////////////////////
+		//  Class methods
+		////////////////////////////////////////////////////////////////
+
+			private static String showDialog(
+				Component	parent,
+				String		titleStr,
+				ParamKind	paramKind,
+				String		pattern)
+			{
+				ItemDialog dialog = new ItemDialog(GuiUtils.getWindow(parent), titleStr, paramKind, pattern);
+				dialog.setVisible(true);
+				return dialog.getText();
+			}
+
+			//----------------------------------------------------------
+
+		}
+
+		//==============================================================
+
+	}
+
+	//==================================================================
+
+////////////////////////////////////////////////////////////////////////
+//  Member classes : inner classes
+////////////////////////////////////////////////////////////////////////
+
+
+	// CLASS: PARAMETER EDITOR TEXT AREA
+
+
+	private class TextArea
+		extends JTextArea
+		implements MouseListener
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Constants
+	////////////////////////////////////////////////////////////////////
+
+		private static final	int	MARGIN	= 4;
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private TextArea(
+			int	tabWidth)
+		{
+			// Set attributes
+			AppFont.PARAMETER_EDITOR.apply(this);
+			setBorder(null);
+			setForeground(AppConstants.TEXT_COLOUR);
+			setDisabledTextColor(Utils.getDisabledTextColour());
+			setTabSize(tabWidth);
+			setCaretPosition(getText().length());
+
+			// Set Tab and Shift+Tab as focus traversal keys
+			setFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS,
+								  Collections.singleton(KeyStroke.getKeyStroke(KeyEvent.VK_TAB, 0)));
+			setFocusTraversalKeys(KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS,
+								  Collections.singleton(KeyStroke.getKeyStroke(KeyEvent.VK_TAB, KeyEvent.SHIFT_DOWN_MASK)));
+
+			// Add listeners
+			addMouseListener(this);
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : MouseListener interface
+	////////////////////////////////////////////////////////////////////
+
+		@Override
+		public void mouseClicked(
+			MouseEvent	event)
+		{
+			// do nothing
+		}
+
+		//--------------------------------------------------------------
+
+		@Override
+		public void mouseEntered(
+			MouseEvent	event)
+		{
+			// do nothing
+		}
+
+		//--------------------------------------------------------------
+
+		@Override
+		public void mouseExited(
+			MouseEvent	event)
+		{
+			// do nothing
+		}
+
+		//--------------------------------------------------------------
+
+		@Override
+		public void mousePressed(
+			MouseEvent	event)
+		{
+			if (SwingUtilities.isLeftMouseButton(event))
+			{
+				if (isEnabled() && (InputModifiers.forEvent(event) == InputModifiers.CTRL))
+					showListDialog();
+			}
+
+			else if (SwingUtilities.isRightMouseButton(event))
+				requestFocusInWindow();
+
+			showContextMenu(event);
+		}
+
+		//--------------------------------------------------------------
+
+		@Override
+		public void mouseReleased(
+			MouseEvent	event)
+		{
+			showContextMenu(event);
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : overriding methods
+	////////////////////////////////////////////////////////////////////
+
+		/**
+		 * Increases the preferred width to allow the caret to be viewable at the trailing end of the
+		 * longest line, if the width exceeds the viewport width.
+		 */
+
+		@Override
+		public Dimension getPreferredSize()
+		{
+			Dimension size = super.getPreferredSize();
+			return new Dimension(size.width + MARGIN, size.height);
+		}
+
+		//--------------------------------------------------------------
+
+		@Override
+		public Color getBackground()
+		{
+			Color colour = AppConstants.BACKGROUND_COLOUR;
+			if (!isEnabled())
+			{
+				colour = getParent().getBackground();
+				if (colour == null)
+					colour = AppConstants.DISABLED_BACKGROUND_COLOUR;
+			}
+			return colour;
+		}
+
+		//--------------------------------------------------------------
+
+		@Override
+		public void setEnabled(
+			boolean	enabled)
+		{
+			super.setEnabled(enabled);
+			GuiUtils.setViewportBorder(textAreaScrollPane, VERTICAL_MARGIN, HORIZONTAL_MARGIN);
+		}
+
+		//--------------------------------------------------------------
+
+		@Override
+		protected int getColumnWidth()
+		{
+			return FontUtils.getCharWidth('0', getFontMetrics(getFont()));
+		}
+
+		//--------------------------------------------------------------
+
+		@Override
+		protected int getRowHeight()
+		{
+			return getFontMetrics(getFont()).getHeight();
+		}
+
+		//--------------------------------------------------------------
+
+		@Override
+		protected Document createDefaultModel()
+		{
+			return new TextAreaDocument();
+		}
+
+		//--------------------------------------------------------------
+
+		@Override
+		protected boolean processKeyBinding(
+			KeyStroke	keyStroke,
+			KeyEvent	event,
+			int			condition,
+			boolean		pressed)
+		{
+			// Replace Ctrl+Tab with Tab
+			if ((event.getKeyCode() == KeyEvent.VK_TAB) && (InputModifiers.forEvent(event) == InputModifiers.CTRL))
+			{
+				event = new KeyEvent(event.getComponent(), event.getID(), event.getWhen(), 0, event.getKeyCode(),
+									 event.getKeyChar(), event.getKeyLocation());
+				keyStroke = KeyStroke.getKeyStrokeForEvent(event);
+			}
+
+			// Process key as normal
+			return super.processKeyBinding(keyStroke, event, condition, pressed);
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods
+	////////////////////////////////////////////////////////////////////
+
+		public void snapViewPosition(
+			JViewport	viewport)
+		{
+			int rowHeight = getRowHeight();
+			Point viewPosition = viewport.getViewPosition();
+			int y = Math.max(0, viewPosition.y + rowHeight / 2) / rowHeight * rowHeight;
+			if (viewPosition.y != y)
+			{
+				viewPosition.y = y;
+				viewport.setViewPosition(viewPosition);
+			}
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Member classes : inner classes
+	////////////////////////////////////////////////////////////////////
+
+
+		// CLASS: TEXT AREA DOCUMENT
+
+
+		private class TextAreaDocument
+			extends PlainDocument
+		{
+
+		////////////////////////////////////////////////////////////////
+		//  Constructors
+		////////////////////////////////////////////////////////////////
+
+			private TextAreaDocument()
+			{
+			}
+
+			//----------------------------------------------------------
+
+		////////////////////////////////////////////////////////////////
+		//  Instance methods : overriding methods
+		////////////////////////////////////////////////////////////////
+
+			@Override
+			public void insertString(
+				int				offset,
+				String			str,
+				AttributeSet	attrSet)
+				throws BadLocationException
+			{
+				str = tabsEscaped ? str.replace("\t", getEscapeSequence('t'))
+								  : str.replace('\t', tabSurrogate);
+				if (lineFeedsEscaped)
+					str = str.replace("\n", getEscapeSequence('n'));
+				super.insertString(offset, str, attrSet);
+				setCaretPosition(offset + str.length());
+			}
+
+			//----------------------------------------------------------
+
+		}
+
+		//==============================================================
+
+	}
+
+	//==================================================================
+
+
+	// CLASS: COMMAND ACTION
+
+
+	private class CommandAction
+		extends AbstractAction
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private CommandAction(
+			String	command,
+			String	text)
+		{
+			super(text);
+			putValue(Action.ACTION_COMMAND_KEY, command);
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : ActionListener interface
+	////////////////////////////////////////////////////////////////////
+
+		public void actionPerformed(
+			ActionEvent	event)
+		{
+			String command = event.getActionCommand();
+
+			if (command.equals(Command.TOGGLE_TABS_ESCAPED))
+				onToggleTabsEscaped();
+
+			else if (command.equals(Command.TOGGLE_LINE_FEEDS_ESCAPED))
+				onToggleLineFeedsEscaped();
+
+			else if (command.equals(Command.EDIT))
+				onEdit();
+
+			else if (command.equals(Command.COPY))
+				onCopy();
+
+			else if (command.equals(Command.SHOW_CONTEXT_MENU))
+				onShowContextMenu();
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods
+	////////////////////////////////////////////////////////////////////
+
+		public void setSelected(
+			boolean	selected)
+		{
+			putValue(Action.SELECTED_KEY, selected);
+		}
+
+		//--------------------------------------------------------------
+
+		private void onToggleTabsEscaped()
+		{
+			String str = getText();
+			tabsEscaped = !tabsEscaped;
+			setText(str);
+			escapeListener.setTabsEscaped(tabsEscaped);
+		}
+
+		//--------------------------------------------------------------
+
+		private void onToggleLineFeedsEscaped()
+		{
+			String str = getText();
+			lineFeedsEscaped = !lineFeedsEscaped;
+			setText(str);
+			escapeListener.setLineFeedsEscaped(lineFeedsEscaped);
+		}
+
+		//--------------------------------------------------------------
+
+		private void onEdit()
+		{
+			showListDialog();
+		}
+
+		//--------------------------------------------------------------
+
+		private void onCopy()
+		{
+			try
+			{
+				Utils.putClipboardText(textArea.getText());
+			}
+			catch (AppException e)
+			{
+				App.INSTANCE.showErrorMessage(App.SHORT_NAME, e);
+			}
+		}
+
+		//--------------------------------------------------------------
+
+		private void onShowContextMenu()
+		{
+			showContextMenu(null);
+		}
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
 
 }
 

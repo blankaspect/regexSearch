@@ -140,7 +140,7 @@ class TabWidthFilter
 		StringBuilder buffer = new StringBuilder();
 		for (FilenameFilter filter : filters)
 		{
-			if (buffer.length() > 0)
+			if (!buffer.isEmpty())
 				buffer.append(' ');
 			buffer.append(filter.toString());
 		}

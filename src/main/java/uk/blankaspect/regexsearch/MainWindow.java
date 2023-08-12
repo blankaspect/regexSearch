@@ -37,6 +37,8 @@ import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
 
+import java.nio.file.Path;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -65,16 +67,16 @@ import uk.blankaspect.common.misc.PathnameFilter;
 
 import uk.blankaspect.common.string.StringUtils;
 
-import uk.blankaspect.common.swing.menu.FMenu;
-import uk.blankaspect.common.swing.menu.FMenuItem;
-
-import uk.blankaspect.common.swing.misc.GuiUtils;
-
-import uk.blankaspect.common.swing.text.TextRendering;
-
-import uk.blankaspect.common.swing.textarea.TextArea;
-
 import uk.blankaspect.common.thread.DaemonFactory;
+
+import uk.blankaspect.ui.swing.menu.FMenu;
+import uk.blankaspect.ui.swing.menu.FMenuItem;
+
+import uk.blankaspect.ui.swing.misc.GuiUtils;
+
+import uk.blankaspect.ui.swing.text.TextRendering;
+
+import uk.blankaspect.ui.swing.textarea.TextArea;
 
 //----------------------------------------------------------------------
 
@@ -91,8 +93,8 @@ class MainWindow
 //  Constants
 ////////////////////////////////////////////////////////////////////////
 
-	public static final		int	HIGHLIGHT_MARGIN_ROWS		= 4;
-	public static final		int	HIGHLIGHT_MARGIN_COLUMNS	= 8;
+	public static final		int		HIGHLIGHT_MARGIN_ROWS		= 4;
+	public static final		int		HIGHLIGHT_MARGIN_COLUMNS	= 8;
 
 	private static final	String	EDITOR_THREAD_NAME_PREFIX	= "editor-";
 
@@ -118,408 +120,28 @@ class MainWindow
 	}
 
 ////////////////////////////////////////////////////////////////////////
-//  Enumerated types
+//  Class variables
 ////////////////////////////////////////////////////////////////////////
 
-
-	// MENUS
-
-
-	private enum Menu
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constants
-	////////////////////////////////////////////////////////////////////
-
-		FILE
-		(
-			"File",
-			KeyEvent.VK_F
-		)
-		{
-			protected void update()
-			{
-				getWindow().updateCommands();
-			}
-		},
-
-		EDIT
-		(
-			"Edit",
-			KeyEvent.VK_E
-		)
-		{
-			protected void update()
-			{
-				getWindow().updateCommands();
-			}
-		},
-
-		SEARCH
-		(
-			"Search",
-			KeyEvent.VK_S
-		)
-		{
-			protected void update()
-			{
-				getMenu().setEnabled(!getWindow().searching);
-				getWindow().updateCommands();
-			}
-		},
-
-		VIEW
-		(
-			"View",
-			KeyEvent.VK_V
-		)
-		{
-			protected void update()
-			{
-				getWindow().updateCommands();
-			}
-		},
-
-		OPTIONS
-		(
-			"Options",
-			KeyEvent.VK_O
-		)
-		{
-			protected void update()
-			{
-				getMenu().setEnabled(!getWindow().searching);
-				getWindow().updateCommands();
-			}
-		};
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private Menu(String text,
-					 int    keyCode)
-		{
-			menu = new FMenu(text, keyCode);
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Abstract methods
-	////////////////////////////////////////////////////////////////////
-
-		protected abstract void update();
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods
-	////////////////////////////////////////////////////////////////////
-
-		protected JMenu getMenu()
-		{
-			return menu;
-		}
-
-		//--------------------------------------------------------------
-
-		protected MainWindow getWindow()
-		{
-			return App.INSTANCE.getMainWindow();
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance variables
-	////////////////////////////////////////////////////////////////////
-
-		private	JMenu	menu;
-
-	}
-
-	//==================================================================
-
-
-	// ERROR IDENTIFIERS
-
-
-	private enum ErrorId
-		implements AppException.IId
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constants
-	////////////////////////////////////////////////////////////////////
-
-		NO_EDITOR_COMMAND
-		("No editor command is defined."),
-
-		FAILED_TO_EXECUTE_EDITOR_COMMAND
-		("Failed to execute the editor command.");
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private ErrorId(String message)
-		{
-			this.message = message;
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : AppException.IId interface
-	////////////////////////////////////////////////////////////////////
-
-		public String getMessage()
-		{
-			return message;
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance variables
-	////////////////////////////////////////////////////////////////////
-
-		private	String	message;
-
-	}
-
-	//==================================================================
+	private static	int	editorThreadIndex;
 
 ////////////////////////////////////////////////////////////////////////
-//  Member classes : non-inner classes
+//  Instance variables
 ////////////////////////////////////////////////////////////////////////
 
-
-	// SCROLL PANE CLASS
-
-
-	private static class ScrollPane
-		extends JScrollPane
-		implements ChangeListener
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constants
-	////////////////////////////////////////////////////////////////////
-
-		private static final	int	VERTICAL_MARGIN		= 2;
-		private static final	int	HORIZONTAL_MARGIN	= 4;
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private ScrollPane(TextArea textArea)
-		{
-			// Call superclass constructor
-			super(textArea, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
-				  JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-
-			// Initialise instance variables
-			this.textArea = textArea;
-
-			// Set viewport in text area
-			textArea.setViewport(getViewport());
-
-			// Set component attributes
-			setBackground(AppConfig.INSTANCE.getTextAreaBackgroundColour());
-			setCorner(JScrollPane.LOWER_RIGHT_CORNER, new JPanel());
-			GuiUtils.setViewportBorder(this, VERTICAL_MARGIN, HORIZONTAL_MARGIN);
-			getViewport().setBackground(AppConfig.INSTANCE.getTextAreaBackgroundColour());
-			getViewport().setFocusable(false);
-			getVerticalScrollBar().setFocusable(false);
-			getHorizontalScrollBar().setFocusable(false);
-
-			// Add listeners
-			getVerticalScrollBar().getModel().addChangeListener(this);
-			getHorizontalScrollBar().getModel().addChangeListener(this);
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : ChangeListener interface
-	////////////////////////////////////////////////////////////////////
-
-		public void stateChanged(ChangeEvent event)
-		{
-			// Update viewport position if neither scroll bar knob is being dragged
-			if (!getVerticalScrollBar().getValueIsAdjusting() &&
-				 !getHorizontalScrollBar().getValueIsAdjusting())
-				textArea.snapViewPosition();
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance variables
-	////////////////////////////////////////////////////////////////////
-
-		private	TextArea	textArea;
-
-	}
-
-	//==================================================================
-
-
-	// RESULT AREA CLASS
-
-
-	private static class ResultArea
-		extends TextArea
-		implements MouseMotionListener
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constants
-	////////////////////////////////////////////////////////////////////
-
-		private static final	int	MAX_NUM_COLUMNS	= 1024;
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private ResultArea(int columns,
-						   int rows)
-		{
-			// Call superclass constructor
-			super(columns, rows, MAX_NUM_COLUMNS, AppFont.RESULT_AREA.getFont());
-
-			// Initialise instance variables
-			selectedIndex = -1;
-
-			// Add listeners
-			addMouseMotionListener(this);
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : MouseMotionListener interface
-	////////////////////////////////////////////////////////////////////
-
-		public void mouseDragged(MouseEvent event)
-		{
-			if (SwingUtilities.isLeftMouseButton(event) && (selectedIndex >= 0))
-			{
-				int index = getIndex(event);
-				if ((index == selectedIndex) != armed)
-				{
-					armed = !armed;
-					((ResultList)getModel()).setElementSelected(selectedIndex, armed);
-					repaint();
-				}
-			}
-		}
-
-		//--------------------------------------------------------------
-
-		public void mouseMoved(MouseEvent event)
-		{
-			// do nothing
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : overriding methods
-	////////////////////////////////////////////////////////////////////
-
-		@Override
-		public void mousePressed(MouseEvent event)
-		{
-			super.mousePressed(event);
-
-			if (SwingUtilities.isLeftMouseButton(event) && event.isControlDown())
-			{
-				int index = getIndex(event);
-				if (index >= 0)
-				{
-					ResultList resultList = (ResultList)getModel();
-					String pathname = resultList.getSearchedPathname(index);
-					if (pathname != null)
-					{
-						resultList.setElementSelected(index, true);
-						repaint();
-						selectedIndex = index;
-						armed = true;
-					}
-				}
-			}
-		}
-
-		//--------------------------------------------------------------
-
-		@Override
-		public void mouseReleased(MouseEvent event)
-		{
-			if (SwingUtilities.isLeftMouseButton(event) && (selectedIndex >= 0))
-			{
-				ResultList resultList = (ResultList)getModel();
-				int index = getIndex(event);
-				if ((index == selectedIndex) && armed)
-				{
-					try
-					{
-						editFile(resultList.getSearchedPathname(index));
-					}
-					catch (AppException e)
-					{
-						App.INSTANCE.showErrorMessage(App.SHORT_NAME, e);
-					}
-				}
-
-				resultList.setElementSelected(selectedIndex, false);
-				repaint();
-				selectedIndex = -1;
-				armed = false;
-			}
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods
-	////////////////////////////////////////////////////////////////////
-
-		private int getIndex(MouseEvent event)
-		{
-			int index = -1;
-			int x = event.getX();
-			if ((x >= 0) && (x < getWidth()))
-			{
-				int row = event.getY() / getRowHeight();
-				ResultList resultList = (ResultList)getModel();
-				if ((row >= 0) && (row < resultList.getNumLines()))
-				{
-					String pathname = resultList.getSearchedPathname(row);
-					if ((pathname != null) && (x < getFontMetrics(getFont()).stringWidth(pathname)))
-						 index = row;
-				}
-			}
-			return index;
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance variables
-	////////////////////////////////////////////////////////////////////
-
-		private	int		selectedIndex;
-		private	boolean	armed;
-
-	}
-
-	//==================================================================
+	private	TextModel			textModel;
+	private	String				currentPathname;
+	private	SearchDialog.Kind	searchKind;
+	private	boolean				searching;
+	private	boolean				controlDialogHidden;
+	private	File				deferredFile;
+	private	ControlDialog		controlDialog;
+	private	SearchDialog		searchDialog;
+	private	JPopupMenu			contextMenu;
+	private	TextArea			textView;
+	private	TextArea			resultArea;
+	private	JFileChooser		openFileChooser;
+	private	JFileChooser		saveFileChooser;
 
 ////////////////////////////////////////////////////////////////////////
 //  Constructors
@@ -695,8 +317,9 @@ class MainWindow
 		pack();
 
 		// Set location of window
-		if (config.isMainWindowLocation())
-			setLocation(GuiUtils.getLocationWithinScreen(this, config.getMainWindowLocation()));
+		setLocation(config.isMainWindowLocation()
+								? GuiUtils.getLocationWithinScreen(this, config.getMainWindowLocation())
+								: GuiUtils.getComponentLocation(this));
 
 		// Make window visible
 		setVisible(true);
@@ -731,6 +354,7 @@ class MainWindow
 	{
 		final	char	ESCAPE_CHAR					= '%';
 		final	char	PATHNAME_PLACEHOLDER_CHAR	= 'f';
+		final	char	URI_PLACEHOLDER_CHAR		= 'u';
 
 		// Parse editor command to create list of arguments
 		String command = AppConfig.INSTANCE.getEditorCommand();
@@ -751,13 +375,15 @@ class MainWindow
 						ch = command.charAt(index++);
 						if (ch == PATHNAME_PLACEHOLDER_CHAR)
 							buffer.append(pathname);
+						else if (ch == URI_PLACEHOLDER_CHAR)
+							buffer.append(Path.of(pathname).toUri());
 						else
 							buffer.append(ch);
 					}
 					break;
 
 				case ' ':
-					if (buffer.length() > 0)
+					if (!buffer.isEmpty())
 					{
 						arguments.add(PathnameUtils.parsePathname(buffer.toString()));
 						buffer.setLength(0);
@@ -769,7 +395,7 @@ class MainWindow
 					break;
 			}
 		}
-		if (buffer.length() > 0)
+		if (!buffer.isEmpty())
 			arguments.add(PathnameUtils.parsePathname(buffer.toString()));
 
 		// Execute editor command
@@ -779,8 +405,7 @@ class MainWindow
 			{
 				// Create process and start it
 				ProcessBuilder processBuilder = new ProcessBuilder(arguments);
-				processBuilder.redirectOutput(ProcessBuilder.Redirect.DISCARD);
-				processBuilder.redirectError(ProcessBuilder.Redirect.DISCARD);
+				processBuilder.inheritIO();
 				processBuilder.start();
 			}
 			catch (IOException e)
@@ -789,7 +414,8 @@ class MainWindow
 						App.INSTANCE.showErrorMessage(App.SHORT_NAME,
 													  new AppException(ErrorId.FAILED_TO_EXECUTE_EDITOR_COMMAND, e)));
 			}
-		}).start();
+		})
+		.start();
 	}
 
 	//------------------------------------------------------------------
@@ -798,6 +424,7 @@ class MainWindow
 //  Instance methods : ActionListener interface
 ////////////////////////////////////////////////////////////////////////
 
+	@Override
 	public void actionPerformed(ActionEvent event)
 	{
 		String command = event.getActionCommand();
@@ -814,6 +441,7 @@ class MainWindow
 //  Instance methods : MenuListener interface
 ////////////////////////////////////////////////////////////////////////
 
+	@Override
 	public void menuCanceled(MenuEvent event)
 	{
 		// do nothing
@@ -821,6 +449,7 @@ class MainWindow
 
 	//------------------------------------------------------------------
 
+	@Override
 	public void menuDeselected(MenuEvent event)
 	{
 		// do nothing
@@ -828,6 +457,7 @@ class MainWindow
 
 	//------------------------------------------------------------------
 
+	@Override
 	public void menuSelected(MenuEvent event)
 	{
 		Object eventSource = event.getSource();
@@ -844,6 +474,7 @@ class MainWindow
 //  Instance methods : MouseListener interface
 ////////////////////////////////////////////////////////////////////////
 
+	@Override
 	public void mouseClicked(MouseEvent event)
 	{
 		// do nothing
@@ -851,6 +482,7 @@ class MainWindow
 
 	//------------------------------------------------------------------
 
+	@Override
 	public void mouseEntered(MouseEvent event)
 	{
 		// do nothing
@@ -858,6 +490,7 @@ class MainWindow
 
 	//------------------------------------------------------------------
 
+	@Override
 	public void mouseExited(MouseEvent event)
 	{
 		// do nothing
@@ -865,6 +498,7 @@ class MainWindow
 
 	//------------------------------------------------------------------
 
+	@Override
 	public void mousePressed(MouseEvent event)
 	{
 		showContextMenu(event);
@@ -872,6 +506,7 @@ class MainWindow
 
 	//------------------------------------------------------------------
 
+	@Override
 	public void mouseReleased(MouseEvent event)
 	{
 		showContextMenu(event);
@@ -1554,28 +1189,417 @@ class MainWindow
 	//------------------------------------------------------------------
 
 ////////////////////////////////////////////////////////////////////////
-//  Class variables
+//  Enumerated types
 ////////////////////////////////////////////////////////////////////////
 
-	private static	int	editorThreadIndex;
+
+	// MENUS
+
+
+	private enum Menu
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Constants
+	////////////////////////////////////////////////////////////////////
+
+		FILE
+		(
+			"File",
+			KeyEvent.VK_F
+		)
+		{
+			@Override
+			protected void update()
+			{
+				getWindow().updateCommands();
+			}
+		},
+
+		EDIT
+		(
+			"Edit",
+			KeyEvent.VK_E
+		)
+		{
+			@Override
+			protected void update()
+			{
+				getWindow().updateCommands();
+			}
+		},
+
+		SEARCH
+		(
+			"Search",
+			KeyEvent.VK_S
+		)
+		{
+			@Override
+			protected void update()
+			{
+				getMenu().setEnabled(!getWindow().searching);
+				getWindow().updateCommands();
+			}
+		},
+
+		VIEW
+		(
+			"View",
+			KeyEvent.VK_V
+		)
+		{
+			@Override
+			protected void update()
+			{
+				getWindow().updateCommands();
+			}
+		},
+
+		OPTIONS
+		(
+			"Options",
+			KeyEvent.VK_O
+		)
+		{
+			@Override
+			protected void update()
+			{
+				getMenu().setEnabled(!getWindow().searching);
+				getWindow().updateCommands();
+			}
+		};
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance variables
+	////////////////////////////////////////////////////////////////////
+
+		private	JMenu	menu;
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private Menu(String text,
+					 int    keyCode)
+		{
+			menu = new FMenu(text, keyCode);
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Abstract methods
+	////////////////////////////////////////////////////////////////////
+
+		protected abstract void update();
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods
+	////////////////////////////////////////////////////////////////////
+
+		protected JMenu getMenu()
+		{
+			return menu;
+		}
+
+		//--------------------------------------------------------------
+
+		protected MainWindow getWindow()
+		{
+			return App.INSTANCE.getMainWindow();
+		}
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
+
+
+	// ERROR IDENTIFIERS
+
+
+	private enum ErrorId
+		implements AppException.IId
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Constants
+	////////////////////////////////////////////////////////////////////
+
+		NO_EDITOR_COMMAND
+		("No editor command is defined."),
+
+		FAILED_TO_EXECUTE_EDITOR_COMMAND
+		("Failed to execute the editor command.");
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance variables
+	////////////////////////////////////////////////////////////////////
+
+		private	String	message;
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private ErrorId(String message)
+		{
+			this.message = message;
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : AppException.IId interface
+	////////////////////////////////////////////////////////////////////
+
+		@Override
+		public String getMessage()
+		{
+			return message;
+		}
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
 
 ////////////////////////////////////////////////////////////////////////
-//  Instance variables
+//  Member classes : non-inner classes
 ////////////////////////////////////////////////////////////////////////
 
-	private	TextModel			textModel;
-	private	String				currentPathname;
-	private	SearchDialog.Kind	searchKind;
-	private	boolean				searching;
-	private	boolean				controlDialogHidden;
-	private	File				deferredFile;
-	private	ControlDialog		controlDialog;
-	private	SearchDialog		searchDialog;
-	private	JPopupMenu			contextMenu;
-	private	TextArea			textView;
-	private	TextArea			resultArea;
-	private	JFileChooser		openFileChooser;
-	private	JFileChooser		saveFileChooser;
+
+	// SCROLL PANE CLASS
+
+
+	private static class ScrollPane
+		extends JScrollPane
+		implements ChangeListener
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Constants
+	////////////////////////////////////////////////////////////////////
+
+		private static final	int	VERTICAL_MARGIN		= 2;
+		private static final	int	HORIZONTAL_MARGIN	= 4;
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance variables
+	////////////////////////////////////////////////////////////////////
+
+		private	TextArea	textArea;
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private ScrollPane(TextArea textArea)
+		{
+			// Call superclass constructor
+			super(textArea, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+				  JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+
+			// Initialise instance variables
+			this.textArea = textArea;
+
+			// Set viewport in text area
+			textArea.setViewport(getViewport());
+
+			// Set component attributes
+			setBackground(AppConfig.INSTANCE.getTextAreaBackgroundColour());
+			setCorner(JScrollPane.LOWER_RIGHT_CORNER, new JPanel());
+			GuiUtils.setViewportBorder(this, VERTICAL_MARGIN, HORIZONTAL_MARGIN);
+			getViewport().setBackground(AppConfig.INSTANCE.getTextAreaBackgroundColour());
+			getViewport().setFocusable(false);
+			getVerticalScrollBar().setFocusable(false);
+			getHorizontalScrollBar().setFocusable(false);
+
+			// Add listeners
+			getVerticalScrollBar().getModel().addChangeListener(this);
+			getHorizontalScrollBar().getModel().addChangeListener(this);
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : ChangeListener interface
+	////////////////////////////////////////////////////////////////////
+
+		@Override
+		public void stateChanged(ChangeEvent event)
+		{
+			// Update viewport position if neither scroll bar knob is being dragged
+			if (!getVerticalScrollBar().getValueIsAdjusting() &&
+				 !getHorizontalScrollBar().getValueIsAdjusting())
+				textArea.snapViewPosition();
+		}
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
+
+
+	// RESULT AREA CLASS
+
+
+	private static class ResultArea
+		extends TextArea
+		implements MouseMotionListener
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Constants
+	////////////////////////////////////////////////////////////////////
+
+		private static final	int	MAX_NUM_COLUMNS	= 1024;
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance variables
+	////////////////////////////////////////////////////////////////////
+
+		private	int		selectedIndex;
+		private	boolean	armed;
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private ResultArea(int columns,
+						   int rows)
+		{
+			// Call superclass constructor
+			super(columns, rows, MAX_NUM_COLUMNS, AppFont.RESULT_AREA.getFont());
+
+			// Initialise instance variables
+			selectedIndex = -1;
+
+			// Add listeners
+			addMouseMotionListener(this);
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : MouseMotionListener interface
+	////////////////////////////////////////////////////////////////////
+
+		@Override
+		public void mouseDragged(MouseEvent event)
+		{
+			if (SwingUtilities.isLeftMouseButton(event) && (selectedIndex >= 0))
+			{
+				int index = getIndex(event);
+				if ((index == selectedIndex) != armed)
+				{
+					armed = !armed;
+					((ResultList)getModel()).setElementSelected(selectedIndex, armed);
+					repaint();
+				}
+			}
+		}
+
+		//--------------------------------------------------------------
+
+		@Override
+		public void mouseMoved(MouseEvent event)
+		{
+			// do nothing
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : overriding methods
+	////////////////////////////////////////////////////////////////////
+
+		@Override
+		public void mousePressed(MouseEvent event)
+		{
+			super.mousePressed(event);
+
+			if (SwingUtilities.isLeftMouseButton(event) && event.isControlDown())
+			{
+				int index = getIndex(event);
+				if (index >= 0)
+				{
+					ResultList resultList = (ResultList)getModel();
+					String pathname = resultList.getSearchedPathname(index);
+					if (pathname != null)
+					{
+						resultList.setElementSelected(index, true);
+						repaint();
+						selectedIndex = index;
+						armed = true;
+					}
+				}
+			}
+		}
+
+		//--------------------------------------------------------------
+
+		@Override
+		public void mouseReleased(MouseEvent event)
+		{
+			if (SwingUtilities.isLeftMouseButton(event) && (selectedIndex >= 0))
+			{
+				ResultList resultList = (ResultList)getModel();
+				int index = getIndex(event);
+				if ((index == selectedIndex) && armed)
+				{
+					try
+					{
+						editFile(resultList.getSearchedPathname(index));
+					}
+					catch (AppException e)
+					{
+						App.INSTANCE.showErrorMessage(App.SHORT_NAME, e);
+					}
+				}
+
+				resultList.setElementSelected(selectedIndex, false);
+				repaint();
+				selectedIndex = -1;
+				armed = false;
+			}
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods
+	////////////////////////////////////////////////////////////////////
+
+		private int getIndex(MouseEvent event)
+		{
+			int index = -1;
+			int x = event.getX();
+			if ((x >= 0) && (x < getWidth()))
+			{
+				int row = event.getY() / getRowHeight();
+				ResultList resultList = (ResultList)getModel();
+				if ((row >= 0) && (row < resultList.getNumLines()))
+				{
+					String pathname = resultList.getSearchedPathname(row);
+					if ((pathname != null) && (x < getFontMetrics(getFont()).stringWidth(pathname)))
+						 index = row;
+				}
+			}
+			return index;
+		}
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
 
 }
 

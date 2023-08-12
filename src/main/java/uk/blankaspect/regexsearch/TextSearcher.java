@@ -42,8 +42,6 @@ import uk.blankaspect.common.collection.ArraySet;
 import uk.blankaspect.common.exception.AppException;
 import uk.blankaspect.common.exception.FileException;
 
-import uk.blankaspect.common.indexedsub.IndexedSub;
-
 import uk.blankaspect.common.misc.DirectoryFilter;
 import uk.blankaspect.common.misc.FileAttributeUtils;
 import uk.blankaspect.common.misc.LineSeparator;
@@ -114,7 +112,7 @@ class TextSearcher
 
 	private static final	String	HEX_DIGITS	= "0123456789ABCDEF";
 
-	private static final	String	DANGLING_ESCAPE_STR			= "The replacement string has a dangling '%1'.";
+	private static final	String	DANGLING_ESCAPE_STR			= "The replacement string has a dangling '%s'.";
 	private static final	String	ILLEGAL_ESCAPE_STR			= "\" is not a legal escape sequence.";
 	private static final	String	ILLEGAL_UNICODE_ESCAPE_STR	= "The Unicode escape is invalid.";
 
@@ -550,7 +548,7 @@ class TextSearcher
 				{
 					if (index >= endIndex)
 					{
-						String str = IndexedSub.sub(DANGLING_ESCAPE_STR, Character.toString(escapeChar));
+						String str = String.format(DANGLING_ESCAPE_STR, escapeChar);
 						throw new SyntaxException(ErrorId.INVALID_REPLACEMENT_STRING, str, index - 1);
 					}
 					textCase = null;
@@ -777,7 +775,7 @@ class TextSearcher
 			int flags = regex ? Pattern.MULTILINE | Pattern.UNIX_LINES
 							  : Pattern.LITERAL;
 			if (params.ignoreCase)
-				flags |= Pattern.CASE_INSENSITIVE;
+				flags |= Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE;
 			pattern = Pattern.compile(params.targetStr, flags);
 		}
 		catch (PatternSyntaxException e)

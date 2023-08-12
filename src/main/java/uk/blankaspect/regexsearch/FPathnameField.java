@@ -25,9 +25,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import uk.blankaspect.common.swing.misc.GuiUtils;
+import uk.blankaspect.ui.swing.misc.GuiUtils;
 
-import uk.blankaspect.common.swing.textfield.PathnameField;
+import uk.blankaspect.ui.swing.textfield.PathnameField;
 
 //----------------------------------------------------------------------
 

@@ -215,7 +215,7 @@ public class ListEditor
 
 	public void setItems(List<String> items)
 	{
-		this.items = (items == null) ? new ArrayList<String>() : new ArrayList<>(items);
+		this.items = (items == null) ? new ArrayList<>() : new ArrayList<>(items);
 		itemIndex = -2;
 		setItemIndex(0);
 	}

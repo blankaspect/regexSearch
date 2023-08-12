@@ -2,7 +2,7 @@
 
 ControlDialog.java
 
-Control dialog box class.
+Control dialog class.
 
 \*====================================================================*/
 
@@ -67,43 +67,44 @@ import uk.blankaspect.common.exception.FileException;
 
 import uk.blankaspect.common.filesystem.PathnameUtils;
 
+import uk.blankaspect.common.geometry.VHPos;
+
 import uk.blankaspect.common.misc.PathnameFilter;
 import uk.blankaspect.common.misc.TextFile;
-import uk.blankaspect.common.misc.VHPos;
 
 import uk.blankaspect.common.regex.RegexUtils;
 
 import uk.blankaspect.common.string.StringUtils;
 
-import uk.blankaspect.common.swing.action.KeyAction;
+import uk.blankaspect.ui.swing.action.KeyAction;
 
-import uk.blankaspect.common.swing.button.ArrowButton;
+import uk.blankaspect.ui.swing.button.ArrowButton;
 
-import uk.blankaspect.common.swing.checkbox.FCheckBox;
+import uk.blankaspect.ui.swing.checkbox.FCheckBox;
 
-import uk.blankaspect.common.swing.colour.Colours;
-import uk.blankaspect.common.swing.colour.ColourUtils;
+import uk.blankaspect.ui.swing.colour.Colours;
+import uk.blankaspect.ui.swing.colour.ColourUtils;
 
-import uk.blankaspect.common.swing.combobox.FComboBox;
+import uk.blankaspect.ui.swing.combobox.FComboBox;
 
-import uk.blankaspect.common.swing.font.FontUtils;
+import uk.blankaspect.ui.swing.font.FontUtils;
 
-import uk.blankaspect.common.swing.label.FLabel;
+import uk.blankaspect.ui.swing.label.FLabel;
 
-import uk.blankaspect.common.swing.list.SingleSelectionListEditor;
+import uk.blankaspect.ui.swing.list.SingleSelectionListEditor;
 
-import uk.blankaspect.common.swing.misc.GuiUtils;
+import uk.blankaspect.ui.swing.misc.GuiUtils;
 
-import uk.blankaspect.common.swing.modifiers.InputModifiers;
+import uk.blankaspect.ui.swing.modifiers.InputModifiers;
 
-import uk.blankaspect.common.swing.text.TextRendering;
+import uk.blankaspect.ui.swing.text.TextRendering;
 
-import uk.blankaspect.common.swing.textfield.PathnameField;
+import uk.blankaspect.ui.swing.textfield.PathnameField;
 
 //----------------------------------------------------------------------
 
 
-// CONTROL DIALOG BOX CLASS
+// CONTROL DIALOG CLASS
 
 
 class ControlDialog
@@ -229,7 +230,7 @@ class ControlDialog
 		("The directory does not exist."),
 
 		FILE_OR_DIRECTORY_DOES_NOT_EXIST
-		("The file or directory specified by this pathname in the list file does not exist."),
+		("The file or directory denoted by this pathname in the list file does not exist."),
 
 		FILE_ACCESS_NOT_PERMITTED
 		("Access to the file was not permitted."),
@@ -1935,7 +1936,7 @@ class ControlDialog
 			{
 				int flags = Pattern.MULTILINE | Pattern.UNIX_LINES;
 				if (isIgnoreCase())
-					flags |= Pattern.CASE_INSENSITIVE;
+					flags |= Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE;
 				Pattern.compile(targetStr, flags);
 			}
 			catch (PatternSyntaxException e)

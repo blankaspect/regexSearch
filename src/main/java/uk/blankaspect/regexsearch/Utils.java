@@ -43,7 +43,7 @@ import uk.blankaspect.common.exception2.ExceptionUtils;
 
 import uk.blankaspect.common.filesystem.PathnameUtils;
 
-import uk.blankaspect.common.swing.colour.ColourUtils;
+import uk.blankaspect.ui.swing.colour.ColourUtils;
 
 //----------------------------------------------------------------------
 

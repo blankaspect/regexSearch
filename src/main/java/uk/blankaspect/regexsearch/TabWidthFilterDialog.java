@@ -2,7 +2,7 @@
 
 TabWidthFilterDialog.java
 
-Tab-width filter dialog box class.
+Tab-width filter dialog class.
 
 \*====================================================================*/
 
@@ -44,22 +44,22 @@ import javax.swing.KeyStroke;
 
 import uk.blankaspect.common.exception.AppException;
 
-import uk.blankaspect.common.swing.action.KeyAction;
+import uk.blankaspect.ui.swing.action.KeyAction;
 
-import uk.blankaspect.common.swing.button.FButton;
+import uk.blankaspect.ui.swing.button.FButton;
 
-import uk.blankaspect.common.swing.label.FLabel;
+import uk.blankaspect.ui.swing.label.FLabel;
 
-import uk.blankaspect.common.swing.misc.GuiUtils;
+import uk.blankaspect.ui.swing.misc.GuiUtils;
 
-import uk.blankaspect.common.swing.spinner.FIntegerSpinner;
+import uk.blankaspect.ui.swing.spinner.FIntegerSpinner;
 
-import uk.blankaspect.common.swing.textfield.ConstrainedTextField;
+import uk.blankaspect.ui.swing.textfield.ConstrainedTextField;
 
 //----------------------------------------------------------------------
 
 
-// TAB-WIDTH FILTER DIALOG BOX CLASS
+// TAB-WIDTH FILTER DIALOG CLASS
 
 
 class TabWidthFilterDialog

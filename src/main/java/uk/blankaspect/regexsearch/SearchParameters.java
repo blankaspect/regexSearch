@@ -24,6 +24,8 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.IOException;
 
+import java.nio.channels.OverlappingFileLockException;
+
 import java.nio.charset.StandardCharsets;
 
 import java.util.ArrayList;
@@ -38,6 +40,8 @@ import org.w3c.dom.NodeList;
 import uk.blankaspect.common.exception.AppException;
 import uk.blankaspect.common.exception.FileException;
 import uk.blankaspect.common.exception.TempFileException;
+
+import uk.blankaspect.common.filesystem.FilenameUtils;
 
 import uk.blankaspect.common.misc.NoYes;
 
@@ -63,13 +67,13 @@ class SearchParameters
 //  Constants
 ////////////////////////////////////////////////////////////////////////
 
-	public static final		int	MAX_NUM_FILE_SETS		= 256;
-	public static final		int	MAX_NUM_TARGETS			= 64;
-	public static final		int	MAX_NUM_REPLACEMENTS	= MAX_NUM_TARGETS;
+	public static final		int		MAX_NUM_FILE_SETS		= 256;
+	public static final		int		MAX_NUM_TARGETS			= 64;
+	public static final		int		MAX_NUM_REPLACEMENTS	= MAX_NUM_TARGETS;
 
-	private static final	int	VERSION					= 1;
-	private static final	int	MIN_SUPPORTED_VERSION	= 0;
-	private static final	int	MAX_SUPPORTED_VERSION	= 1;
+	private static final	int		VERSION					= 1;
+	private static final	int		MIN_SUPPORTED_VERSION	= 0;
+	private static final	int		MAX_SUPPORTED_VERSION	= 1;
 
 	private static final	String	NAMESPACE_NAME			= "http://ns.blankaspect.uk/regexSearch-1";
 	private static final	String	NAMESPACE_NAME_REGEX	= "http://ns\\.[a-z.]+/regexSearch-1";
@@ -133,6 +137,9 @@ class SearchParameters
 
 		NOT_ENOUGH_MEMORY_TO_OPEN_FILE
 		("There was not enough memory to open the file."),
+
+		FAILED_TO_CREATE_DIRECTORY
+		("Failed to create the directory."),
 
 		FAILED_TO_CREATE_TEMPORARY_FILE
 		("Failed to create a temporary file."),
@@ -527,7 +534,11 @@ class SearchParameters
 				if (inStream.getChannel().tryLock(0, Long.MAX_VALUE, true) == null)
 					throw new FileException(ErrorId.FAILED_TO_LOCK_FILE, file);
 			}
-			catch (Exception e)
+			catch (OverlappingFileLockException e)
+			{
+				// ignore
+			}
+			catch (IOException e)
 			{
 				throw new FileException(ErrorId.FAILED_TO_LOCK_FILE, file, e);
 			}
@@ -632,11 +643,26 @@ class SearchParameters
 		boolean oldFileDeleted = false;
 		try
 		{
+			// Create parent directory of output file
+			File directory = file.getAbsoluteFile().getParentFile();
+			if ((directory != null) && !directory.exists())
+			{
+				try
+				{
+					if (!directory.mkdirs())
+						throw new FileException(ErrorId.FAILED_TO_CREATE_DIRECTORY, directory);
+				}
+				catch (SecurityException e)
+				{
+					throw new FileException(ErrorId.FAILED_TO_CREATE_DIRECTORY, directory, e);
+				}
+			}
+
 			// Create temporary file
 			try
 			{
-				tempFile = File.createTempFile(AppConstants.TEMP_FILE_PREFIX, null,
-											   file.getAbsoluteFile().getParentFile());
+				tempFile = FilenameUtils.tempLocation(file);
+				tempFile.createNewFile();
 			}
 			catch (Exception e)
 			{

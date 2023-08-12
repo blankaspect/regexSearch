@@ -1,13 +1,13 @@
 /*====================================================================*\
 
-Minimal Gradle build script : RegexSearch
+Gradle build script : RegexSearch
 
 \*====================================================================*/
 
 // Plug-ins
 
 plugins {
-	id("java")
+	java
 }
 
 //----------------------------------------------------------------------
@@ -21,33 +21,20 @@ fun _path(vararg components : String) : String =
 
 // Properties
 
+val javaVersion = 17
+
 val packageName		= "regexsearch"
 val mainClassName	= "uk.blankaspect.${packageName}.App"
-
-val commonDir		= _path("..", "common")
-val commonSourceDir	= _path(commonDir, "src", "main", "java")
 
 val jarDir		= _path("${buildDir}", "bin")
 val jarFilename	= "regexSearch.jar"
 
 //----------------------------------------------------------------------
 
-// Java version
-
-val javaVersion	= JavaVersion.VERSION_1_8
-java {
-	sourceCompatibility = javaVersion
-	targetCompatibility = javaVersion
-}
-
-//----------------------------------------------------------------------
-
-// Compile all classes from source
+// Compile
 
 tasks.compileJava {
-	options.sourcepath = files(
-		commonSourceDir
-	)
+	options.release.set(javaVersion)
 }
 
 //----------------------------------------------------------------------
@@ -63,6 +50,23 @@ tasks.jar {
 			"Main-Class"       to mainClassName
 		)
 	}
+}
+
+//----------------------------------------------------------------------
+
+// Run main class
+
+tasks.register<JavaExec>("runMain") {
+	classpath = sourceSets["main"].runtimeClasspath
+	mainClass.set(mainClassName)
+}
+
+//----------------------------------------------------------------------
+
+// Run executable JAR
+
+tasks.register<JavaExec>("runJar") {
+	classpath = files(tasks.jar)
 }
 
 //----------------------------------------------------------------------

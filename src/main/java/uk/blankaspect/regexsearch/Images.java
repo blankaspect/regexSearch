@@ -23,7 +23,7 @@ import java.awt.Image;
 import java.util.Arrays;
 import java.util.List;
 
-import uk.blankaspect.common.swing.image.ImageCache;
+import uk.blankaspect.ui.swing.image.ImageCache;
 
 //----------------------------------------------------------------------
 

@@ -2,7 +2,7 @@
 
 PathnameFilterDialog.java
 
-Pathname filter dialog box class.
+Pathname filter dialog class.
 
 \*====================================================================*/
 
@@ -50,24 +50,24 @@ import javax.swing.event.DocumentListener;
 
 import uk.blankaspect.common.exception.AppException;
 
-import uk.blankaspect.common.swing.action.KeyAction;
+import uk.blankaspect.ui.swing.action.KeyAction;
 
-import uk.blankaspect.common.swing.button.FButton;
+import uk.blankaspect.ui.swing.button.FButton;
 
-import uk.blankaspect.common.swing.container.SingleSelectionListPanel;
+import uk.blankaspect.ui.swing.container.SingleSelectionListPanel;
 
-import uk.blankaspect.common.swing.dialog.SingleTextFieldDialog;
+import uk.blankaspect.ui.swing.dialog.SingleTextFieldDialog;
 
-import uk.blankaspect.common.swing.label.FLabel;
+import uk.blankaspect.ui.swing.label.FLabel;
 
-import uk.blankaspect.common.swing.misc.GuiUtils;
+import uk.blankaspect.ui.swing.misc.GuiUtils;
 
-import uk.blankaspect.common.swing.textfield.FTextField;
+import uk.blankaspect.ui.swing.textfield.FTextField;
 
 //----------------------------------------------------------------------
 
 
-// PATHNAME FILTER DIALOG BOX CLASS
+// PATHNAME FILTER DIALOG CLASS
 
 
 class PathnameFilterDialog

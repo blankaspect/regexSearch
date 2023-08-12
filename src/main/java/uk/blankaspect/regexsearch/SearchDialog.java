@@ -2,7 +2,7 @@
 
 SearchDialog.java
 
-Search dialog box class.
+Search dialog class.
 
 \*====================================================================*/
 
@@ -46,20 +46,20 @@ import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.UIManager;
 
-import uk.blankaspect.common.swing.action.KeyAction;
+import uk.blankaspect.ui.swing.action.KeyAction;
 
-import uk.blankaspect.common.swing.button.FButton;
+import uk.blankaspect.ui.swing.button.FButton;
 
-import uk.blankaspect.common.swing.font.FontUtils;
+import uk.blankaspect.ui.swing.font.FontUtils;
 
-import uk.blankaspect.common.swing.label.FLabel;
+import uk.blankaspect.ui.swing.label.FLabel;
 
-import uk.blankaspect.common.swing.misc.GuiUtils;
+import uk.blankaspect.ui.swing.misc.GuiUtils;
 
 //----------------------------------------------------------------------
 
 
-// SEARCH DIALOG BOX CLASS
+// SEARCH DIALOG CLASS
 
 
 class SearchDialog
@@ -71,10 +71,10 @@ class SearchDialog
 //  Constants
 ////////////////////////////////////////////////////////////////////////
 
-	private static final	int	TARGET_FIELD_NUM_COLUMNS	= 80;
-	private static final	int	FILE_FIELD_NUM_COLUMNS		= 80;
-	private static final	int	LINE_FIELD_NUM_COLUMNS		= 10;
-	private static final	int	OFFSET_FIELD_NUM_COLUMNS	= 10;
+	private static final	int		TARGET_FIELD_NUM_COLUMNS	= 80;
+	private static final	int		FILE_FIELD_NUM_COLUMNS		= 80;
+	private static final	int		LINE_FIELD_NUM_COLUMNS		= 10;
+	private static final	int		OFFSET_FIELD_NUM_COLUMNS	= 10;
 
 	private static final	Insets	BUTTON_MARGINS	= new Insets(2, 8, 2, 8);
 
@@ -86,45 +86,84 @@ class SearchDialog
 
 	private static final	OptionEx[]	FIND_OPTIONS	=
 	{
-		new OptionEx(Option.YES,
-					 "Search for the next occurrence"),
-		new OptionEx(Option.GLOBAL,
-					 "Search for all remaining occurrences in the current file and all subsequent files " +
-						"without further prompting"),
-		new OptionEx(Option.NEXT_FILE,
-					 "Search the next file"),
-		new OptionEx(Option.CANCEL,
-					 "Cancel the search")
+		new OptionEx
+		(
+			Option.YES,
+			"Search for the next occurrence"
+		),
+		new OptionEx
+		(
+			Option.GLOBAL,
+			"Search for all remaining occurrences in the current file and all subsequent files without further prompting"
+		),
+		new OptionEx
+		(
+			Option.NEXT_FILE,
+			"Search the next file"
+		),
+		new OptionEx
+		(
+			Option.CANCEL,
+			"Cancel the search"
+		)
 	};
 
 	private static final	OptionEx[]	REPLACE_OPTIONS	=
 	{
-		new OptionEx(Option.YES,
-					 "Replace this occurrence and resume the search"),
-		new OptionEx(Option.NO,
-					 "Don't replace this occurrence; resume the search"),
-		new OptionEx(Option.PREVIEW,
-					 "Replace this occurrence and display the replacement"),
-		new OptionEx(Option.THIS_FILE,
-					 "Replace all remaining occurrences in the current file, then search the next file"),
-		new OptionEx(Option.GLOBAL,
-					 "Replace all remaining occurrences in the current file and all subsequent files " +
-						"without further prompting"),
-		new OptionEx(Option.NEXT_FILE,
-					 "Don't replace this occurrence; save any changes to the current file, then search " +
-						"the next file"),
-		new OptionEx(Option.CANCEL,
-					 "Cancel the search, discarding any changes to the current file")
+		new OptionEx
+		(
+			Option.YES,
+			"Replace this occurrence and resume the search"
+		),
+		new OptionEx
+		(
+			Option.NO,
+			"Don't replace this occurrence; resume the search"
+		),
+		new OptionEx
+		(
+			Option.PREVIEW,
+			"Replace this occurrence and display the replacement"
+		),
+		new OptionEx
+		(
+			Option.THIS_FILE,
+			"Replace all remaining occurrences in the current file, then search the next file"
+		),
+		new OptionEx
+		(
+			Option.GLOBAL,
+			"Replace all remaining occurrences in the current file and all subsequent files without further prompting"
+		),
+		new OptionEx
+		(
+			Option.NEXT_FILE,
+			"Don't replace this occurrence; save any changes to the current file, then search the next file"
+		),
+		new OptionEx
+		(
+			Option.CANCEL,
+			"Cancel the search, discarding any changes to the current file"
+		)
 	};
 
 	private static final	OptionEx[]	PREVIEW_OPTIONS	=
 	{
-		new OptionEx(Option.KEEP,
-					 "Keep the highlighted replacement"),
-		new OptionEx(Option.RESTORE,
-					 "Restore the original text"),
-		new OptionEx(Option.CANCEL,
-					 "Cancel the search, discarding any changes to the current file")
+		new OptionEx
+		(
+			Option.KEEP,
+			"Keep the highlighted replacement"
+		),
+		new OptionEx
+		(
+			Option.RESTORE,
+			"Restore the original text"
+		),
+		new OptionEx
+		(
+			Option.CANCEL,
+			"Cancel the search, discarding any changes to the current file"
+		)
 	};
 
 	// Commands
@@ -133,348 +172,38 @@ class SearchDialog
 		String	CLOSE	= "close";
 	}
 
-////////////////////////////////////////////////////////////////////////
-//  Enumerated types
-////////////////////////////////////////////////////////////////////////
-
-
-	// DIALOG KIND
-
-
-	enum Kind
+	// Property keys
+	private interface PropertyKey
 	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constants
-	////////////////////////////////////////////////////////////////////
-
-		FIND
-		(
-			"Search options | Find",
-			"Do you want to search for the next occurrence?",
-			FIND_OPTIONS,
-			0
-		),
-
-		REPLACE
-		(
-			"Search options | Find-and-replace",
-			"Do you want to replace this occurrence?",
-			REPLACE_OPTIONS,
-			1
-		),
-
-		PREVIEW
-		(
-			"Text replacement preview",
-			"Do you want to keep the replacement or to restore the original text?",
-			PREVIEW_OPTIONS,
-			1
-		);
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private Kind(String     titleStr,
-					 String     questionStr,
-					 OptionEx[] options,
-					 int        defaultFocusIndex)
-		{
-			this.titleStr = titleStr;
-			this.questionStr = questionStr;
-			this.options = options;
-			this.defaultFocusIndex = defaultFocusIndex;
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods
-	////////////////////////////////////////////////////////////////////
-
-		public String getTitleString()
-		{
-			return titleStr;
-		}
-
-		//--------------------------------------------------------------
-
-		public String getQuestionString()
-		{
-			return questionStr;
-		}
-
-		//--------------------------------------------------------------
-
-		public int getNumOptions()
-		{
-			return options.length;
-		}
-
-		//--------------------------------------------------------------
-
-		public OptionEx getOption(int index)
-		{
-			return options[index];
-		}
-
-		//--------------------------------------------------------------
-
-		public int getDefaultFocusIndex()
-		{
-			return defaultFocusIndex;
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance variables
-	////////////////////////////////////////////////////////////////////
-
-		private	String		titleStr;
-		private	String		questionStr;
-		private	OptionEx[]	options;
-		private	int			defaultFocusIndex;
-
+		String	OPTION_PANE_QUESTION_ICON	= "OptionPane.questionIcon";
 	}
 
-	//==================================================================
-
-
-	// OPTION
-
-
-	private enum Option
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constants
-	////////////////////////////////////////////////////////////////////
-
-		YES
-		(
-			TextSearcher.Option.REPLACE,
-			"Yes",
-			KeyEvent.VK_Y
-		),
-
-		NO
-		(
-			TextSearcher.Option.SKIP,
-			"No",
-			KeyEvent.VK_N
-		),
-
-		PREVIEW
-		(
-			TextSearcher.Option.PREVIEW,
-			"Preview",
-			KeyEvent.VK_P
-		),
-
-		THIS_FILE
-		(
-			TextSearcher.Option.REPLACE_FILE,
-			"This file",
-			KeyEvent.VK_T
-		),
-
-		GLOBAL
-		(
-			TextSearcher.Option.REPLACE_GLOBAL,
-			"Global",
-			KeyEvent.VK_G
-		),
-
-		NEXT_FILE
-		(
-			TextSearcher.Option.NEXT_FILE,
-			"Next file",
-			KeyEvent.VK_X
-		),
-
-		KEEP
-		(
-			TextSearcher.Option.KEEP,
-			"Keep",
-			KeyEvent.VK_K
-		),
-
-		RESTORE
-		(
-			TextSearcher.Option.RESTORE,
-			"Restore",
-			KeyEvent.VK_R
-		),
-
-		CANCEL
-		(
-			TextSearcher.Option.CANCEL,
-			"Cancel",
-			KeyEvent.VK_ESCAPE
-		);
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private Option(TextSearcher.Option searchOption,
-					   String              text,
-					   int                 key)
-		{
-			this.searchOption = searchOption;
-			this.text = text;
-			this.key = key;
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods
-	////////////////////////////////////////////////////////////////////
-
-		public TextSearcher.Option getSearchOption()
-		{
-			return searchOption;
-		}
-
-		//--------------------------------------------------------------
-
-		public String getText()
-		{
-			return text;
-		}
-
-		//--------------------------------------------------------------
-
-		public int getKey()
-		{
-			return key;
-		}
-
-		//--------------------------------------------------------------
-
-		public KeyStroke getKeyStroke()
-		{
-			return KeyStroke.getKeyStroke(key, 0);
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance variables
-	////////////////////////////////////////////////////////////////////
-
-		private	TextSearcher.Option	searchOption;
-		private	String				text;
-		private	int					key;
-
-	}
-
-	//==================================================================
-
 ////////////////////////////////////////////////////////////////////////
-//  Member classes : non-inner classes
+//  Class variables
 ////////////////////////////////////////////////////////////////////////
 
+	private static	Point[]	locations;
+	private static	int[]	focusIndices;
 
-	// EXTENDED OPTION CLASS
+////////////////////////////////////////////////////////////////////////
+//  Instance variables
+////////////////////////////////////////////////////////////////////////
 
-
-	private static class OptionEx
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private OptionEx(Option option,
-						 String tooltipStr)
-		{
-			this.option = option;
-			this.tooltipStr = tooltipStr;
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance variables
-	////////////////////////////////////////////////////////////////////
-
-		Option	option;
-		String	tooltipStr;
-
-	}
-
-	//==================================================================
-
-
-	// INFORMATION FIELD CLASS
-
-
-	private static class InfoField
-		extends JTextField
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private InfoField(String text,
-						  int    numColumns)
-		{
-			super(text, numColumns);
-			AppFont.MAIN.apply(this);
-			GuiUtils.setPaddedLineBorder(this, 2, 4);
-			AppConfig config = AppConfig.INSTANCE;
-			setForeground(config.getTextAreaTextColour());
-			setBackground(config.getTextAreaBackgroundColour());
-			setSelectedTextColor(config.getTextAreaHighlightTextColour());
-			setSelectionColor(config.getTextAreaHighlightBackgroundColour());
-			setEditable(false);
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : overriding methods
-	////////////////////////////////////////////////////////////////////
-
-		@Override
-		public Dimension getPreferredSize()
-		{
-			Dimension size = super.getPreferredSize();
-			return new Dimension(size.width + 1, size.height);
-		}
-
-		//--------------------------------------------------------------
-
-		@Override
-		protected int getColumnWidth()
-		{
-			return FontUtils.getCharWidth('0', getFontMetrics(getFont()));
-		}
-
-		//--------------------------------------------------------------
-
-	}
-
-	//==================================================================
+	private	Kind	dialogKind;
 
 ////////////////////////////////////////////////////////////////////////
 //  Constructors
 ////////////////////////////////////////////////////////////////////////
 
-	private SearchDialog(Window owner,
-						 Kind   dialogKind,
-						 String targetStr,
-						 String pathname,
-						 int    lineIndex,
-						 int    startOffset,
-						 int    endOffset)
+	private SearchDialog(
+		Window	owner,
+		Kind	dialogKind,
+		String	targetStr,
+		String	pathname,
+		int		lineIndex,
+		int		startOffset,
+		int		endOffset)
 	{
-
 		// Call superclass constructor
 		super(owner, dialogKind.getTitleString());
 
@@ -573,8 +302,7 @@ class SearchDialog
 			topPanel.add(lineLabel);
 
 			// Field: line
-			InfoField lineField = new InfoField(Integer.toString(lineIndex + 1),
-												LINE_FIELD_NUM_COLUMNS);
+			InfoField lineField = new InfoField(Integer.toString(lineIndex + 1), LINE_FIELD_NUM_COLUMNS);
 
 			gbc.gridx = 1;
 			gbc.gridy = gridY++;
@@ -606,8 +334,7 @@ class SearchDialog
 			// Field: start offset
 			JPanel offsetPanel = new JPanel(gridBag);
 
-			InfoField startOffsetField = new InfoField(Integer.toString(startOffset),
-													   OFFSET_FIELD_NUM_COLUMNS);
+			InfoField startOffsetField = new InfoField(Integer.toString(startOffset), OFFSET_FIELD_NUM_COLUMNS);
 
 			gbc.gridx = 0;
 			gbc.gridy = 0;
@@ -637,8 +364,7 @@ class SearchDialog
 			offsetPanel.add(toLabel);
 
 			// Field: end offset
-			InfoField endOffsetField = new InfoField(Integer.toString(endOffset),
-													 OFFSET_FIELD_NUM_COLUMNS);
+			InfoField endOffsetField = new InfoField(Integer.toString(endOffset), OFFSET_FIELD_NUM_COLUMNS);
 
 			gbc.gridx = 2;
 			gbc.gridy = 0;
@@ -666,7 +392,7 @@ class SearchDialog
 		}
 
 		// Icon: question
-		JLabel questionIcon = new JLabel(UIManager.getIcon("OptionPane.questionIcon"));
+		JLabel questionIcon = new JLabel(UIManager.getIcon(PropertyKey.OPTION_PANE_QUESTION_ICON));
 
 		gbc.gridx = 0;
 		gbc.gridy = gridY;
@@ -769,7 +495,8 @@ class SearchDialog
 		addWindowListener(new WindowAdapter()
 		{
 			@Override
-			public void windowClosing(WindowEvent event)
+			public void windowClosing(
+				WindowEvent	event)
 			{
 				close(TextSearcher.Option.CANCEL);
 			}
@@ -805,7 +532,6 @@ class SearchDialog
 
 		// Show dialog
 		setVisible(true);
-
 	}
 
 	//------------------------------------------------------------------
@@ -814,16 +540,17 @@ class SearchDialog
 //  Class methods
 ////////////////////////////////////////////////////////////////////////
 
-	public static SearchDialog showDialog(Component parent,
-										  Kind      dialogKind,
-										  String    targetStr,
-										  String    pathname,
-										  int       lineIndex,
-										  int       startOffset,
-										  int       endOffset)
+	public static SearchDialog showDialog(
+		Component	parent,
+		Kind		dialogKind,
+		String		targetStr,
+		String		pathname,
+		int			lineIndex,
+		int			startOffset,
+		int			endOffset)
 	{
-		return new SearchDialog(GuiUtils.getWindow(parent), dialogKind, targetStr, pathname,
-								lineIndex, startOffset, endOffset);
+		return new SearchDialog(GuiUtils.getWindow(parent), dialogKind, targetStr, pathname, lineIndex, startOffset,
+								endOffset);
 	}
 
 	//------------------------------------------------------------------
@@ -832,7 +559,9 @@ class SearchDialog
 //  Instance methods : ActionListener interface
 ////////////////////////////////////////////////////////////////////////
 
-	public void actionPerformed(ActionEvent event)
+	@Override
+	public void actionPerformed(
+		ActionEvent	event)
 	{
 		int index = Integer.parseInt(event.getActionCommand().substring(Command.CLOSE.length()));
 		Option option = dialogKind.getOption(index).option;
@@ -847,7 +576,8 @@ class SearchDialog
 //  Instance methods
 ////////////////////////////////////////////////////////////////////////
 
-	private void close(TextSearcher.Option option)
+	private void close(
+		TextSearcher.Option	option)
 	{
 		locations[dialogKind.ordinal()] = getLocation();
 		setVisible(false);
@@ -858,17 +588,338 @@ class SearchDialog
 	//------------------------------------------------------------------
 
 ////////////////////////////////////////////////////////////////////////
-//  Class variables
+//  Enumerated types
 ////////////////////////////////////////////////////////////////////////
 
-	private static	Point[]	locations;
-	private static	int[]	focusIndices;
+
+	// ENUMERATION: DIALOG KIND
+
+
+	enum Kind
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Constants
+	////////////////////////////////////////////////////////////////////
+
+		FIND
+		(
+			"Search options | Find",
+			"Do you want to search for the next occurrence?",
+			FIND_OPTIONS,
+			0
+		),
+
+		REPLACE
+		(
+			"Search options | Find-and-replace",
+			"Do you want to replace this occurrence?",
+			REPLACE_OPTIONS,
+			1
+		),
+
+		PREVIEW
+		(
+			"Text replacement preview",
+			"Do you want to keep the replacement or to restore the original text?",
+			PREVIEW_OPTIONS,
+			1
+		);
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance variables
+	////////////////////////////////////////////////////////////////////
+
+		private	String		titleStr;
+		private	String		questionStr;
+		private	OptionEx[]	options;
+		private	int			defaultFocusIndex;
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private Kind(
+			String		titleStr,
+			String		questionStr,
+			OptionEx[]	options,
+			int			defaultFocusIndex)
+		{
+			this.titleStr = titleStr;
+			this.questionStr = questionStr;
+			this.options = options;
+			this.defaultFocusIndex = defaultFocusIndex;
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods
+	////////////////////////////////////////////////////////////////////
+
+		public String getTitleString()
+		{
+			return titleStr;
+		}
+
+		//--------------------------------------------------------------
+
+		public String getQuestionString()
+		{
+			return questionStr;
+		}
+
+		//--------------------------------------------------------------
+
+		public int getNumOptions()
+		{
+			return options.length;
+		}
+
+		//--------------------------------------------------------------
+
+		public OptionEx getOption(
+			int	index)
+		{
+			return options[index];
+		}
+
+		//--------------------------------------------------------------
+
+		public int getDefaultFocusIndex()
+		{
+			return defaultFocusIndex;
+		}
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
+
+
+	// ENUMERATION: OPTION
+
+
+	private enum Option
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Constants
+	////////////////////////////////////////////////////////////////////
+
+		YES
+		(
+			TextSearcher.Option.REPLACE,
+			"Yes",
+			KeyEvent.VK_Y
+		),
+
+		NO
+		(
+			TextSearcher.Option.SKIP,
+			"No",
+			KeyEvent.VK_N
+		),
+
+		PREVIEW
+		(
+			TextSearcher.Option.PREVIEW,
+			"Preview",
+			KeyEvent.VK_P
+		),
+
+		THIS_FILE
+		(
+			TextSearcher.Option.REPLACE_FILE,
+			"This file",
+			KeyEvent.VK_T
+		),
+
+		GLOBAL
+		(
+			TextSearcher.Option.REPLACE_GLOBAL,
+			"Global",
+			KeyEvent.VK_G
+		),
+
+		NEXT_FILE
+		(
+			TextSearcher.Option.NEXT_FILE,
+			"Next file",
+			KeyEvent.VK_X
+		),
+
+		KEEP
+		(
+			TextSearcher.Option.KEEP,
+			"Keep",
+			KeyEvent.VK_K
+		),
+
+		RESTORE
+		(
+			TextSearcher.Option.RESTORE,
+			"Restore",
+			KeyEvent.VK_R
+		),
+
+		CANCEL
+		(
+			TextSearcher.Option.CANCEL,
+			"Cancel",
+			KeyEvent.VK_ESCAPE
+		);
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance variables
+	////////////////////////////////////////////////////////////////////
+
+		private	TextSearcher.Option	searchOption;
+		private	String				text;
+		private	int					key;
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private Option(
+			TextSearcher.Option	searchOption,
+			String				text,
+			int					key)
+		{
+			this.searchOption = searchOption;
+			this.text = text;
+			this.key = key;
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods
+	////////////////////////////////////////////////////////////////////
+
+		public TextSearcher.Option getSearchOption()
+		{
+			return searchOption;
+		}
+
+		//--------------------------------------------------------------
+
+		public String getText()
+		{
+			return text;
+		}
+
+		//--------------------------------------------------------------
+
+		public int getKey()
+		{
+			return key;
+		}
+
+		//--------------------------------------------------------------
+
+		public KeyStroke getKeyStroke()
+		{
+			return KeyStroke.getKeyStroke(key, 0);
+		}
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
 
 ////////////////////////////////////////////////////////////////////////
-//  Instance variables
+//  Member classes : non-inner classes
 ////////////////////////////////////////////////////////////////////////
 
-	private	Kind	dialogKind;
+
+	// CLASS: EXTENDED OPTION
+
+
+	private static class OptionEx
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance variables
+	////////////////////////////////////////////////////////////////////
+
+		Option	option;
+		String	tooltipStr;
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private OptionEx(
+			Option	option,
+			String	tooltipStr)
+		{
+			this.option = option;
+			this.tooltipStr = tooltipStr;
+		}
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
+
+
+	// CLASS: INFORMATION FIELD
+
+
+	private static class InfoField
+		extends JTextField
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private InfoField(
+			String	text,
+			int		numColumns)
+		{
+			super(text, numColumns);
+			AppFont.MAIN.apply(this);
+			GuiUtils.setPaddedLineBorder(this, 2, 4);
+			AppConfig config = AppConfig.INSTANCE;
+			setForeground(config.getTextAreaTextColour());
+			setBackground(config.getTextAreaBackgroundColour());
+			setSelectedTextColor(config.getTextAreaHighlightTextColour());
+			setSelectionColor(config.getTextAreaHighlightBackgroundColour());
+			setEditable(false);
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : overriding methods
+	////////////////////////////////////////////////////////////////////
+
+		@Override
+		public Dimension getPreferredSize()
+		{
+			Dimension size = super.getPreferredSize();
+			return new Dimension(size.width + 1, size.height);
+		}
+
+		//--------------------------------------------------------------
+
+		@Override
+		protected int getColumnWidth()
+		{
+			return FontUtils.getCharWidth('0', getFontMetrics(getFont()));
+		}
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
 
 }
 

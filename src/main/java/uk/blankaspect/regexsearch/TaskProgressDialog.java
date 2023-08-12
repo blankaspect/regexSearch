@@ -2,7 +2,7 @@
 
 TaskProgressDialog.java
 
-Task progress dialog box class.
+Task progress dialog class.
 
 \*====================================================================*/
 
@@ -51,21 +51,21 @@ import javax.swing.SwingUtilities;
 
 import uk.blankaspect.common.exception.AppException;
 
-import uk.blankaspect.common.swing.action.KeyAction;
-
-import uk.blankaspect.common.swing.button.FButton;
-
-import uk.blankaspect.common.swing.misc.GuiUtils;
-
-import uk.blankaspect.common.swing.text.TextRendering;
-import uk.blankaspect.common.swing.text.TextUtils;
-
 import uk.blankaspect.common.ui.progress.IProgressView;
+
+import uk.blankaspect.ui.swing.action.KeyAction;
+
+import uk.blankaspect.ui.swing.button.FButton;
+
+import uk.blankaspect.ui.swing.misc.GuiUtils;
+
+import uk.blankaspect.ui.swing.text.TextRendering;
+import uk.blankaspect.ui.swing.text.TextUtils;
 
 //----------------------------------------------------------------------
 
 
-// TASK PROGRESS DIALOG BOX CLASS
+// TASK PROGRESS DIALOG CLASS
 
 
 class TaskProgressDialog
@@ -87,190 +87,20 @@ class TaskProgressDialog
 	}
 
 ////////////////////////////////////////////////////////////////////////
-//  Member classes : non-inner classes
+//  Class variables
 ////////////////////////////////////////////////////////////////////////
 
-
-	// INFORMATION FIELD CLASS
-
-
-	private static class InfoField
-		extends JComponent
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private InfoField()
-		{
-			AppFont.MAIN.apply(this);
-			setPreferredSize(new Dimension(INFO_FIELD_WIDTH,
-										   getFontMetrics(getFont()).getHeight()));
-			setOpaque(true);
-			setFocusable(false);
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : overriding methods
-	////////////////////////////////////////////////////////////////////
-
-		@Override
-		protected void paintComponent(Graphics gr)
-		{
-			// Create copy of graphics context
-			gr = gr.create();
-
-			// Draw background
-			gr.setColor(getBackground());
-			gr.fillRect(0, 0, getWidth(), getHeight());
-
-			// Draw text
-			if (text != null)
-			{
-				// Set rendering hints for text antialiasing and fractional metrics
-				TextRendering.setHints((Graphics2D)gr);
-
-				// Draw text
-				gr.setColor(Color.BLACK);
-				gr.drawString(text, 0, gr.getFontMetrics().getAscent());
-			}
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods
-	////////////////////////////////////////////////////////////////////
-
-		public void setText(String text)
-		{
-			this.text = text;
-			repaint();
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance variables
-	////////////////////////////////////////////////////////////////////
-
-		private	String	text;
-
-	}
-
-	//==================================================================
+	private static	Point	location;
 
 ////////////////////////////////////////////////////////////////////////
-//  Member classes : inner classes
+//  Instance variables
 ////////////////////////////////////////////////////////////////////////
 
-
-	// SET INFO CLASS
-
-
-	private class DoSetInfo
-		implements Runnable
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private DoSetInfo(File file,
-						  int  numFiles)
-		{
-			this.file = file;
-			this.numFiles = numFiles;
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : Runnable interface
-	////////////////////////////////////////////////////////////////////
-
-		public void run()
-		{
-			FontMetrics fontMetrics = infoField1.getFontMetrics(infoField1.getFont());
-			if (file == null)
-			{
-				infoField1.setText(AppConstants.CLIPBOARD_STR);
-				infoField2.setText(null);
-			}
-			else
-			{
-				infoField1.setText(TextUtils.getLimitedWidthPathname(Utils.getPathname(file),
-																	 fontMetrics,
-																	 infoField1.getWidth(),
-																	 Utils.getFileSeparatorChar()));
-				infoField2.setText("[ " + numFiles + " ]");
-			}
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance variables
-	////////////////////////////////////////////////////////////////////
-
-		private	File	file;
-		private	int		numFiles;
-
-	}
-
-	//==================================================================
-
-
-	// WINDOW EVENT HANDLER CLASS
-
-
-	private class WindowEventHandler
-		extends WindowAdapter
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private WindowEventHandler()
-		{
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : overriding methods
-	////////////////////////////////////////////////////////////////////
-
-		@Override
-		public void windowOpened(WindowEvent event)
-		{
-			Task.setProgressView((TaskProgressDialog)event.getWindow());
-			Task.setException(null, true);
-			Task.setCancelled(false);
-			task.start();
-		}
-
-		//--------------------------------------------------------------
-
-		@Override
-		public void windowClosing(WindowEvent event)
-		{
-			location = getLocation();
-			if (stopped)
-				dispose();
-			else
-				Task.setCancelled(true);
-		}
-
-		//--------------------------------------------------------------
-
-	}
-
-	//==================================================================
+	private	Task		task;
+	private	boolean		stopped;
+	private	InfoField	infoField1;
+	private	InfoField	infoField2;
+	private	JButton		cancelButton;
 
 ////////////////////////////////////////////////////////////////////////
 //  Constructors
@@ -490,20 +320,190 @@ class TaskProgressDialog
 	//------------------------------------------------------------------
 
 ////////////////////////////////////////////////////////////////////////
-//  Class variables
+//  Member classes : non-inner classes
 ////////////////////////////////////////////////////////////////////////
 
-	private static	Point	location;
+
+	// INFORMATION FIELD CLASS
+
+
+	private static class InfoField
+		extends JComponent
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private InfoField()
+		{
+			AppFont.MAIN.apply(this);
+			setPreferredSize(new Dimension(INFO_FIELD_WIDTH,
+										   getFontMetrics(getFont()).getHeight()));
+			setOpaque(true);
+			setFocusable(false);
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : overriding methods
+	////////////////////////////////////////////////////////////////////
+
+		@Override
+		protected void paintComponent(Graphics gr)
+		{
+			// Create copy of graphics context
+			gr = gr.create();
+
+			// Draw background
+			gr.setColor(getBackground());
+			gr.fillRect(0, 0, getWidth(), getHeight());
+
+			// Draw text
+			if (text != null)
+			{
+				// Set rendering hints for text antialiasing and fractional metrics
+				TextRendering.setHints((Graphics2D)gr);
+
+				// Draw text
+				gr.setColor(Color.BLACK);
+				gr.drawString(text, 0, gr.getFontMetrics().getAscent());
+			}
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods
+	////////////////////////////////////////////////////////////////////
+
+		public void setText(String text)
+		{
+			this.text = text;
+			repaint();
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance variables
+	////////////////////////////////////////////////////////////////////
+
+		private	String	text;
+
+	}
+
+	//==================================================================
 
 ////////////////////////////////////////////////////////////////////////
-//  Instance variables
+//  Member classes : inner classes
 ////////////////////////////////////////////////////////////////////////
 
-	private	Task		task;
-	private	boolean		stopped;
-	private	InfoField	infoField1;
-	private	InfoField	infoField2;
-	private	JButton		cancelButton;
+
+	// SET INFO CLASS
+
+
+	private class DoSetInfo
+		implements Runnable
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private DoSetInfo(File file,
+						  int  numFiles)
+		{
+			this.file = file;
+			this.numFiles = numFiles;
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : Runnable interface
+	////////////////////////////////////////////////////////////////////
+
+		public void run()
+		{
+			FontMetrics fontMetrics = infoField1.getFontMetrics(infoField1.getFont());
+			if (file == null)
+			{
+				infoField1.setText(AppConstants.CLIPBOARD_STR);
+				infoField2.setText(null);
+			}
+			else
+			{
+				infoField1.setText(TextUtils.getLimitedWidthPathname(Utils.getPathname(file),
+																	 fontMetrics,
+																	 infoField1.getWidth(),
+																	 Utils.getFileSeparatorChar()));
+				infoField2.setText("[ " + numFiles + " ]");
+			}
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance variables
+	////////////////////////////////////////////////////////////////////
+
+		private	File	file;
+		private	int		numFiles;
+
+	}
+
+	//==================================================================
+
+
+	// WINDOW EVENT HANDLER CLASS
+
+
+	private class WindowEventHandler
+		extends WindowAdapter
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private WindowEventHandler()
+		{
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : overriding methods
+	////////////////////////////////////////////////////////////////////
+
+		@Override
+		public void windowOpened(WindowEvent event)
+		{
+			Task.setProgressView((TaskProgressDialog)event.getWindow());
+			Task.setException(null, true);
+			Task.setCancelled(false);
+			task.start();
+		}
+
+		//--------------------------------------------------------------
+
+		@Override
+		public void windowClosing(WindowEvent event)
+		{
+			location = getLocation();
+			if (stopped)
+				dispose();
+			else
+				Task.setCancelled(true);
+		}
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
 
 }
 

@@ -28,7 +28,7 @@ import javax.swing.event.ChangeListener;
 
 import uk.blankaspect.common.filesystem.PathnameUtils;
 
-import uk.blankaspect.common.swing.textarea.TextArea;
+import uk.blankaspect.ui.swing.textarea.TextArea;
 
 //----------------------------------------------------------------------
 
