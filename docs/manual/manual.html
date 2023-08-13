@@ -189,7 +189,7 @@
         RegexSearch.
       </p>
       <p class="wrap">
-        The <code>src</code> directory of the distribution contains all the source code and
+        The <code>src</code> directory of the repository contains all the source code and
         resources that constitute the application; there are no external dependencies.  The
         directory conforms to the Maven standard directory layout: the source code is in
         <code>src/main/java</code> and the resources are in <code>src/main/resources</code>.
@@ -412,9 +412,10 @@
       </ul>
       <p class="wrap">
         The search parameters are stored collectively as an XML file.  The DTD of the current
-        version of a search-parameter file (<code>searchParams.dtd</code>) is included in the
-        RegexSearch distribution.  It is provided only for reference because RegexSearch does
-        not validate search-parameter files against the DTD.
+        version of a search-parameter file can be found in <a
+        href="https://github.com/blankaspect/regexSearch/blob/master/dtd/searchParameters.dtd">a
+        file</a> in the RegexSearch repository.  It is provided only for reference because
+        RegexSearch does not validate search-parameter files against the DTD.
       </p>
       <p class="wrap">
         A search-parameter file may contain multiple file sets, targets and replacements, and
@@ -3020,7 +3021,7 @@
         The Java character classes will probably be of interest only to Java programmers.  The
         name of the character class is formed by substituting <code>java</code> for
         <code>is</code> in the name of a method of the <code><a class="external"
-        href="https://docs.oracle.com/javase/7/docs/api/java/lang/Character.html">java.lang.Character</a></code>
+        href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Character.html">java.lang.Character</a></code>
         class that begins with <code>is</code>.  For example, the character class
         <code>javaLetterOrDigit</code> is equivalent to
         <code>java.lang.Character.isLetterOrDigit()</code>.
@@ -3170,7 +3171,7 @@
       <ul class="list">
         <li class="wrap">
           The Java documentation of the <code><a class="external"
-          href="https://docs.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html">java.util.regex.Pattern</a></code>
+          href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/regex/Pattern.html">java.util.regex.Pattern</a></code>
           class.
         </li>
         <li class="wrap">
@@ -3520,7 +3521,7 @@
     <div id="lastModified">
       <div>
         <div>
-          Last modified: 2023-08-12
+          Last modified: 2023-08-13
         </div>
         <div class="image">
           <a class="hideHover" href="http://validator.w3.org/check?uri=referer">
