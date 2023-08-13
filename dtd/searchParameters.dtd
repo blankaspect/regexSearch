@@ -1,0 +1,45 @@
+<!--
+========================================================================
+DTD: Search parameters
+Application: RegexSearch
+
+This DTD is for reference only: RegexSearch does not validate its
+search-parameter documents against a DTD.
+========================================================================
+-->
+
+<!ENTITY % boolean "false | true | no | yes" >
+<!ENTITY % fileSetKind "file | directory | list | results | clipboard" >
+
+<!ELEMENT searchParameters ( fileSet*, target*, replacement* )>
+<!ATTLIST searchParameters
+    xmlns            CDATA         #FIXED    "http://ns.blankaspect.uk/regexSearch-1"
+    version          NMTOKEN       #REQUIRED
+    replace          ( %boolean; ) #REQUIRED
+    regex            ( %boolean; ) #REQUIRED
+    ignoreCase       ( %boolean; ) #REQUIRED
+    showNotFound     ( %boolean; ) #REQUIRED
+    fileSetIndex     NMTOKEN       #IMPLIED
+    targetIndex      NMTOKEN       #IMPLIED
+    replacementIndex NMTOKEN       #IMPLIED
+>
+
+<!ELEMENT fileSet ( pathname*, include*, exclude* )>
+<!ATTLIST fileSet
+    kind          ( %fileSetKind; ) #REQUIRED
+    pathnameIndex NMTOKEN           #IMPLIED
+    includeIndex  NMTOKEN           #IMPLIED
+    excludeIndex  NMTOKEN           #IMPLIED
+>
+
+<!ELEMENT target ( #PCDATA )>
+
+<!ELEMENT replacement ( #PCDATA )>
+
+<!ELEMENT pathname ( #PCDATA )>
+
+<!ELEMENT include ( pattern* )>
+
+<!ELEMENT exclude ( pattern* )>
+
+<!ELEMENT pattern ( #PCDATA )>
