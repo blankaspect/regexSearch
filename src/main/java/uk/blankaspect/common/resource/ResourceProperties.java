@@ -68,7 +68,7 @@ public class ResourceProperties
 	 * @param  pathname
 	 *           the pathname of the resource file.
 	 * @throws LocationException
-	 *           if an error occurred when reading the properties from the resource.
+	 *           if an error occurs when reading the properties from the resource.
 	 */
 
 	public ResourceProperties(String pathname)

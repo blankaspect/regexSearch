@@ -61,7 +61,7 @@ public abstract class ColourProperty
 		{
 			throw new IllegalValueException(input);
 		}
-		catch (uk.blankaspect.common.exception.ValueOutOfBoundsException e)
+		catch (uk.blankaspect.common.exception2.ValueOutOfBoundsException e)
 		{
 			throw new ValueOutOfBoundsException(input);
 		}

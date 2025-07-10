@@ -256,14 +256,14 @@ class ResultList
 	{
 		StringBuilder buffer = new StringBuilder(32);
 		buffer.append(FOUND_STR);
-		buffer.append(result.numMatches);
-		if (result.numReplacements >= 0)
+		buffer.append(result.numMatches());
+		if (result.numReplacements() >= 0)
 		{
 			buffer.append(", ");
 			buffer.append(REPLACED_STR);
-			buffer.append(result.numReplacements);
+			buffer.append(result.numReplacements());
 		}
-		elements.add(new Element(Utils.getPathname(result.file), buffer.toString(), true));
+		elements.add(new Element(Utils.getPathname(result.file()), buffer.toString(), true));
 		fireStateChanged();
 	}
 
@@ -273,13 +273,13 @@ class ResultList
 	{
 		if (!elements.isEmpty())
 			elements.add(new Element());
-		if (result.numFiles >= 0)
-			elements.add(new Element(NUM_FILES_STR + EQUALS_STR + result.numFiles));
-		if (result.numMatchedFiles >= 0)
-			elements.add(new Element(NUM_MATCHED_FILES_STR + EQUALS_STR + result.numMatchedFiles));
-		elements.add(new Element(NUM_MATCHES_STR + EQUALS_STR + result.numMatches));
-		if (result.numReplacements >= 0)
-			elements.add(new Element(NUM_REPLACEMENTS_STR + EQUALS_STR + result.numReplacements));
+		if (result.numFiles() >= 0)
+			elements.add(new Element(NUM_FILES_STR + EQUALS_STR + result.numFiles()));
+		if (result.numMatchedFiles() >= 0)
+			elements.add(new Element(NUM_MATCHED_FILES_STR + EQUALS_STR + result.numMatchedFiles()));
+		elements.add(new Element(NUM_MATCHES_STR + EQUALS_STR + result.numMatches()));
+		if (result.numReplacements() >= 0)
+			elements.add(new Element(NUM_REPLACEMENTS_STR + EQUALS_STR + result.numReplacements()));
 		fireStateChanged();
 	}
 

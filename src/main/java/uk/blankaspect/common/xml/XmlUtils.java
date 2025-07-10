@@ -385,9 +385,8 @@ public class XmlUtils
 	{
 		try
 		{
-			DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
+			DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newNSInstance();
 			docBuilderFactory.setValidating(validate);
-			docBuilderFactory.setNamespaceAware(true);
 			docBuilderFactory.setXIncludeAware(true);
 			return docBuilderFactory.newDocumentBuilder();
 		}

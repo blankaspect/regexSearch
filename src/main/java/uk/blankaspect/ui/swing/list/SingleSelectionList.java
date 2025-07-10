@@ -39,7 +39,6 @@ import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.EventObject;
 import java.util.List;
 
@@ -276,7 +275,7 @@ public class SingleSelectionList<E>
 		dragEndIndex = -1;
 		model = new DefaultModel<>();
 
-		// Set component attributes
+		// Set properties
 		setFont(font);
 		setForeground(Colours.List.FOREGROUND.getColour());
 		setBackground(Colours.List.BACKGROUND.getColour());
@@ -1021,7 +1020,7 @@ public class SingleSelectionList<E>
 	public void setElements(
 		E[]	elements)
 	{
-		setElements((elements == null) ? null : Arrays.asList(elements));
+		setElements((elements == null) ? null : List.of(elements));
 	}
 
 	//------------------------------------------------------------------
@@ -1259,19 +1258,19 @@ public class SingleSelectionList<E>
 		int			index)
 	{
 		// Create copy of graphics context
-		gr = gr.create();
+		Graphics2D gr2d = GuiUtils.copyGraphicsContext(gr);
 
 		// Set rendering hints for text antialiasing and fractional metrics
-		if (gr instanceof Graphics2D gr2d)
-			TextRendering.setHints(gr2d);
+		TextRendering.setHints(gr2d);
 
 		// Get text and truncate it if it is too wide
-		FontMetrics fontMetrics = gr.getFontMetrics();
+		FontMetrics fontMetrics = gr2d.getFontMetrics();
 		String text = truncateText(getElementText(index), fontMetrics, getMaxTextWidth());
 
 		// Draw text
-		gr.setColor(getForegroundColour(index));
-		gr.drawString(text, horizontalMargin, index * rowHeight + FontUtils.getBaselineOffset(rowHeight, fontMetrics));
+		gr2d.setColor(getForegroundColour(index));
+		gr2d.drawString(text, horizontalMargin,
+						index * rowHeight + FontUtils.getBaselineOffset(rowHeight, fontMetrics));
 	}
 
 	//------------------------------------------------------------------
@@ -1721,7 +1720,7 @@ public class SingleSelectionList<E>
 			// Initialise instance variables
 			this.text = text;
 
-			// Set component attributes
+			// Set properties
 			FontUtils.setAppFont(FontKey.MAIN, this);
 			int width = 2 * getHorizontalMargin() + getFontMetrics(getFont()).stringWidth(text);
 			setPreferredSize(new Dimension(width, rowHeight + 2));
@@ -1740,27 +1739,26 @@ public class SingleSelectionList<E>
 			Graphics	gr)
 		{
 			// Create copy of graphics context
-			gr = gr.create();
+			Graphics2D gr2d = GuiUtils.copyGraphicsContext(gr);
 
 			// Get dimensions
 			int width = getWidth();
 			int height = getHeight();
 
 			// Fill interior
-			gr.setColor(SingleSelectionList.this.getBackground());
-			gr.fillRect(0, 0, width, height);
+			gr2d.setColor(SingleSelectionList.this.getBackground());
+			gr2d.fillRect(0, 0, width, height);
 
 			// Set rendering hints for text antialiasing and fractional metrics
-			if (gr instanceof Graphics2D gr2d)
-				TextRendering.setHints(gr2d);
+			TextRendering.setHints(gr2d);
 
 			// Draw text
-			gr.setColor(getForeground());
-			gr.drawString(text, getHorizontalMargin(), FontUtils.getBaselineOffset(height, gr.getFontMetrics()));
+			gr2d.setColor(getForeground());
+			gr2d.drawString(text, getHorizontalMargin(), FontUtils.getBaselineOffset(height, gr2d.getFontMetrics()));
 
 			// Draw border
-			gr.setColor(Colours.LINE_BORDER);
-			gr.drawRect(0, 0, width - 1, height - 1);
+			gr2d.setColor(Colours.LINE_BORDER);
+			gr2d.drawRect(0, 0, width - 1, height - 1);
 		}
 
 		//--------------------------------------------------------------

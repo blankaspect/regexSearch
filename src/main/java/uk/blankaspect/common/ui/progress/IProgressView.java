@@ -23,7 +23,7 @@ import java.io.File;
 //----------------------------------------------------------------------
 
 
-// PROGRESS VIEW INTERFACE
+// INTERFACE: PROGRESS VIEW
 
 
 public interface IProgressView
@@ -33,17 +33,24 @@ public interface IProgressView
 //  Methods
 ////////////////////////////////////////////////////////////////////////
 
-	void setInfo(String str);
+	void setInfo(
+		String	str);
 
 	//------------------------------------------------------------------
 
-	void setInfo(String str,
-				 File   file);
+	void setInfo(
+		String	str,
+		File	file);
 
 	//------------------------------------------------------------------
 
-	void setProgress(int    index,
-					 double value);
+	int getNumProgressIndicators();
+
+	//------------------------------------------------------------------
+
+	void setProgress(
+		int		index,
+		double	value);
 
 	//------------------------------------------------------------------
 

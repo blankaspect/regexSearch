@@ -18,7 +18,6 @@ package uk.blankaspect.ui.swing.dialog;
 // IMPORTS
 
 
-import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.FontMetrics;
 import java.awt.GridBagConstraints;
@@ -75,7 +74,7 @@ public abstract class AbstractNonEditableTextAreaDialog
 ////////////////////////////////////////////////////////////////////////
 
 	protected AbstractNonEditableTextAreaDialog(Window       owner,
-												String       titleStr,
+												String       title,
 												String       key,
 												int          numColumns,
 												int          numRows,
@@ -83,9 +82,8 @@ public abstract class AbstractNonEditableTextAreaDialog
 												String       defaultButtonKey,
 												String       text)
 	{
-
 		// Call superclass constructor
-		super(owner, titleStr, Dialog.ModalityType.APPLICATION_MODAL);
+		super(owner, title, ModalityType.APPLICATION_MODAL);
 
 		// Set icons
 		if (owner != null)
@@ -195,7 +193,7 @@ public abstract class AbstractNonEditableTextAreaDialog
 		// Resize dialog to its preferred size
 		pack();
 
-		// Set location of dialog box
+		// Set location of dialog
 		Point location = locations.get(key);
 		if (location == null)
 			location = GuiUtils.getComponentLocation(this, owner);

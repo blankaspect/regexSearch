@@ -19,7 +19,6 @@ package uk.blankaspect.common.property;
 
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -36,12 +35,18 @@ public class PropertyString
 //  Constants
 ////////////////////////////////////////////////////////////////////////
 
+	public enum SpanKind
+	{
+		UNKNOWN,
+		LITERAL,
+		ENVIRONMENT,
+		SYSTEM
+	}
+
 	public static final		char	KEY_SEPARATOR_CHAR	= '.';
 	public static final		String	KEY_SEPARATOR		= Character.toString(KEY_SEPARATOR_CHAR);
 
 	private static final	String	KEY_SUFFIX	= "}";
-
-	private static final	int		KEY_SUFFIX_LENGTH	= KEY_SUFFIX.length();
 
 	private static final	String	ENV_PREFIX_KEY	= "blankaspect" + KEY_SEPARATOR + "envPrefix";
 	private static final	String	SYS_PREFIX_KEY	= "blankaspect" + KEY_SEPARATOR + "sysPrefix";
@@ -126,7 +131,7 @@ public class PropertyString
 		String		str,
 		String...	keyPrefixes)
 	{
-		return getSpans(str, Arrays.asList(keyPrefixes));
+		return getSpans(str, List.of(keyPrefixes));
 	}
 
 	//------------------------------------------------------------------
@@ -142,15 +147,18 @@ public class PropertyString
 		// Initialise list of spans
 		List<Span> spans = new ArrayList<>();
 
-		// Populate list of spans
+		// Decompose input string into spans
 		int index = 0;
 		while (index < str.length())
 		{
-			Span.Kind spanKind = Span.Kind.UNKNOWN;
+			// Initialise local variables
+			SpanKind spanKind = SpanKind.UNKNOWN;
 			String spanKey = null;
-			String spanValue = null;
+			String spanText = null;
 			int keyPrefixLength = 0;
 			int startIndex = index;
+
+			// Search for start of property key
 			for (String keyPrefix : keyPrefixes)
 			{
 				index = str.indexOf(keyPrefix, startIndex);
@@ -160,64 +168,82 @@ public class PropertyString
 					break;
 				}
 			}
+
+			// If no property key was found, add span for literal text ...
 			if (index < 0)
 			{
 				index = str.length();
 				if (index > startIndex)
 				{
-					spanKind = Span.Kind.LITERAL;
-					spanValue = str.substring(startIndex);
+					spanKind = SpanKind.LITERAL;
+					spanText = str.substring(startIndex);
 				}
 			}
+
+			// ... otherwise, search for end of property key; replace property key with value of property
 			else
 			{
+				// Search for end of property key
 				index = str.indexOf(KEY_SUFFIX, index + keyPrefixLength);
+
+				// If there is no property-key suffix, add span for literal text ...
 				if (index < 0)
 				{
 					index = str.length();
 					if (index > startIndex)
 					{
-						spanKind = Span.Kind.LITERAL;
-						spanValue = str.substring(startIndex);
+						spanKind = SpanKind.LITERAL;
+						spanText = str.substring(startIndex);
 					}
 				}
+
+				// ... otherwise, replace property key with value of property
 				else
 				{
+					// Extract property key
 					startIndex += keyPrefixLength;
 					String key = str.substring(startIndex, index);
+
+					// Replace property key with value of property
 					try
 					{
+						// Case: key is environment variable
 						if (key.startsWith(envPrefix))
 						{
-							spanKind = Span.Kind.ENVIRONMENT;
+							spanKind = SpanKind.ENVIRONMENT;
 							spanKey = key.substring(envPrefix.length());
-							spanValue = System.getenv(spanKey);
+							spanText = System.getenv(spanKey);
 						}
+
+						// Case: key is key of system property
 						else if (key.startsWith(sysPrefix))
 						{
-							spanKind = Span.Kind.SYSTEM;
+							spanKind = SpanKind.SYSTEM;
 							spanKey = key.substring(sysPrefix.length());
-							spanValue = System.getProperty(spanKey);
+							spanText = System.getProperty(spanKey);
 						}
+
+						// Case: key does not start with a recognised prefix
 						else
 						{
+							// Try system property, then environment variable
 							spanKey = key;
 							if (!key.isEmpty())
 							{
 								String value = System.getProperty(key);
-								if (value == null)
+								if (value != null)
+								{
+									spanKind = SpanKind.SYSTEM;
+									spanText = value;
+								}
+								else
 								{
 									value = System.getenv(key);
 									if (value != null)
 									{
-										spanKind = Span.Kind.ENVIRONMENT;
-										spanValue = value;
+										spanKind = SpanKind.ENVIRONMENT;
+										spanText = value;
 									}
-								}
-								else
-								{
-									spanKind = Span.Kind.SYSTEM;
-									spanValue = value;
 								}
 							}
 						}
@@ -226,10 +252,14 @@ public class PropertyString
 					{
 						// ignore
 					}
-					index += KEY_SUFFIX_LENGTH;
+
+					// Increment index past end of property key
+					index += KEY_SUFFIX.length();
 				}
 			}
-			spans.add(new Span(spanKind, spanKey, spanValue));
+
+			// Create new span and add it to list
+			spans.add(new Span(spanKind, spanKey, spanText));
 		}
 
 		// Return list of spans
@@ -244,8 +274,8 @@ public class PropertyString
 		StringBuilder buffer = new StringBuilder(256);
 		for (Span span : spans)
 		{
-			if (span.value != null)
-				buffer.append(span.value);
+			if (span.text != null)
+				buffer.append(span.text);
 		}
 		return buffer.toString();
 	}
@@ -261,85 +291,18 @@ public class PropertyString
 	//------------------------------------------------------------------
 
 ////////////////////////////////////////////////////////////////////////
-//  Member classes : non-inner classes
+//  Member records
 ////////////////////////////////////////////////////////////////////////
 
 
-	// CLASS: SPAN
+	// RECORD: SPAN
 
 
-	public static class Span
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constants
-	////////////////////////////////////////////////////////////////////
-
-		public enum Kind
-		{
-			UNKNOWN,
-			LITERAL,
-			ENVIRONMENT,
-			SYSTEM
-		}
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance variables
-	////////////////////////////////////////////////////////////////////
-
-		private	Kind	kind;
-		private	String	key;
-		private	String	value;
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		public Span()
-		{
-			kind = Kind.UNKNOWN;
-		}
-
-		//--------------------------------------------------------------
-
-		public Span(
-			Kind	kind,
-			String	key,
-			String	value)
-		{
-			this.kind = kind;
-			this.key = key;
-			this.value = value;
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods
-	////////////////////////////////////////////////////////////////////
-
-		public Kind getKind()
-		{
-			return kind;
-		}
-
-		//--------------------------------------------------------------
-
-		public String getKey()
-		{
-			return key;
-		}
-
-		//--------------------------------------------------------------
-
-		public String getValue()
-		{
-			return value;
-		}
-
-		//--------------------------------------------------------------
-
-	}
+	public record Span(
+		SpanKind	kind,
+		String		key,
+		String		text)
+	{ }
 
 	//==================================================================
 

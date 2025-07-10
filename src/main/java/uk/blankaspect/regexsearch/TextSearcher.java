@@ -2,7 +2,7 @@
 
 TextSearcher.java
 
-Text searcher class.
+Class: text searcher.
 
 \*====================================================================*/
 
@@ -34,6 +34,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
+import java.util.stream.Stream;
+
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
@@ -50,7 +52,7 @@ import uk.blankaspect.common.misc.PathnameFilter;
 //----------------------------------------------------------------------
 
 
-// TEXT SEARCHER CLASS
+// CLASS: TEXT SEARCHER
 
 
 class TextSearcher
@@ -108,7 +110,7 @@ class TextSearcher
 		DONE
 	}
 
-	private static final	int	UNICODE_ESCAPE_LENGTH	= 4;
+	private static final	int		UNICODE_ESCAPE_LENGTH	= 4;
 
 	private static final	String	HEX_DIGITS	= "0123456789ABCDEF";
 
@@ -117,11 +119,39 @@ class TextSearcher
 	private static final	String	ILLEGAL_UNICODE_ESCAPE_STR	= "The Unicode escape is invalid.";
 
 ////////////////////////////////////////////////////////////////////////
+//  Instance variables
+////////////////////////////////////////////////////////////////////////
+
+	private	String				replacementStr;
+	private	boolean				regex;
+	private	boolean				replaceGlobal;
+	private	boolean				replaceUnprompted;
+	private	int					numFiles;
+	private	int					numMatchedFiles;
+	private	int					numMatches;
+	private	int					numMatchesInFile;
+	private	int					numReplacements;
+	private	int					numReplacementsInFile;
+	private	Pattern				pattern;
+	private	Matcher				matcher;
+	private	FileFilter			exclusionFilter;
+	private	Deque<Directory>	directoryStack;
+	private	File				targetFile;
+	private	StringBuffer		text;
+	private	int					textIndex;
+	private	LineSeparator		lineSeparator;
+	private	SearchState			searchState;
+	private	StopSubstate		stopSubstate;
+	private	List<File>			targetNotFoundFiles;
+	private	List<File>			unprocessedFiles;
+	private	List<File>			attributesNotSetFiles;
+
+////////////////////////////////////////////////////////////////////////
 //  Enumerated types
 ////////////////////////////////////////////////////////////////////////
 
 
-	// TEXT CASE
+	// ENUMERATION: TEXT CASE
 
 
 	private enum Case
@@ -135,10 +165,17 @@ class TextSearcher
 		UPPER   ('U');
 
 	////////////////////////////////////////////////////////////////////
+	//  Instance variables
+	////////////////////////////////////////////////////////////////////
+
+		private	char	key;
+
+	////////////////////////////////////////////////////////////////////
 	//  Constructors
 	////////////////////////////////////////////////////////////////////
 
-		private Case(char key)
+		private Case(
+			char	key)
 		{
 			this.key = key;
 		}
@@ -149,41 +186,23 @@ class TextSearcher
 	//  Class methods
 	////////////////////////////////////////////////////////////////////
 
-		public static Case forKey(char key)
+		public static Case forKey(
+			char	key)
 		{
-			for (Case value : values())
-			{
-				if (value.key == key)
-					return value;
-			}
-			return null;
+			return Stream.of(values())
+					.filter(value -> value.key == key)
+					.findFirst()
+					.orElse(null);
 		}
 
 		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods
-	////////////////////////////////////////////////////////////////////
-
-		public char getKey()
-		{
-			return key;
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance variables
-	////////////////////////////////////////////////////////////////////
-
-		private	char	key;
 
 	}
 
 	//==================================================================
 
 
-	// ERROR IDENTIFIERS
+	// ENUMERATION: ERROR IDENTIFIERS
 
 
 	private enum ErrorId
@@ -210,10 +229,17 @@ class TextSearcher
 		("An error occurred while performing a replacement.");
 
 	////////////////////////////////////////////////////////////////////
+	//  Instance variables
+	////////////////////////////////////////////////////////////////////
+
+		private	String	message;
+
+	////////////////////////////////////////////////////////////////////
 	//  Constructors
 	////////////////////////////////////////////////////////////////////
 
-		private ErrorId(String message)
+		private ErrorId(
+			String	message)
 		{
 			this.message = message;
 		}
@@ -224,6 +250,7 @@ class TextSearcher
 	//  Instance methods : AppException.IId interface
 	////////////////////////////////////////////////////////////////////
 
+		@Override
 		public String getMessage()
 		{
 			return message;
@@ -231,13 +258,36 @@ class TextSearcher
 
 		//--------------------------------------------------------------
 
-	////////////////////////////////////////////////////////////////////
-	//  Instance variables
-	////////////////////////////////////////////////////////////////////
-
-		private	String	message;
-
 	}
+
+	//==================================================================
+
+////////////////////////////////////////////////////////////////////////
+//  Member records
+////////////////////////////////////////////////////////////////////////
+
+
+	// RECORD: FILE RESULT
+
+
+	public record FileResult(
+		File	file,
+		int		numMatches,
+		int		numReplacements)
+	{ }
+
+	//==================================================================
+
+
+	// RECORD: AGGREGATE RESULT
+
+
+	public record AggregateResult(
+		int	numFiles,
+		int	numMatchedFiles,
+		int	numMatches,
+		int	numReplacements)
+	{ }
 
 	//==================================================================
 
@@ -246,23 +296,11 @@ class TextSearcher
 ////////////////////////////////////////////////////////////////////////
 
 
-	// SEARCH PARAMETERS CLASS
+	// CLASS: SEARCH PARAMETERS
 
 
 	public static class Params
 	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		public Params()
-		{
-			inclusionPatterns = Collections.emptyList();
-			exclusionPatterns = Collections.emptyList();
-		}
-
-		//--------------------------------------------------------------
 
 	////////////////////////////////////////////////////////////////////
 	//  Instance variables
@@ -277,83 +315,24 @@ class TextSearcher
 		boolean			ignoreCase;
 		boolean			recordTargetNotFound;
 
-	}
-
-	//==================================================================
-
-
-	// FILE RESULT CLASS
-
-
-	public static class FileResult
-	{
-
 	////////////////////////////////////////////////////////////////////
 	//  Constructors
 	////////////////////////////////////////////////////////////////////
 
-		private FileResult(File file,
-						   int  numMatches,
-						   int  numReplacements)
+		public Params()
 		{
-			this.file = file;
-			this.numMatches = numMatches;
-			this.numReplacements = numReplacements;
+			inclusionPatterns = Collections.emptyList();
+			exclusionPatterns = Collections.emptyList();
 		}
 
 		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance variables
-	////////////////////////////////////////////////////////////////////
-
-		File	file;
-		int		numMatches;
-		int		numReplacements;
 
 	}
 
 	//==================================================================
 
 
-	// AGGREGATE RESULT CLASS
-
-
-	public static class AggregateResult
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private AggregateResult(int numFiles,
-								int numMatchedFiles,
-								int numMatches,
-								int numReplacements)
-		{
-			this.numFiles = numFiles;
-			this.numMatchedFiles = numMatchedFiles;
-			this.numMatches = numMatches;
-			this.numReplacements = numReplacements;
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance variables
-	////////////////////////////////////////////////////////////////////
-
-		int	numFiles;
-		int	numMatchedFiles;
-		int	numMatches;
-		int	numReplacements;
-
-	}
-
-	//==================================================================
-
-
-	// SYNTAX EXCEPTION CLASS
+	// CLASS: SYNTAX EXCEPTION
 
 
 	public static class SyntaxException
@@ -361,20 +340,29 @@ class TextSearcher
 	{
 
 	////////////////////////////////////////////////////////////////////
+	//  Instance variables
+	////////////////////////////////////////////////////////////////////
+
+		private	String	description;
+		private	int		index;
+
+	////////////////////////////////////////////////////////////////////
 	//  Constructors
 	////////////////////////////////////////////////////////////////////
 
-		public SyntaxException(AppException.IId id,
-							   String           description)
+		public SyntaxException(
+			AppException.IId	id,
+			String				description)
 		{
 			this(id, description, -1);
 		}
 
 		//--------------------------------------------------------------
 
-		public SyntaxException(AppException.IId id,
-							   String           description,
-							   int              index)
+		public SyntaxException(
+			AppException.IId	id,
+			String				description,
+			int					index)
 		{
 			super(id);
 			this.description = description;
@@ -390,7 +378,7 @@ class TextSearcher
 		@Override
 		protected String getSuffix()
 		{
-			return ("\n(" + description + ")");
+			return "\n(" + description + ")";
 		}
 
 		//--------------------------------------------------------------
@@ -406,30 +394,34 @@ class TextSearcher
 
 		//--------------------------------------------------------------
 
-	////////////////////////////////////////////////////////////////////
-	//  Instance variables
-	////////////////////////////////////////////////////////////////////
-
-		private	String	description;
-		private	int		index;
-
 	}
 
 	//==================================================================
 
 
-	// DIRECTORY CLASS
+	// CLASS: DIRECTORY
 
 
 	private static class Directory
 	{
 
 	////////////////////////////////////////////////////////////////////
+	//  Instance variables
+	////////////////////////////////////////////////////////////////////
+
+		private	File[]			directories;
+		private	File[]			files;
+		private	PathnameFilter	filter;
+		private	int				directoryIndex;
+		private	int				fileIndex;
+
+	////////////////////////////////////////////////////////////////////
 	//  Constructors
 	////////////////////////////////////////////////////////////////////
 
-		private Directory(File           file,
-						  PathnameFilter filter)
+		private Directory(
+			File			file,
+			PathnameFilter	filter)
 		{
 			files = new File[1];
 			files[0] = file;
@@ -438,9 +430,10 @@ class TextSearcher
 
 		//--------------------------------------------------------------
 
-		private Directory(File[]         directories,
-						  File[]         files,
-						  PathnameFilter filter)
+		private Directory(
+			File[]			directories,
+			File[]			files,
+			PathnameFilter	filter)
 		{
 			this.directories = directories;
 			this.files = files;
@@ -482,16 +475,6 @@ class TextSearcher
 
 		//--------------------------------------------------------------
 
-	////////////////////////////////////////////////////////////////////
-	//  Instance variables
-	////////////////////////////////////////////////////////////////////
-
-		private	File[]			directories;
-		private	File[]			files;
-		private	PathnameFilter	filter;
-		private	int				directoryIndex;
-		private	int				fileIndex;
-
 	}
 
 	//==================================================================
@@ -513,9 +496,10 @@ class TextSearcher
 //  Class methods
 ////////////////////////////////////////////////////////////////////////
 
-	public static String createReplacementString(String  expression,
-												 Matcher matcher,
-												 boolean regex)
+	public static String createReplacementString(
+		String	expression,
+		Matcher	matcher,
+		boolean	regex)
 		throws AppException
 	{
 		StringBuilder buffer = new StringBuilder();
@@ -583,9 +567,11 @@ class TextSearcher
 								default:
 									textCase = Case.forKey(ch);
 									if (!regex || (textCase == null))
+									{
 										throw new SyntaxException(ErrorId.INVALID_REPLACEMENT_STRING,
 																  "\"" + escapeChar + ch + ILLEGAL_ESCAPE_STR,
 																  index - 1);
+									}
 									state = ReplacementState.GROUP_QUALIFIER;
 									break;
 							}
@@ -598,14 +584,17 @@ class TextSearcher
 				case GROUP_QUALIFIER:
 				{
 					if (index >= endIndex)
+					{
 						throw new SyntaxException(ErrorId.INVALID_REPLACEMENT_STRING,
-												  "\"" + escapeChar + textCase.getKey() + ILLEGAL_ESCAPE_STR,
-												  index - 2);
+												  "\"" + escapeChar + textCase.key + ILLEGAL_ESCAPE_STR, index - 2);
+					}
 					ch = expression.charAt(index);
 					if ((ch < '0') || (ch > '9'))
+					{
 						throw new SyntaxException(ErrorId.INVALID_REPLACEMENT_STRING,
-												  "\"" + escapeChar + textCase.getKey() + ch + ILLEGAL_ESCAPE_STR,
+												  "\"" + escapeChar + textCase.key + ch + ILLEGAL_ESCAPE_STR,
 												  index - 2);
+					}
 					state = ReplacementState.GROUP_INDEX;
 					break;
 				}
@@ -668,13 +657,17 @@ class TextSearcher
 					for (int i = 0; i < UNICODE_ESCAPE_LENGTH; i++)
 					{
 						if (index >= endIndex)
+						{
 							throw new SyntaxException(ErrorId.INVALID_REPLACEMENT_STRING, ILLEGAL_UNICODE_ESCAPE_STR,
 													  startIndex);
+						}
 						ch = Character.toUpperCase(expression.charAt(index++));
 						int digitValue = HEX_DIGITS.indexOf(ch);
 						if (digitValue < 0)
+						{
 							throw new SyntaxException(ErrorId.INVALID_REPLACEMENT_STRING, ILLEGAL_UNICODE_ESCAPE_STR,
 													  startIndex);
+						}
 						value <<= 4;
 						value += digitValue;
 					}
@@ -695,17 +688,18 @@ class TextSearcher
 
 	private static MainWindow getWindow()
 	{
-		return App.INSTANCE.getMainWindow();
+		return RegexSearchApp.INSTANCE.getMainWindow();
 	}
 
 	//------------------------------------------------------------------
 
-	private static boolean confirmContinue(AppException exception)
+	private static boolean confirmContinue(
+		AppException	exception)
 	{
 		String[] optionStrs = Utils.getOptionStrings(AppConstants.CONTINUE_STR);
-		return (JOptionPane.showOptionDialog(getWindow(), exception, App.SHORT_NAME, JOptionPane.OK_CANCEL_OPTION,
-											 JOptionPane.ERROR_MESSAGE, null, optionStrs, optionStrs[1])
-																							== JOptionPane.OK_OPTION);
+		return (JOptionPane.showOptionDialog(getWindow(), exception, RegexSearchApp.SHORT_NAME,
+											 JOptionPane.OK_CANCEL_OPTION, JOptionPane.ERROR_MESSAGE, null, optionStrs,
+											 optionStrs[1]) == JOptionPane.OK_OPTION);
 	}
 
 	//------------------------------------------------------------------
@@ -754,7 +748,8 @@ class TextSearcher
 
 	//------------------------------------------------------------------
 
-	public void startSearch(Params params)
+	public void startSearch(
+		Params	params)
 		throws AppException
 	{
 		// Initialise instance variables
@@ -796,7 +791,8 @@ class TextSearcher
 
 	//------------------------------------------------------------------
 
-	public void resumeSearch(Option option)
+	public void resumeSearch(
+		Option	option)
 		throws AppException
 	{
 		// Set the search state from the user's response in the search dialog
@@ -848,7 +844,8 @@ class TextSearcher
 
 	//------------------------------------------------------------------
 
-	private void initSearch(Params params)
+	private void initSearch(
+		Params	params)
 		throws AppException
 	{
 		// Initialise inclusion filters
@@ -866,8 +863,10 @@ class TextSearcher
 				for (String pattern : params.inclusionPatterns)
 				{
 					if (!new File(pattern).isAbsolute())
+					{
 						inclusionFilters.add(new PathnameFilter(PathnameFilter.toNormalisedPathname(file, pattern),
 																fsIgnoreCase));
+					}
 				}
 			}
 		}
@@ -976,7 +975,8 @@ class TextSearcher
 
 				case READ_FILE:
 				{
-					((TaskProgressDialog)Task.getProgressView()).setInfo(targetFile, numFiles + 1);
+					if (Task.getProgressView() instanceof TaskProgressDialog progressDialog)
+						progressDialog.setInfo(targetFile, numFiles + 1);
 
 					try
 					{
@@ -996,7 +996,8 @@ class TextSearcher
 
 				case GET_TEXT:
 				{
-					((TaskProgressDialog)Task.getProgressView()).setInfo(null, 0);
+					if (Task.getProgressView() instanceof TaskProgressDialog progressDialog)
+						progressDialog.setInfo(null, 0);
 
 					targetFile = null;
 					text = new StringBuffer(Utils.getClipboardText());
@@ -1029,8 +1030,8 @@ class TextSearcher
 						if (numMatchesInFile == 0)
 						{
 							++numMatchedFiles;
-							SwingUtilities.invokeLater(() -> getWindow().initTextModel(targetFile, text,
-																					   !replaceGlobal));
+							SwingUtilities.invokeLater(() ->
+									getWindow().initTextModel(targetFile, text, !replaceGlobal));
 						}
 
 						// Increment number of matches
@@ -1110,7 +1111,7 @@ class TextSearcher
 								{
 									throw new FileException(ErrorId.NOT_ENOUGH_MEMORY_TO_CONVERT_LINE_SEPARATORS,
 															targetFile);
-							}
+								}
 							}
 							catch (AppException e)
 							{
@@ -1172,8 +1173,9 @@ class TextSearcher
 
 	//------------------------------------------------------------------
 
-	private Directory getDirectory(File           directory,
-								   PathnameFilter filter)
+	private Directory getDirectory(
+		File			directory,
+		PathnameFilter	filter)
 	{
 		// Get relative length of filter
 		int filterRelativeLength = 0;
@@ -1233,7 +1235,8 @@ class TextSearcher
 
 	//------------------------------------------------------------------
 
-	private boolean replace(TextModel.ReplacementKind replacementKind)
+	private boolean replace(
+		TextModel.ReplacementKind	replacementKind)
 		throws AppException
 	{
 		try
@@ -1286,7 +1289,8 @@ class TextSearcher
 
 	//------------------------------------------------------------------
 
-	private void addUnprocessed(File file)
+	private void addUnprocessed(
+		File	file)
 	{
 		if (file != null)
 			unprocessedFiles.add(file);
@@ -1300,34 +1304,6 @@ class TextSearcher
 	}
 
 	//------------------------------------------------------------------
-
-////////////////////////////////////////////////////////////////////////
-//  Instance variables
-////////////////////////////////////////////////////////////////////////
-
-	private	String				replacementStr;
-	private	boolean				regex;
-	private	boolean				replaceGlobal;
-	private	boolean				replaceUnprompted;
-	private	int					numFiles;
-	private	int					numMatchedFiles;
-	private	int					numMatches;
-	private	int					numMatchesInFile;
-	private	int					numReplacements;
-	private	int					numReplacementsInFile;
-	private	Pattern				pattern;
-	private	Matcher				matcher;
-	private	FileFilter			exclusionFilter;
-	private	Deque<Directory>	directoryStack;
-	private	File				targetFile;
-	private	StringBuffer		text;
-	private	int					textIndex;
-	private	LineSeparator		lineSeparator;
-	private	SearchState			searchState;
-	private	StopSubstate		stopSubstate;
-	private	List<File>			targetNotFoundFiles;
-	private	List<File>			unprocessedFiles;
-	private	List<File>			attributesNotSetFiles;
 
 }
 

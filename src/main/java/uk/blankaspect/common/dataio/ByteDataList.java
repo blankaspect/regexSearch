@@ -38,6 +38,13 @@ public class ByteDataList
 {
 
 ////////////////////////////////////////////////////////////////////////
+//  Constants
+////////////////////////////////////////////////////////////////////////
+
+	/** Miscellaneous strings. */
+	private static final	String	NULL_BUFFER_STR	= "Null buffer";
+
+////////////////////////////////////////////////////////////////////////
 //  Instance variables
 ////////////////////////////////////////////////////////////////////////
 
@@ -131,11 +138,11 @@ public class ByteDataList
 	 */
 
 	@Override
-	public long getLength()
+	public long length()
 	{
 		long length = 0;
 		for (ByteData dataBlock : dataBlocks)
-			length += dataBlock.getLength();
+			length += dataBlock.length();
 		return length;
 	}
 
@@ -188,9 +195,9 @@ public class ByteDataList
 		for (int i = 0; i < numBlocks; i++)
 		{
 			ByteData block = dataBlocks.get(i);
-			endIndex = startIndex + block.getLength();
+			endIndex = startIndex + block.length();
 			if (index < endIndex)
-				return block.getBuffer()[block.getOffset() + (int)(index - startIndex)];
+				return block.buffer()[block.offset() + (int)(index - startIndex)];
 			startIndex = endIndex;
 		}
 		throw new IndexOutOfBoundsException(index);
@@ -252,11 +259,11 @@ public class ByteDataList
 	{
 		// Validate arguments
 		if (data == null)
-			throw new IllegalArgumentException("Null data");
+			throw new IllegalArgumentException(NULL_DATA_STR);
 
 		// Add block to list
 		if (data.length > 0)
-			dataBlocks.add(new ByteData(data));
+			dataBlocks.add(ByteData.of(data));
 	}
 
 	//------------------------------------------------------------------
@@ -279,11 +286,11 @@ public class ByteDataList
 	{
 		// Validate arguments
 		if (data == null)
-			throw new IllegalArgumentException("Null data");
+			throw new IllegalArgumentException(NULL_DATA_STR);
 		if ((offset < 0) || (offset > data.length))
-			throw new IllegalArgumentException("Offset out of bounds: " + offset);
+			throw new IllegalArgumentException(OFFSET_OUT_OF_BOUNDS_STR + offset);
 		if ((length < 0) || (length > data.length - offset))
-			throw new IllegalArgumentException("Length out of bounds: " + length);
+			throw new IllegalArgumentException(LENGTH_OUT_OF_BOUNDS_STR + length);
 
 		// Add block to list
 		if (length > 0)
@@ -304,11 +311,11 @@ public class ByteDataList
 	{
 		// Validate arguments
 		if (data == null)
-			throw new IllegalArgumentException("Null data");
+			throw new IllegalArgumentException(NULL_DATA_STR);
 
 		// Add block to list
 		if (data.length > 0)
-			dataBlocks.add(new ByteData(data.clone()));
+			dataBlocks.add(ByteData.of(data.clone()));
 	}
 
 	//------------------------------------------------------------------
@@ -331,18 +338,18 @@ public class ByteDataList
 	{
 		// Validate arguments
 		if (data == null)
-			throw new IllegalArgumentException("Null data");
+			throw new IllegalArgumentException(NULL_DATA_STR);
 		if ((offset < 0) || (offset > data.length))
-			throw new IllegalArgumentException("Offset out of bounds: " + offset);
+			throw new IllegalArgumentException(OFFSET_OUT_OF_BOUNDS_STR + offset);
 		if ((length < 0) || (length > data.length - offset))
-			throw new IllegalArgumentException("Length out of bounds: " + length);
+			throw new IllegalArgumentException(LENGTH_OUT_OF_BOUNDS_STR + length);
 
 		// Add block to list
 		if (length > 0)
 		{
 			byte[] copy = new byte[length];
 			System.arraycopy(data, offset, copy, 0, length);
-			dataBlocks.add(new ByteData(copy));
+			dataBlocks.add(ByteData.of(copy));
 		}
 	}
 
@@ -357,7 +364,7 @@ public class ByteDataList
 	public byte[] getData()
 	{
 		// Test length of data
-		long length = getLength();
+		long length = length();
 		if (length > Integer.MAX_VALUE)
 			throw new IllegalStateException("Data is too long");
 
@@ -388,7 +395,7 @@ public class ByteDataList
 	{
 		// Validate arguments
 		if (buffer == null)
-			throw new IllegalArgumentException("Null buffer");
+			throw new IllegalArgumentException(NULL_BUFFER_STR);
 
 		// Concatenate data blocks in buffer and return length of resulting data
 		return getData(buffer, 0, buffer.length);
@@ -417,11 +424,11 @@ public class ByteDataList
 	{
 		// Validate arguments
 		if (buffer == null)
-			throw new IllegalArgumentException("Null buffer");
+			throw new IllegalArgumentException(NULL_BUFFER_STR);
 		if ((offset < 0) || (offset > buffer.length))
-			throw new IllegalArgumentException("Offset out of bounds: " + offset);
+			throw new IllegalArgumentException(OFFSET_OUT_OF_BOUNDS_STR + offset);
 		if ((length < 0) || (length > buffer.length - offset))
-			throw new IllegalArgumentException("Length out of bounds: " + length);
+			throw new IllegalArgumentException(LENGTH_OUT_OF_BOUNDS_STR + length);
 
 		// Concatenate data blocks in buffer
 		int startOffset = offset;
@@ -430,8 +437,8 @@ public class ByteDataList
 		{
 			if (offset >= endOffset)
 				break;
-			int blockLength = Math.min(dataBlock.getLength(), endOffset - offset);
-			System.arraycopy(dataBlock.getBuffer(), dataBlock.getOffset(), buffer, offset, blockLength);
+			int blockLength = Math.min(dataBlock.length(), endOffset - offset);
+			System.arraycopy(dataBlock.buffer(), dataBlock.offset(), buffer, offset, blockLength);
 			offset += blockLength;
 		}
 
@@ -456,14 +463,14 @@ public class ByteDataList
 	{
 		// Validate arguments
 		if (buffer == null)
-			throw new IllegalArgumentException("Null buffer");
+			throw new IllegalArgumentException(NULL_BUFFER_STR);
 
 		// Add data blocks to buffer
 		int offset = 0;
 		for (ByteData dataBlock : dataBlocks)
 		{
-			int blockLength = dataBlock.getLength();
-			buffer.put(dataBlock.getBuffer(), dataBlock.getOffset(), blockLength);
+			int blockLength = dataBlock.length();
+			buffer.put(dataBlock.buffer(), dataBlock.offset(), blockLength);
 			offset += blockLength;
 		}
 

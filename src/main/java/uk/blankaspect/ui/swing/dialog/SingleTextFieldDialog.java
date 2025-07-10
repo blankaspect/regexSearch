@@ -2,7 +2,7 @@
 
 SingleTextFieldDialog.java
 
-Single text field dialog class.
+Class: single text-field dialog.
 
 \*====================================================================*/
 
@@ -19,7 +19,6 @@ package uk.blankaspect.ui.swing.dialog;
 
 
 import java.awt.Component;
-import java.awt.Dialog;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
@@ -33,7 +32,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.swing.BorderFactory;
@@ -61,7 +60,7 @@ import uk.blankaspect.ui.swing.textfield.FTextField;
 //----------------------------------------------------------------------
 
 
-// SINGLE TEXT FIELD DIALOG CLASS
+// CLASS: SINGLE TEXT-FIELD DIALOG
 
 
 public class SingleTextFieldDialog
@@ -83,70 +82,45 @@ public class SingleTextFieldDialog
 	}
 
 ////////////////////////////////////////////////////////////////////////
-//  Member classes : non-inner classes
+//  Class variables
 ////////////////////////////////////////////////////////////////////////
 
+	private static	Map<String, Point>	locations	= new HashMap<>();
 
-	// FIELD CLASS
+////////////////////////////////////////////////////////////////////////
+//  Instance variables
+////////////////////////////////////////////////////////////////////////
 
-
-	private static class Field
-		extends FTextField
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private Field(String text,
-					  int    numColumns)
-		{
-			super(text, numColumns);
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : overriding methods
-	////////////////////////////////////////////////////////////////////
-
-		@Override
-		protected int getColumnWidth()
-		{
-			return FontUtils.getCharWidth('0', getFontMetrics(getFont()));
-		}
-
-		//--------------------------------------------------------------
-
-	}
-
-	//==================================================================
+	private	String		key;
+	private	boolean		accepted;
+	private	JTextField	field;
 
 ////////////////////////////////////////////////////////////////////////
 //  Constructors
 ////////////////////////////////////////////////////////////////////////
 
-	protected SingleTextFieldDialog(Window owner,
-									String titleStr,
-									String key,
-									String labelStr,
-									String text)
+	protected SingleTextFieldDialog(
+		Window	owner,
+		String	title,
+		String	key,
+		String	labelStr,
+		String	text)
 	{
-		this(owner, titleStr, key, labelStr, text, DEFAULT_NUM_COLUMNS);
+		this(owner, title, key, labelStr, text, DEFAULT_NUM_COLUMNS);
 	}
 
 	//------------------------------------------------------------------
 
-	protected SingleTextFieldDialog(Window owner,
-									String titleStr,
-									String key,
-									String labelStr,
-									String text,
-									int    numColumns)
+	protected SingleTextFieldDialog(
+		Window	owner,
+		String	title,
+		String	key,
+		String	labelStr,
+		String	text,
+		int		numColumns)
 	{
-
 		// Call superclass constructor
-		super(owner, titleStr, Dialog.ModalityType.APPLICATION_MODAL);
+		super(owner, title, ModalityType.APPLICATION_MODAL);
 
 		// Set icons
 		if (owner != null)
@@ -263,7 +237,8 @@ public class SingleTextFieldDialog
 		addWindowListener(new WindowAdapter()
 		{
 			@Override
-			public void windowClosing(WindowEvent event)
+			public void windowClosing(
+				WindowEvent	event)
 			{
 				onClose();
 			}
@@ -275,7 +250,7 @@ public class SingleTextFieldDialog
 		// Resize dialog to its preferred size
 		pack();
 
-		// Set location of dialog box
+		// Set location of dialog
 		Point location = locations.get(key);
 		if (location == null)
 			location = GuiUtils.getComponentLocation(this, owner);
@@ -283,7 +258,6 @@ public class SingleTextFieldDialog
 
 		// Set default button
 		getRootPane().setDefaultButton(okButton);
-
 	}
 
 	//------------------------------------------------------------------
@@ -292,30 +266,31 @@ public class SingleTextFieldDialog
 //  Class methods
 ////////////////////////////////////////////////////////////////////////
 
-	public static String showDialog(Component parent,
-									String    titleStr,
-									String    key,
-									String    labelStr,
-									String    text)
+	public static String showDialog(
+		Component	parent,
+		String		title,
+		String		key,
+		String		labelStr,
+		String		text)
 	{
-		SingleTextFieldDialog dialog = new SingleTextFieldDialog(GuiUtils.getWindow(parent),
-																 titleStr, key, labelStr, text);
+		SingleTextFieldDialog dialog =
+				new SingleTextFieldDialog(GuiUtils.getWindow(parent), title, key, labelStr, text);
 		dialog.setVisible(true);
 		return dialog.getText();
 	}
 
 	//------------------------------------------------------------------
 
-	public static String showDialog(Component parent,
-									String    titleStr,
-									String    key,
-									String    labelStr,
-									String    text,
-									int       numColumns)
+	public static String showDialog(
+		Component	parent,
+		String		title,
+		String		key,
+		String		labelStr,
+		String		text,
+		int			numColumns)
 	{
-		SingleTextFieldDialog dialog = new SingleTextFieldDialog(GuiUtils.getWindow(parent),
-																 titleStr, key, labelStr, text,
-																 numColumns);
+		SingleTextFieldDialog dialog =
+				new SingleTextFieldDialog(GuiUtils.getWindow(parent), title, key, labelStr, text, numColumns);
 		dialog.setVisible(true);
 		return dialog.getText();
 	}
@@ -326,15 +301,24 @@ public class SingleTextFieldDialog
 //  Instance methods : ActionListener interface
 ////////////////////////////////////////////////////////////////////////
 
-	public void actionPerformed(ActionEvent event)
+	@Override
+	public void actionPerformed(
+		ActionEvent	event)
 	{
-		String command = event.getActionCommand();
+		switch (event.getActionCommand())
+		{
+			case Command.ACCEPT:
+				if (isTextValid())
+				{
+					accepted = true;
+					onClose();
+				}
+				break;
 
-		if (command.equals(Command.ACCEPT))
-			onAccept();
-
-		else if (command.equals(Command.CLOSE))
-			onClose();
+			case Command.CLOSE:
+				onClose();
+				break;
+		}
 	}
 
 	//------------------------------------------------------------------
@@ -352,7 +336,7 @@ public class SingleTextFieldDialog
 
 	protected String getText()
 	{
-		return (accepted ? field.getText() : null);
+		return accepted ? field.getText() : null;
 	}
 
 	//------------------------------------------------------------------
@@ -360,17 +344,6 @@ public class SingleTextFieldDialog
 	protected boolean isTextValid()
 	{
 		return true;
-	}
-
-	//------------------------------------------------------------------
-
-	private void onAccept()
-	{
-		if (isTextValid())
-		{
-			accepted = true;
-			onClose();
-		}
 	}
 
 	//------------------------------------------------------------------
@@ -385,18 +358,45 @@ public class SingleTextFieldDialog
 	//------------------------------------------------------------------
 
 ////////////////////////////////////////////////////////////////////////
-//  Class variables
+//  Member classes : non-inner classes
 ////////////////////////////////////////////////////////////////////////
 
-	private static	Map<String, Point>	locations	= new Hashtable<>();
 
-////////////////////////////////////////////////////////////////////////
-//  Instance variables
-////////////////////////////////////////////////////////////////////////
+	// CLASS: TEXT FIELD
 
-	private	String		key;
-	private	boolean		accepted;
-	private	JTextField	field;
+
+	private static class Field
+		extends FTextField
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private Field(
+			String	text,
+			int		numColumns)
+		{
+			super(text, numColumns);
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : overriding methods
+	////////////////////////////////////////////////////////////////////
+
+		@Override
+		protected int getColumnWidth()
+		{
+			return FontUtils.getCharWidth('0', getFontMetrics(getFont()));
+		}
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
 
 }
 

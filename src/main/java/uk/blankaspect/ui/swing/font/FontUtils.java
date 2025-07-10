@@ -22,7 +22,8 @@ import java.awt.Component;
 import java.awt.Font;
 import java.awt.FontMetrics;
 
-import uk.blankaspect.common.misc.IStringKeyed;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 
 //----------------------------------------------------------------------
 
@@ -40,6 +41,8 @@ public class FontUtils
 	private static final	String	CLASS_NAME_APP_FONT		= "AppFont";
 	private static final	String	METHOD_NAME_GET_FONT	= "getFont";
 	private static final	String	METHOD_NAME_APPLY		= "apply";
+
+	private static final	String[]	FONT_KEY_GETTER_NAMES	= { "key", "getKey" };
 
 ////////////////////////////////////////////////////////////////////////
 //  Class variables
@@ -86,8 +89,8 @@ public class FontUtils
 		FontMetrics	fontMetrics,
 		boolean		roundUp)
 	{
-		return ((height - fontMetrics.getAscent() - fontMetrics.getDescent() + (roundUp ? 1 : 0)) / 2
-																						+ fontMetrics.getAscent());
+		return (height - fontMetrics.getAscent() - fontMetrics.getDescent() + (roundUp ? 1 : 0)) / 2
+				+ fontMetrics.getAscent();
 	}
 
 	//------------------------------------------------------------------
@@ -108,10 +111,14 @@ public class FontUtils
 			Class<?> cls = getAppFontClass();
 			if (cls.isEnum())
 			{
-				for (Object obj : cls.getEnumConstants())
+				Method keyGetter = getFontKeyGetter(cls);
+				if (keyGetter != null)
 				{
-					if (((IStringKeyed)obj).getKey().equals(key))
-						return true;
+					for (Object enumConst : cls.getEnumConstants())
+					{
+						if (key.equals(keyGetter.invoke(enumConst)))
+							return true;
+					}
 				}
 			}
 		}
@@ -133,10 +140,17 @@ public class FontUtils
 			Class<?> cls = getAppFontClass();
 			if (cls.isEnum())
 			{
-				for (Object obj : cls.getEnumConstants())
+				Method keyGetter = getFontKeyGetter(cls);
+				if (keyGetter != null)
 				{
-					if (((IStringKeyed)obj).getKey().equals(key))
-						font = (Font)cls.getMethod(METHOD_NAME_GET_FONT).invoke(obj);
+					for (Object enumConst : cls.getEnumConstants())
+					{
+						if (key.equals(keyGetter.invoke(enumConst)))
+						{
+							font = (Font)cls.getMethod(METHOD_NAME_GET_FONT).invoke(enumConst);
+							break;
+						}
+					}
 				}
 			}
 		}
@@ -158,12 +172,16 @@ public class FontUtils
 			Class<?> cls = getAppFontClass();
 			if (cls.isEnum())
 			{
-				for (Object obj : cls.getEnumConstants())
+				Method keyGetter = getFontKeyGetter(cls);
+				if (keyGetter != null)
 				{
-					if (((IStringKeyed)obj).getKey().equals(key))
+					for (Object enumConst : cls.getEnumConstants())
 					{
-						cls.getMethod(METHOD_NAME_APPLY, Component.class).invoke(obj, component);
-						break;
+						if (key.equals(keyGetter.invoke(enumConst)))
+						{
+							cls.getMethod(METHOD_NAME_APPLY, Component.class).invoke(enumConst, component);
+							break;
+						}
 					}
 				}
 			}
@@ -180,6 +198,30 @@ public class FontUtils
 		throws Exception
 	{
 		return (appFontClass == null) ? Class.forName(CLASS_NAME_APP_FONT) : appFontClass;
+	}
+
+	//------------------------------------------------------------------
+
+	private static Method getFontKeyGetter(
+		Class<?>	cls)
+	{
+		for (Method method : cls.getMethods())
+		{
+			if (String.class.equals(method.getReturnType()))
+			{
+				int modifiers = method.getModifiers();
+				if (!Modifier.isStatic(modifiers) && !Modifier.isAbstract(modifiers))
+				{
+					String methodName = method.getName();
+					for (String name : FONT_KEY_GETTER_NAMES)
+					{
+						if (name.equals(methodName))
+							return method;
+					}
+				}
+			}
+		}
+		return null;
 	}
 
 	//------------------------------------------------------------------

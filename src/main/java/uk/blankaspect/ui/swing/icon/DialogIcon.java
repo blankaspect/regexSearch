@@ -2,7 +2,7 @@
 
 DialogIcon.java
 
-Dialog icon class.
+Class: dialog icon.
 
 \*====================================================================*/
 
@@ -23,7 +23,7 @@ import javax.swing.ImageIcon;
 //----------------------------------------------------------------------
 
 
-// DIALOG ICON CLASS
+// CLASS: DIALOG ICON
 
 
 public class DialogIcon
@@ -33,10 +33,28 @@ public class DialogIcon
 //  Constants
 ////////////////////////////////////////////////////////////////////////
 
-	public static final	ImageIcon	TICK	= new ImageIcon(ImageData.TICK);
-	public static final	ImageIcon	CROSS	= new ImageIcon(ImageData.CROSS);
+	public static final	ImageIcon	TICK	= new ImageIcon(ImgData.TICK);
+	public static final	ImageIcon	CROSS	= new ImageIcon(ImgData.CROSS);
 
-	private interface ImageData
+////////////////////////////////////////////////////////////////////////
+//  Constructors
+////////////////////////////////////////////////////////////////////////
+
+	private DialogIcon()
+	{
+	}
+
+	//------------------------------------------------------------------
+
+////////////////////////////////////////////////////////////////////////
+//  Image data
+////////////////////////////////////////////////////////////////////////
+
+	/**
+	 * PNG image data.
+	 */
+
+	private interface ImgData
 	{
 		byte[]	TICK	=
 		{
@@ -100,15 +118,7 @@ public class DialogIcon
 		};
 	}
 
-////////////////////////////////////////////////////////////////////////
-//  Constructors
-////////////////////////////////////////////////////////////////////////
-
-	private DialogIcon()
-	{
-	}
-
-	//------------------------------------------------------------------
+	//==================================================================
 
 }
 

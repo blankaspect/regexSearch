@@ -163,7 +163,7 @@ public class XmlWriter
 
 	public void setLineSeparator(String lineSeparator)
 	{
-		this.lineSeparator = (lineSeparator == null) ? SystemUtils.getLineSeparator() : lineSeparator;
+		this.lineSeparator = (lineSeparator == null) ? SystemUtils.lineSeparator() : lineSeparator;
 	}
 
 	//------------------------------------------------------------------

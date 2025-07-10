@@ -14,8 +14,13 @@ plugins {
 
 // Functions
 
-fun _path(vararg components : String) : String =
+fun _path(vararg components : String): String =
         components.map { it.replace('/', File.separatorChar) }.joinToString(separator = File.separator)
+
+fun _appSystemProperties() =
+        System.getProperties()
+                .filter { (key, _) -> (key is String) && key.startsWith("app.") }
+                .mapKeys { it.key as String }
 
 //----------------------------------------------------------------------
 
@@ -23,8 +28,10 @@ fun _path(vararg components : String) : String =
 
 val javaVersion = 17
 
+val projectName = project.name
+
 val packageName     = "regexsearch"
-val mainClassName   = "uk.blankaspect.${packageName}.App"
+val mainClassName   = "uk.blankaspect.${packageName}.RegexSearchApp"
 
 val buildDir    = layout.buildDirectory.get().getAsFile().toString()
 val jarDir      = _path(buildDir, "bin")
@@ -47,7 +54,7 @@ tasks.jar {
     archiveFileName.set(jarFilename)
     manifest {
         attributes(
-            "Application-Name" to project.name,
+            "Application-Name" to projectName,
             "Main-Class"       to mainClassName
         )
     }
@@ -60,6 +67,8 @@ tasks.jar {
 tasks.register<JavaExec>("runMain") {
     classpath = sourceSets["main"].runtimeClasspath
     mainClass.set(mainClassName)
+
+    systemProperties(_appSystemProperties())
 }
 
 //----------------------------------------------------------------------
@@ -68,6 +77,8 @@ tasks.register<JavaExec>("runMain") {
 
 tasks.register<JavaExec>("runJar") {
     classpath = files(tasks.jar)
+
+    systemProperties(_appSystemProperties())
 }
 
 //----------------------------------------------------------------------

@@ -2,7 +2,7 @@
 
 TabWidthFilterDialog.java
 
-Tab-width filter dialog class.
+Class: tab-width filter dialog.
 
 \*====================================================================*/
 
@@ -19,7 +19,6 @@ package uk.blankaspect.regexsearch;
 
 
 import java.awt.Component;
-import java.awt.Dialog;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
@@ -59,7 +58,7 @@ import uk.blankaspect.ui.swing.textfield.ConstrainedTextField;
 //----------------------------------------------------------------------
 
 
-// TAB-WIDTH FILTER DIALOG CLASS
+// CLASS: TAB-WIDTH FILTER DIALOG
 
 
 class TabWidthFilterDialog
@@ -71,8 +70,8 @@ class TabWidthFilterDialog
 //  Constants
 ////////////////////////////////////////////////////////////////////////
 
-	private static final	int	FILTER_FIELD_NUM_COLUMNS	= 32;
-	private static final	int	WIDTH_FIELD_LENGTH			= 3;
+	private static final	int		FILTER_FIELD_NUM_COLUMNS	= 32;
+	private static final	int		WIDTH_FIELD_LENGTH			= 3;
 
 	private static final	String	FILENAME_FILTER_STR	= "Filename filter";
 	private static final	String	TAB_WIDTH_STR		= "Tab width";
@@ -85,117 +84,30 @@ class TabWidthFilterDialog
 	}
 
 ////////////////////////////////////////////////////////////////////////
-//  Enumerated types
+//  Class variables
 ////////////////////////////////////////////////////////////////////////
 
-
-	// ERROR IDENTIFIERS
-
-
-	private enum ErrorId
-		implements AppException.IId
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constants
-	////////////////////////////////////////////////////////////////////
-
-		NO_FILE_FILTER
-		("No file filter was specified.");
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private ErrorId(String message)
-		{
-			this.message = message;
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : AppException.IId interface
-	////////////////////////////////////////////////////////////////////
-
-		public String getMessage()
-		{
-			return message;
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance variables
-	////////////////////////////////////////////////////////////////////
-
-		private	String	message;
-
-	}
-
-	//==================================================================
+	private static	Point	location;
 
 ////////////////////////////////////////////////////////////////////////
-//  Member classes : non-inner classes
+//  Instance variables
 ////////////////////////////////////////////////////////////////////////
 
-
-	// FILE FILTER FIELD CLASS
-
-
-	private static class FilterField
-		extends ConstrainedTextField
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private FilterField()
-		{
-			super(0, FILTER_FIELD_NUM_COLUMNS);
-			AppFont.TEXT_FIELD.apply(this);
-			GuiUtils.setTextComponentMargins(this);
-		}
-
-		//--------------------------------------------------------------
-
-		private FilterField(String text)
-		{
-			this();
-			setText(text);
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : overriding methods
-	////////////////////////////////////////////////////////////////////
-
-		@Override
-		protected boolean acceptCharacter(char ch,
-										  int  index)
-		{
-			return !TabWidthFilter.isWidthSeparator(ch);
-		}
-
-		//--------------------------------------------------------------
-
-	}
-
-	//==================================================================
+	private	boolean			accepted;
+	private	FilterField		filterField;
+	private	FIntegerSpinner	widthSpinner;
 
 ////////////////////////////////////////////////////////////////////////
 //  Constructors
 ////////////////////////////////////////////////////////////////////////
 
-	private TabWidthFilterDialog(Window         owner,
-								 String         titleStr,
-								 TabWidthFilter filter)
+	private TabWidthFilterDialog(
+		Window			owner,
+		String			title,
+		TabWidthFilter	filter)
 	{
-
 		// Call superclass constructor
-		super(owner, titleStr, Dialog.ModalityType.APPLICATION_MODAL);
+		super(owner, title, ModalityType.APPLICATION_MODAL);
 
 		// Set icons
 		setIconImages(owner.getIconImages());
@@ -257,10 +169,9 @@ class TabWidthFilterDialog
 		controlPanel.add(tabWidthLabel);
 
 		// Spinner: tab width
-		int tabWidth = (filter == null) ? AppConfig.INSTANCE.getDefaultTabWidth()
-										: filter.getTabWidth();
-		widthSpinner = new FIntegerSpinner(tabWidth, TextModel.MIN_TAB_WIDTH, TextModel.MAX_TAB_WIDTH,
-										   WIDTH_FIELD_LENGTH);
+		int tabWidth = (filter == null) ? AppConfig.INSTANCE.getDefaultTabWidth() : filter.getTabWidth();
+		widthSpinner =
+				new FIntegerSpinner(tabWidth, TextModel.MIN_TAB_WIDTH, TextModel.MAX_TAB_WIDTH, WIDTH_FIELD_LENGTH);
 
 		gbc.gridx = 1;
 		gbc.gridy = gridY++;
@@ -341,7 +252,8 @@ class TabWidthFilterDialog
 		addWindowListener(new WindowAdapter()
 		{
 			@Override
-			public void windowClosing(WindowEvent event)
+			public void windowClosing(
+				WindowEvent	event)
 			{
 				onClose();
 			}
@@ -353,7 +265,7 @@ class TabWidthFilterDialog
 		// Resize dialog to its preferred size
 		pack();
 
-		// Set location of dialog box
+		// Set location of dialog
 		if (location == null)
 			location = GuiUtils.getComponentLocation(this, owner);
 		setLocation(location);
@@ -363,7 +275,6 @@ class TabWidthFilterDialog
 
 		// Show dialog
 		setVisible(true);
-
 	}
 
 	//------------------------------------------------------------------
@@ -372,12 +283,12 @@ class TabWidthFilterDialog
 //  Class methods
 ////////////////////////////////////////////////////////////////////////
 
-	public static TabWidthFilter showDialog(Component      parent,
-											String         titleStr,
-											TabWidthFilter filter)
+	public static TabWidthFilter showDialog(
+		Component		parent,
+		String			title,
+		TabWidthFilter	filter)
 	{
-		return new TabWidthFilterDialog(GuiUtils.getWindow(parent), titleStr, filter).
-																					getTabWidthFilter();
+		return new TabWidthFilterDialog(GuiUtils.getWindow(parent), title, filter).getTabWidthFilter();
 	}
 
 	//------------------------------------------------------------------
@@ -386,7 +297,9 @@ class TabWidthFilterDialog
 //  Instance methods : ActionListener interface
 ////////////////////////////////////////////////////////////////////////
 
-	public void actionPerformed(ActionEvent event)
+	@Override
+	public void actionPerformed(
+		ActionEvent	event)
 	{
 		String command = event.getActionCommand();
 
@@ -417,7 +330,7 @@ class TabWidthFilterDialog
 		// File filter
 		try
 		{
-			if (filterField.getText().trim().isEmpty())
+			if (filterField.getText().strip().isEmpty())
 				throw new AppException(ErrorId.NO_FILE_FILTER);
 		}
 		catch (AppException e)
@@ -439,7 +352,7 @@ class TabWidthFilterDialog
 		}
 		catch (AppException e)
 		{
-			JOptionPane.showMessageDialog(this, e, App.SHORT_NAME, JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(this, e, RegexSearchApp.SHORT_NAME, JOptionPane.ERROR_MESSAGE);
 		}
 	}
 
@@ -455,18 +368,107 @@ class TabWidthFilterDialog
 	//------------------------------------------------------------------
 
 ////////////////////////////////////////////////////////////////////////
-//  Class variables
+//  Enumerated types
 ////////////////////////////////////////////////////////////////////////
 
-	private static	Point	location;
+
+	// ENUMERATION: ERROR IDENTIFIERS
+
+
+	private enum ErrorId
+		implements AppException.IId
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Constants
+	////////////////////////////////////////////////////////////////////
+
+		NO_FILE_FILTER
+		("No file filter was specified.");
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance variables
+	////////////////////////////////////////////////////////////////////
+
+		private	String	message;
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private ErrorId(String message)
+		{
+			this.message = message;
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : AppException.IId interface
+	////////////////////////////////////////////////////////////////////
+
+		public String getMessage()
+		{
+			return message;
+		}
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
 
 ////////////////////////////////////////////////////////////////////////
-//  Instance variables
+//  Member classes : non-inner classes
 ////////////////////////////////////////////////////////////////////////
 
-	private	boolean			accepted;
-	private	FilterField		filterField;
-	private	FIntegerSpinner	widthSpinner;
+
+	// CLASS: FILE FILTER FIELD
+
+
+	private static class FilterField
+		extends ConstrainedTextField
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private FilterField()
+		{
+			super(0, FILTER_FIELD_NUM_COLUMNS);
+			AppFont.TEXT_FIELD.apply(this);
+			GuiUtils.setTextComponentMargins(this);
+		}
+
+		//--------------------------------------------------------------
+
+		private FilterField(
+			String	text)
+		{
+			this();
+			setText(text);
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : overriding methods
+	////////////////////////////////////////////////////////////////////
+
+		@Override
+		protected boolean acceptCharacter(
+			char	ch,
+			int		index)
+		{
+			return !TabWidthFilter.isWidthSeparator(ch);
+		}
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
 
 }
 

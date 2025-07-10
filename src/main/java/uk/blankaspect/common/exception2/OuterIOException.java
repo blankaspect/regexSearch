@@ -39,36 +39,37 @@ public class OuterIOException
 ////////////////////////////////////////////////////////////////////////
 
 	/**
-	 * Creates a new instance of an exception with the specified cause.
+	 * Creates a new instance of an I/O exception that wraps the specified exception.
 	 *
-	 * @param cause
-	 *          the underlying cause of the exception, which may be {@code null}.
+	 * @param exception
+	 *          the underlying exception, which may be {@code null}.
 	 */
 
 	public OuterIOException(
-		Throwable	cause)
+		Throwable	exception)
 	{
 		// Call superclass constructor
-		super(cause);
+		super(exception);
 	}
 
 	//------------------------------------------------------------------
 
 	/**
-	 * Creates a new instance of an exception with the specified detail message and cause.
+	 * Creates a new instance of an I/O exception that wraps the specified exception.  The wrapping exception has the
+	 * specified detail message.
 	 *
 	 * @param message
 	 *          the detail message of the exception.
-	 * @param cause
-	 *          the underlying cause of the exception, which may be {@code null}.
+	 * @param exception
+	 *          the underlying exception, which may be {@code null}.
 	 */
 
 	public OuterIOException(
 		String		message,
-		Throwable	cause)
+		Throwable	exception)
 	{
 		// Call superclass constructor
-		super(message, cause);
+		super(message, exception);
 	}
 
 	//------------------------------------------------------------------

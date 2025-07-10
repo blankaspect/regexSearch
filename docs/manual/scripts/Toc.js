@@ -11,7 +11,7 @@ Table-of-contents generator
 //----------------------------------------------------------------------
 
 
-// TABLE-OF-CONTENTS NODE CLASS
+// CLASS: TABLE-OF-CONTENTS NODE
 
 
 ////////////////////////////////////////////////////////////////////////
@@ -34,13 +34,21 @@ function TocNode(key)
 TocNode.compareKeys = function(key1, key2)
 {
 	if (isNaN(Number(key1)) || isNaN(Number(key2)))
-		return ((key1 == key2) ? 0
-							   : (key1 < key2) ? -1 : 1);
+	{
+		return (key1 == key2)
+					? 0
+					: (key1 < key2)
+							? -1
+							: 1;
+	}
 
 	var value1 = Number(key1);
 	var value2 = Number(key2);
-	return ((value1 == value2) ? 0
-							   : (value1 < value2) ? -1 : 1);
+	return (value1 == value2)
+				? 0
+				: (value1 < value2)
+						? -1
+						: 1;
 };
 
 //----------------------------------------------------------------------
@@ -89,7 +97,7 @@ TocNode.prototype.add = function(keys, keyIndex, htmlNodes)
 //======================================================================
 
 
-// TABLE OF CONTENTS CLASS
+// CLASS: TABLE OF CONTENTS
 
 
 ////////////////////////////////////////////////////////////////////////

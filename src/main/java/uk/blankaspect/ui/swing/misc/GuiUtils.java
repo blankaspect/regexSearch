@@ -50,7 +50,7 @@ import javax.swing.SwingUtilities;
 
 import javax.swing.text.JTextComponent;
 
-import uk.blankaspect.common.exception.UnexpectedRuntimeException;
+import uk.blankaspect.common.exception2.UnexpectedRuntimeException;
 
 import uk.blankaspect.common.geometry.VHPos;
 
@@ -90,7 +90,8 @@ public class GuiUtils
 //  Class methods
 ////////////////////////////////////////////////////////////////////////
 
-	public static Window getWindow(Component component)
+	public static Window getWindow(
+		Component	component)
 	{
 		return (component == null)
 						? null
@@ -101,7 +102,8 @@ public class GuiUtils
 
 	//------------------------------------------------------------------
 
-	public static Toolkit getToolkit(Component component)
+	public static Toolkit getToolkit(
+		Component	component)
 	{
 		Toolkit toolkit = null;
 		if (component != null)
@@ -120,7 +122,8 @@ public class GuiUtils
 
 	//------------------------------------------------------------------
 
-	public static GraphicsConfiguration getGraphicsConfiguration(Component component)
+	public static GraphicsConfiguration getGraphicsConfiguration(
+		Component	component)
 	{
 		GraphicsConfiguration graphicsConfig = null;
 		if (component != null)
@@ -129,8 +132,8 @@ public class GuiUtils
 		{
 			if (graphicsConfig == null)
 			{
-				graphicsConfig =
-						GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration();
+				graphicsConfig = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice()
+						.getDefaultConfiguration();
 			}
 		}
 		catch (HeadlessException e)
@@ -142,7 +145,8 @@ public class GuiUtils
 
 	//------------------------------------------------------------------
 
-	public static Insets getScreenInsets(Component component)
+	public static Insets getScreenInsets(
+		Component	component)
 	{
 		Insets insets = null;
 		Toolkit toolkit = getToolkit(component);
@@ -157,26 +161,27 @@ public class GuiUtils
 
 	//------------------------------------------------------------------
 
-	public static List<Rectangle> getScreenBounds(Component component)
+	public static List<ScreenBounds> getScreenBounds(
+		Component	component)
 	{
-		List<Rectangle> screenRects = new ArrayList<>();
+		List<ScreenBounds> screenBounds = new ArrayList<>();
 		Toolkit toolkit = getToolkit(component);
 		try
 		{
-			for (GraphicsDevice graphicsDevice : GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices())
+			for (GraphicsDevice screen : GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices())
 			{
-				for (GraphicsConfiguration graphicsConfig : graphicsDevice.getConfigurations())
+				for (GraphicsConfiguration screenConfig : screen.getConfigurations())
 				{
-					Rectangle screenRect = graphicsConfig.getBounds();
+					Rectangle rect = screenConfig.getBounds();
 					if (toolkit != null)
 					{
-						Insets insets = toolkit.getScreenInsets(graphicsConfig);
-						screenRect.x += insets.left;
-						screenRect.y += insets.top;
-						screenRect.width -= insets.left + insets.right;
-						screenRect.height -= insets.top + insets.bottom;
+						Insets insets = toolkit.getScreenInsets(screenConfig);
+						rect.x += insets.left;
+						rect.y += insets.top;
+						rect.width -= insets.left + insets.right;
+						rect.height -= insets.top + insets.bottom;
 					}
-					screenRects.add(screenRect);
+					screenBounds.add(new ScreenBounds(screen, rect));
 				}
 			}
 		}
@@ -184,20 +189,35 @@ public class GuiUtils
 		{
 			// ignore
 		}
-		return screenRects;
+		return screenBounds;
 	}
 
 	//------------------------------------------------------------------
 
-	public static Rectangle getComponentScreenBounds(Component component)
+	public static ScreenBounds getComponentScreenBounds(
+		Component	component)
 	{
-		List<Rectangle> screenRects = getScreenBounds(component);
-		Rectangle screenRect = getMaxIntersection(screenRects, component.getBounds());
-		return (screenRect == null)
-							? screenRects.isEmpty()
-									? new Rectangle()
-									: new Rectangle(screenRects.get(0))
-							: screenRect;
+		ScreenBounds result = null;
+		List<ScreenBounds> screenBoundsList = getScreenBounds(component);
+		if (component != null)
+		{
+			Rectangle componentBounds = component.getBounds();
+			int maxIntersection = 0;
+			for (ScreenBounds screenBounds : screenBoundsList)
+			{
+				int intersection = getIntersection(screenBounds.bounds, componentBounds);
+				if (maxIntersection < intersection)
+				{
+					maxIntersection = intersection;
+					result = screenBounds;
+				}
+			}
+		}
+		return (result == null)
+					? screenBoundsList.isEmpty()
+							? new ScreenBounds(null, new Rectangle())
+							: screenBoundsList.get(0)
+					: result;
 	}
 
 	//------------------------------------------------------------------
@@ -207,8 +227,7 @@ public class GuiUtils
 		Rectangle virtualBounds = new Rectangle();
 		try
 		{
-			GraphicsDevice[] graphicsDevices = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
-			for (GraphicsDevice graphicsDevice : graphicsDevices)
+			for (GraphicsDevice graphicsDevice : GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices())
 			{
 				for (GraphicsConfiguration graphicsConfig : graphicsDevice.getConfigurations())
 					virtualBounds = virtualBounds.union(graphicsConfig.getBounds());
@@ -223,37 +242,38 @@ public class GuiUtils
 
 	//------------------------------------------------------------------
 
-	public static Rectangle getVirtualScreenBounds(Component component)
+	public static Rectangle getVirtualScreenBounds(
+		Component	component)
 	{
-		if (component == null)
-			return getVirtualScreenBounds();
-
-		Rectangle virtualBounds = new Rectangle();
-		for (Rectangle screenRect : getScreenBounds(component))
-			virtualBounds = virtualBounds.union(screenRect);
-		return virtualBounds;
+		return (component == null)
+						? getVirtualScreenBounds()
+						: getScreenBounds(component).stream()
+								.map(ScreenBounds::bounds)
+								.reduce(new Rectangle(), Rectangle::union);
 	}
 
 	//------------------------------------------------------------------
 
-	public static Point getLocationWithinScreen(Component component,
-												Point     point)
+	public static Point getLocationWithinScreen(
+		Component	component,
+		Point		point)
 	{
-		return getLocationWithinScreen(component, point, CornerKind.TOP_CORNERS, DEFAULT_CORNER_SIZE);
+		return getLocationWithinScreen(component, point, DEFAULT_CORNER_SIZE, CornerKind.TOP_CORNERS);
 	}
 
 	//------------------------------------------------------------------
 
-	public static Point getLocationWithinScreen(Component    component,
-												Point        point,
-												CornerKind[] cornerKinds,
-												int          cornerSize)
+	public static Point getLocationWithinScreen(
+		Component		component,
+		Point			point,
+		int				cornerSize,
+		CornerKind...	cornerKinds)
 	{
 		if ((component == null) || (point == null) || ((cornerKinds != null) && (cornerSize < 1)))
 			throw new IllegalArgumentException();
 
 		Rectangle rect = new Rectangle(point, component.getSize());
-		List<Rectangle> screenRects = getScreenBounds(component);
+		List<Rectangle> screenRects = getScreenBounds(component).stream().map(ScreenBounds::bounds).toList();
 		if ((cornerKinds == null) || (cornerKinds.length == 0))
 		{
 			for (Rectangle screenRect : screenRects)
@@ -288,62 +308,71 @@ public class GuiUtils
 
 	//------------------------------------------------------------------
 
-	public static Point getComponentLocation(Component component,
-											 Point     point)
+	public static Point getComponentLocation(
+		Component	component,
+		Point		point)
 	{
-		Rectangle screenRect = getComponentScreenBounds(component);
-		return new Point(Math.max(screenRect.x, Math.min(point.x, screenRect.x + screenRect.width - component.getWidth())),
-						 Math.max(screenRect.y, Math.min(point.y, screenRect.y + screenRect.height - component.getHeight())));
+		Rectangle screenRect = getComponentScreenBounds(component).bounds;
+		return new Point(Math.max(screenRect.x,
+								  Math.min(point.x, screenRect.x + screenRect.width - component.getWidth())),
+						 Math.max(screenRect.y,
+								  Math.min(point.y, screenRect.y + screenRect.height - component.getHeight())));
 	}
 
 	//------------------------------------------------------------------
 
-	public static Point getComponentLocation(Component component,
-											 Component relativeLocator)
+	public static Point getComponentLocation(
+		Component	component,
+		Component	relativeLocator)
 	{
 		return getComponentLocation(component, relativeLocator, VHPos.CENTRE_CENTRE);
 	}
 
 	//------------------------------------------------------------------
 
-	public static Point getComponentLocation(Component component,
-											 Component relativeLocator,
-											 VHPos     pos)
+	public static Point getComponentLocation(
+		Component	component,
+		Component	relativeLocator,
+		VHPos		pos)
 	{
 		return getComponentLocation(component, (relativeLocator == null) ? null : relativeLocator.getBounds(), pos);
 	}
 
 	//------------------------------------------------------------------
 
-	public static Point getComponentLocation(Component component)
+	public static Point getComponentLocation(
+		Component	component)
 	{
 		return getComponentLocation(component, VHPos.CENTRE_CENTRE);
 	}
 
 	//------------------------------------------------------------------
 
-	public static Point getComponentLocation(Component component,
-											 VHPos     pos)
+	public static Point getComponentLocation(
+		Component	component,
+		VHPos		pos)
 	{
 		return getComponentLocation(component, (Rectangle)null, pos);
 	}
 
 	//------------------------------------------------------------------
 
-	public static Point getComponentLocation(Component component,
-											 Rectangle rect)
+	public static Point getComponentLocation(
+		Component	component,
+		Rectangle 	rect)
 	{
 		return getComponentLocation(component, rect, VHPos.CENTRE_CENTRE);
 	}
 
 	//------------------------------------------------------------------
 
-	public static Point getComponentLocation(Component component,
-											 Rectangle rect,
-											 VHPos     pos)
+	public static Point getComponentLocation(
+		Component	component,
+		Rectangle	rect,
+		VHPos		pos)
 	{
 		// Get screen bounds
-		Rectangle screenRect = getComponentScreenBounds(component);
+		Rectangle screenRect = getComponentScreenBounds(component).bounds;
 
 		// If no reference rectangle, use screen bounds
 		if (rect == null)
@@ -356,40 +385,22 @@ public class GuiUtils
 		// Calculate x coordinate
 		int x1 = rect.x;
 		int dx = rect.width - width;
-		int x = 0;
-		switch (pos.getH())
+		int x = switch (pos.getH())
 		{
-		case LEFT:
-			x = x1;
-			break;
-
-		case CENTRE:
-			x = x1 + dx / 2;
-			break;
-
-		case RIGHT:
-			x = x1 + dx;
-			break;
-		}
+			case LEFT   -> x1;
+			case CENTRE -> x1 + dx / 2;
+			case RIGHT  -> x1 + dx;
+		};
 
 		// Calculate y coordinate
 		int y1 = rect.y;
 		int dy = rect.height - height;
-		int y = 0;
-		switch (pos.getV())
+		int y = switch (pos.getV())
 		{
-		case TOP:
-			y = y1;
-			break;
-
-		case CENTRE:
-			y = y1 + dy / 2;
-			break;
-
-		case BOTTOM:
-			y = y1 + dy;
-			break;
-		}
+			case TOP    -> y1;
+			case CENTRE -> y1 + dy / 2;
+			case BOTTOM -> y1 + dy;
+		};
 
 		// Return location
 		return new Point(Math.max(screenRect.x, Math.min(x, screenRect.x + screenRect.width - width)),
@@ -398,7 +409,8 @@ public class GuiUtils
 
 	//------------------------------------------------------------------
 
-	public static void restoreFrame(JFrame frame)
+	public static void restoreFrame(
+		JFrame	frame)
 	{
 		try
 		{
@@ -412,13 +424,14 @@ public class GuiUtils
 
 	//------------------------------------------------------------------
 
-	public static Point getFrameLocation(JFrame frame)
+	public static Point getFrameLocation(
+		JFrame	frame)
 	{
 		Point location = null;
 		try
 		{
 			frame.setExtendedState(JFrame.NORMAL);
-			location = frame.getLocation();
+			location = frame.getLocationOnScreen();
 		}
 		catch (IllegalComponentStateException e)
 		{
@@ -429,7 +442,8 @@ public class GuiUtils
 
 	//------------------------------------------------------------------
 
-	public static Dimension getFrameSize(JFrame frame)
+	public static Dimension getFrameSize(
+		JFrame	frame)
 	{
 		Dimension size = null;
 		try
@@ -446,8 +460,9 @@ public class GuiUtils
 
 	//------------------------------------------------------------------
 
-	public static void setAllEnabled(Component component,
-									 boolean   enabled)
+	public static void setAllEnabled(
+		Component	component,
+		boolean		enabled)
 	{
 		if (component instanceof Container container)
 		{
@@ -462,7 +477,8 @@ public class GuiUtils
 
 	//------------------------------------------------------------------
 
-	public static Graphics2D copyGraphicsContext(Graphics gr)
+	public static Graphics2D copyGraphicsContext(
+		Graphics	gr)
 	{
 		if (gr.create() instanceof Graphics2D gr2d)
 			return gr2d;
@@ -471,8 +487,9 @@ public class GuiUtils
 
 	//------------------------------------------------------------------
 
-	public static boolean containsFocus(Window    window,
-										Component component)
+	public static boolean containsFocus(
+		Window		window,
+		Component	component)
 	{
 		if (window != null)
 		{
@@ -492,7 +509,8 @@ public class GuiUtils
 
 	//------------------------------------------------------------------
 
-	public static boolean setFocus(JComponent component)
+	public static boolean setFocus(
+		JComponent	component)
 	{
 		if (component.requestFocusInWindow())
 		{
@@ -507,15 +525,16 @@ public class GuiUtils
 
 	//------------------------------------------------------------------
 
-	public static Box.Filler createFiller()
+	public static Box.Filler spacer()
 	{
-		return createFiller(1, 1);
+		return spacer(1, 1);
 	}
 
 	//------------------------------------------------------------------
 
-	public static Box.Filler createFiller(int width,
-										  int height)
+	public static Box.Filler spacer(
+		int	width,
+		int	height)
 	{
 		Dimension size = new Dimension(width, height);
 		return new Box.Filler(size, size, size);
@@ -523,43 +542,66 @@ public class GuiUtils
 
 	//------------------------------------------------------------------
 
-	public static void setPaddedLineBorder(JComponent component)
+	public static Component hBoxFiller()
+	{
+		Component component = Box.createHorizontalGlue();
+		component.setMaximumSize(new Dimension(Integer.MAX_VALUE, 1));
+		return component;
+	}
+
+	//------------------------------------------------------------------
+
+	public static Component vBoxFiller()
+	{
+		Component component = Box.createVerticalGlue();
+		component.setMaximumSize(new Dimension(1, Integer.MAX_VALUE));
+		return component;
+	}
+
+	//------------------------------------------------------------------
+
+	public static void setPaddedLineBorder(
+		JComponent	component)
 	{
 		setPaddedLineBorder(component, Colours.LINE_BORDER);
 	}
 
 	//------------------------------------------------------------------
 
-	public static void setPaddedLineBorder(JComponent component,
-										   int        padding)
+	public static void setPaddedLineBorder(
+		JComponent	component,
+		int			padding)
 	{
 		setPaddedLineBorder(component, padding, Colours.LINE_BORDER);
 	}
 
 	//------------------------------------------------------------------
 
-	public static void setPaddedLineBorder(JComponent component,
-										   int        vertical,
-										   int        horizontal)
+	public static void setPaddedLineBorder(
+		JComponent	component,
+		int			vertical,
+		int			horizontal)
 	{
 		setPaddedLineBorder(component, vertical, horizontal, Colours.LINE_BORDER);
 	}
 
 	//------------------------------------------------------------------
 
-	public static void setPaddedLineBorder(JComponent component,
-										   int        top,
-										   int        left,
-										   int        bottom,
-										   int        right)
+	public static void setPaddedLineBorder(
+		JComponent	component,
+		int			top,
+		int			left,
+		int			bottom,
+		int			right)
 	{
 		setPaddedLineBorder(component, top, left, bottom, right, Colours.LINE_BORDER);
 	}
 
 	//------------------------------------------------------------------
 
-	public static void setPaddedLineBorder(JComponent component,
-										   Color      colour)
+	public static void setPaddedLineBorder(
+		JComponent	component,
+		Color		colour)
 	{
 		setPaddedLineBorder(component, DEFAULT_BORDER_PADDING, DEFAULT_BORDER_PADDING, DEFAULT_BORDER_PADDING,
 							DEFAULT_BORDER_PADDING, colour);
@@ -567,39 +609,44 @@ public class GuiUtils
 
 	//------------------------------------------------------------------
 
-	public static void setPaddedLineBorder(JComponent component,
-										   int        padding,
-										   Color      colour)
+	public static void setPaddedLineBorder(
+		JComponent	component,
+		int			padding,
+		Color		colour)
 	{
 		setPaddedLineBorder(component, padding, padding, padding, padding, colour);
 	}
 
 	//------------------------------------------------------------------
 
-	public static void setPaddedLineBorder(JComponent component,
-										   int        vertical,
-										   int        horizontal,
-										   Color      colour)
+	public static void setPaddedLineBorder(
+		JComponent	component,
+		int			vertical,
+		int			horizontal,
+		Color		colour)
 	{
 		setPaddedLineBorder(component, vertical, horizontal, vertical, horizontal, colour);
 	}
 
 	//------------------------------------------------------------------
 
-	public static void setPaddedLineBorder(JComponent component,
-										   int        top,
-										   int        left,
-										   int        bottom,
-										   int        right,
-										   Color      colour)
+	public static void setPaddedLineBorder(
+		JComponent	component,
+		int			top,
+		int			left,
+		int			bottom,
+		int			right,
+		Color		colour)
 	{
-		component.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(colour),
-															   BorderFactory.createEmptyBorder(top, left, bottom, right)));
+		component.setBorder(BorderFactory
+				.createCompoundBorder(BorderFactory.createLineBorder(colour),
+									  BorderFactory.createEmptyBorder(top, left, bottom, right)));
 	}
 
 	//------------------------------------------------------------------
 
-	public static void setPaddedRaisedBevelBorder(JComponent component)
+	public static void setPaddedRaisedBevelBorder(
+		JComponent	component)
 	{
 		setPaddedRaisedBevelBorder(component, DEFAULT_BORDER_PADDING, DEFAULT_BORDER_PADDING, DEFAULT_BORDER_PADDING,
 								   DEFAULT_BORDER_PADDING);
@@ -607,55 +654,64 @@ public class GuiUtils
 
 	//------------------------------------------------------------------
 
-	public static void setPaddedRaisedBevelBorder(JComponent component,
-												  int        padding)
+	public static void setPaddedRaisedBevelBorder(
+		JComponent	component,
+		int			padding)
 	{
 		setPaddedRaisedBevelBorder(component, padding, padding, padding, padding);
 	}
 
 	//------------------------------------------------------------------
 
-	public static void setPaddedRaisedBevelBorder(JComponent component,
-												  int        vertical,
-												  int        horizontal)
+	public static void setPaddedRaisedBevelBorder(
+		JComponent	component,
+		int			vertical,
+		int			horizontal)
 	{
 		setPaddedRaisedBevelBorder(component, vertical, horizontal, vertical, horizontal);
 	}
 
 	//------------------------------------------------------------------
 
-	public static void setPaddedRaisedBevelBorder(JComponent component,
-												  int        top,
-												  int        left,
-												  int        bottom,
-												  int        right)
+	public static void setPaddedRaisedBevelBorder(
+		JComponent	component,
+		int			top,
+		int			left,
+		int			bottom,
+		int			right)
 	{
-		component.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createRaisedBevelBorder(),
-															   BorderFactory.createEmptyBorder(top, left, bottom, right)));
+		component.setBorder(BorderFactory
+				.createCompoundBorder(BorderFactory.createRaisedBevelBorder(),
+									  BorderFactory.createEmptyBorder(top, left, bottom, right)));
 	}
 
 	//------------------------------------------------------------------
 
-	public static void setViewportBorder(JScrollPane scrollPane,
-										 int         vertical,
-										 int         horizontal)
+	public static void setViewportBorder(
+		JScrollPane	scrollPane,
+		int			vertical,
+		int			horizontal)
 	{
-		scrollPane.setViewportBorder(BorderFactory.createMatteBorder(vertical, horizontal, vertical, horizontal,
-																	 scrollPane.getViewport().getView().getBackground()));
+		scrollPane.setViewportBorder(BorderFactory
+				.createMatteBorder(vertical, horizontal, vertical, horizontal,
+								   scrollPane.getViewport().getView().getBackground()));
 	}
 
 	//------------------------------------------------------------------
 
-	public static void setTextComponentMargins(JTextComponent component)
+	public static void setTextComponentMargins(
+		JTextComponent	component)
 	{
-		setTextComponentMargins(component, DEFAULT_TEXT_COMPONENT_VERTICAL_MARGIN, DEFAULT_TEXT_COMPONENT_HORIZONAL_MARGIN);
+		setTextComponentMargins(component, DEFAULT_TEXT_COMPONENT_VERTICAL_MARGIN,
+								DEFAULT_TEXT_COMPONENT_HORIZONAL_MARGIN);
 	}
 
 	//------------------------------------------------------------------
 
-	public static void setTextComponentMargins(JTextComponent component,
-											   int            vertical,
-											   int            horizontal)
+	public static void setTextComponentMargins(
+		JTextComponent	component,
+		int				vertical,
+		int				horizontal)
 	{
 		Insets margins = component.getMargin();
 		margins.set(Math.max(vertical, margins.top), Math.max(horizontal, margins.left),
@@ -665,7 +721,8 @@ public class GuiUtils
 
 	//------------------------------------------------------------------
 
-	public static void updatePreferredSize(List<Component> components)
+	public static void updatePreferredSize(
+		List<? extends Component>	components)
 	{
 		// Get maximum preferred width and height of components
 		int maxWidth = 0;
@@ -690,8 +747,9 @@ public class GuiUtils
 
 	//------------------------------------------------------------------
 
-	private static int getIntersection(Rectangle rect1,
-									   Rectangle rect2)
+	private static int getIntersection(
+		Rectangle	rect1,
+		Rectangle	rect2)
 	{
 		int ax1 = rect1.x;
 		int ax2 = ax1 + rect1.width;
@@ -710,24 +768,20 @@ public class GuiUtils
 
 	//------------------------------------------------------------------
 
-	private static Rectangle getMaxIntersection(List<Rectangle> targetRects,
-												Rectangle       rect)
-	{
-		int maxIntersection = 0;
-		Rectangle result = null;
-		for (Rectangle targetRect : targetRects)
-		{
-			int intersection = getIntersection(targetRect, rect);
-			if (maxIntersection < intersection)
-			{
-				maxIntersection = intersection;
-				result = targetRect;
-			}
-		}
-		return result;
-	}
+////////////////////////////////////////////////////////////////////////
+//  Member records
+////////////////////////////////////////////////////////////////////////
 
-	//------------------------------------------------------------------
+
+	// RECORD: SCREEN BOUNDS
+
+
+	public record ScreenBounds(
+		GraphicsDevice	screen,
+		Rectangle		bounds)
+	{ }
+
+	//==================================================================
 
 }
 

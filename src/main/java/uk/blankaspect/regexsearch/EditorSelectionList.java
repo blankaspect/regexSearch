@@ -66,8 +66,7 @@ class EditorSelectionList
 
 	private static int getNumColumns()
 	{
-		int numColumns = App.INSTANCE.getMainWindow().getControlDialog().
-																			getParameterEditorSize().width;
+		int numColumns = RegexSearchApp.INSTANCE.getMainWindow().getControlDialog().getParameterEditorSize().width;
 		return Math.min(Math.max(ParameterEditor.MIN_NUM_COLUMNS, numColumns),
 						ParameterEditor.MAX_NUM_COLUMNS);
 	}

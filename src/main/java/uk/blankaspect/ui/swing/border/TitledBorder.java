@@ -38,6 +38,8 @@ import uk.blankaspect.ui.swing.colour.Colours;
 import uk.blankaspect.ui.swing.font.FontKey;
 import uk.blankaspect.ui.swing.font.FontUtils;
 
+import uk.blankaspect.ui.swing.misc.GuiUtils;
+
 import uk.blankaspect.ui.swing.text.TextRendering;
 
 //----------------------------------------------------------------------
@@ -84,7 +86,8 @@ public class TitledBorder
 		String	text)
 	{
 		// Call alternative constructor
-		this(text, DEFAULT_BORDER_COLOUR, DEFAULT_TITLE_BORDER_COLOUR, DEFAULT_TITLE_BACKGROUND_COLOUR, TITLE_TEXT_COLOUR);
+		this(text, DEFAULT_BORDER_COLOUR, DEFAULT_TITLE_BORDER_COLOUR, DEFAULT_TITLE_BACKGROUND_COLOUR,
+			 TITLE_TEXT_COLOUR);
 	}
 
 	//------------------------------------------------------------------
@@ -159,8 +162,8 @@ public class TitledBorder
 		int			right)
 	{
 		TitledBorder titledBorder = new TitledBorder(text);
-		component.setBorder(BorderFactory.createCompoundBorder(titledBorder,
-															   BorderFactory.createEmptyBorder(top, left, bottom, right)));
+		component.setBorder(BorderFactory
+				.createCompoundBorder(titledBorder, BorderFactory.createEmptyBorder(top, left, bottom, right)));
 		return titledBorder;
 	}
 
@@ -204,8 +207,8 @@ public class TitledBorder
 		int				bottom,
 		int				right)
 	{
-		component.setBorder(BorderFactory.createCompoundBorder(titledBorder,
-															   BorderFactory.createEmptyBorder(top, left, bottom, right)));
+		component.setBorder(BorderFactory
+				.createCompoundBorder(titledBorder, BorderFactory.createEmptyBorder(top, left, bottom, right)));
 	}
 
 	//------------------------------------------------------------------
@@ -255,41 +258,41 @@ public class TitledBorder
 		int			height)
 	{
 		// Create copy of graphics context
-		gr = gr.create();
+		Graphics2D gr2d = GuiUtils.copyGraphicsContext(gr);
 
 		// Set font
-		gr.setFont(getFont());
+		gr2d.setFont(getFont());
 
 		// Set rendering hints for text antialiasing and fractional metrics
-		if (gr instanceof Graphics2D gr2d)
-			TextRendering.setHints(gr2d);
+		TextRendering.setHints(gr2d);
 
 		// Get dimensions of text and title
-		FontMetrics fontMetrics = gr.getFontMetrics();
+		FontMetrics fontMetrics = gr2d.getFontMetrics();
 		int textWidth = fontMetrics.stringWidth(text);
 		int titleWidth = fullWidth ? width : Math.min(width, 2 * TITLE_HORIZONTAL_MARGIN + textWidth);
-		int titleHeight = Math.min(height, 2 * TITLE_VERTICAL_MARGIN + fontMetrics.getAscent() + fontMetrics.getDescent());
+		int titleHeight =
+				Math.min(height, 2 * TITLE_VERTICAL_MARGIN + fontMetrics.getAscent() + fontMetrics.getDescent());
 
 		// Fill component background of title
-		gr.setColor(component.getBackground());
-		gr.fillRect(x, y, width, titleHeight);
+		gr2d.setColor(component.getBackground());
+		gr2d.fillRect(x, y, width, titleHeight);
 
 		// Fill background of title
-		gr.setColor(titleBackgroundColour);
-		gr.fillRect(x, y, titleWidth, titleHeight);
+		gr2d.setColor(titleBackgroundColour);
+		gr2d.fillRect(x, y, titleWidth, titleHeight);
 
 		// Draw text
 		int textX = fullWidth ? x + (width - textWidth) / 2 : x + TITLE_HORIZONTAL_MARGIN;
-		gr.setColor(titleForegroundColour);
-		gr.drawString(text, textX, TITLE_VERTICAL_MARGIN + fontMetrics.getAscent());
+		gr2d.setColor(titleForegroundColour);
+		gr2d.drawString(text, textX, TITLE_VERTICAL_MARGIN + fontMetrics.getAscent());
 
 		// Draw title border
-		gr.setColor(titleBorderColour);
-		gr.drawRect(x, y, x + titleWidth - 1, y + titleHeight - 1);
+		gr2d.setColor(titleBorderColour);
+		gr2d.drawRect(x, y, x + titleWidth - 1, y + titleHeight - 1);
 
 		// Draw outer border
-		gr.setColor(borderColour);
-		gr.drawRect(x, y, x + width - 1, y + height - 1);
+		gr2d.setColor(borderColour);
+		gr2d.drawRect(x, y, x + width - 1, y + height - 1);
 	}
 
 	//------------------------------------------------------------------

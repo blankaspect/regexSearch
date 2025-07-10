@@ -2,7 +2,7 @@
 
 KeyAction.java
 
-Key action class.
+Class: an action that is associated with a key stroke.
 
 \*====================================================================*/
 
@@ -31,7 +31,7 @@ import javax.swing.KeyStroke;
 //----------------------------------------------------------------------
 
 
-// KEY ACTION CLASS
+// CLASS: AN ACTION THAT IS ASSOCIATED WITH A KEY STROKE
 
 
 public class KeyAction
@@ -39,77 +39,18 @@ public class KeyAction
 {
 
 ////////////////////////////////////////////////////////////////////////
-//  Member classes : non-inner classes
+//  Instance variables
 ////////////////////////////////////////////////////////////////////////
 
-
-	// KEY-COMMAND PAIR CLASS
-
-
-	public static class KeyCommandPair
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		public KeyCommandPair(KeyStroke keyStroke,
-							  String    command)
-		{
-			this.keyStroke = keyStroke;
-			this.command = command;
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance variables
-	////////////////////////////////////////////////////////////////////
-
-		public	KeyStroke	keyStroke;
-		public	String		command;
-
-	}
-
-	//==================================================================
-
-
-	// KEY-ACTION PAIR CLASS
-
-
-	public static class KeyActionPair
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		public KeyActionPair(KeyStroke keyStroke,
-							 Action    action)
-		{
-			this.keyStroke = keyStroke;
-			this.action = action;
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance variables
-	////////////////////////////////////////////////////////////////////
-
-		public	KeyStroke	keyStroke;
-		public	Action		action;
-
-	}
-
-	//==================================================================
+	private	ActionListener	listener;
 
 ////////////////////////////////////////////////////////////////////////
 //  Constructors
 ////////////////////////////////////////////////////////////////////////
 
-	private KeyAction(String         command,
-					  ActionListener listener)
+	private KeyAction(
+		String			command,
+		ActionListener	listener)
 	{
 		this.listener = listener;
 		putValue(ACTION_COMMAND_KEY, command);
@@ -121,19 +62,21 @@ public class KeyAction
 //  Class methods
 ////////////////////////////////////////////////////////////////////////
 
-	public static void create(JComponent component,
-							  int        condition,
-							  Action     action)
+	public static void create(
+		JComponent	component,
+		int			condition,
+		Action		action)
 	{
 		create(component, condition, (KeyStroke)action.getValue(ACCELERATOR_KEY), action);
 	}
 
 	//------------------------------------------------------------------
 
-	public static void create(JComponent component,
-							  int        condition,
-							  KeyStroke  keyStroke,
-							  Action     action)
+	public static void create(
+		JComponent	component,
+		int			condition,
+		KeyStroke	keyStroke,
+		Action		action)
 	{
 		String command = action.getValue(ACTION_COMMAND_KEY).toString();
 		component.getInputMap(condition).put(keyStroke, command);
@@ -142,9 +85,10 @@ public class KeyAction
 
 	//------------------------------------------------------------------
 
-	public static void create(JComponent       component,
-							  int              condition,
-							  KeyActionPair... keyActionPairs)
+	public static void create(
+		JComponent			component,
+		int					condition,
+		KeyActionPair...	keyActionPairs)
 	{
 		for (KeyActionPair keyActionPair : keyActionPairs)
 			create(component, condition, keyActionPair.keyStroke, keyActionPair.action);
@@ -152,9 +96,10 @@ public class KeyAction
 
 	//------------------------------------------------------------------
 
-	public static void create(JComponent          component,
-							  int                 condition,
-							  List<KeyActionPair> keyActionPairs)
+	public static void create(
+		JComponent						component,
+		int								condition,
+		List<? extends KeyActionPair>	keyActionPairs)
 	{
 		for (KeyActionPair keyActionPair : keyActionPairs)
 			create(component, condition, keyActionPair.keyStroke, keyActionPair.action);
@@ -162,11 +107,12 @@ public class KeyAction
 
 	//------------------------------------------------------------------
 
-	public static Action create(JComponent     component,
-								int            condition,
-								KeyStroke      keyStroke,
-								String         command,
-								ActionListener listener)
+	public static Action create(
+		JComponent		component,
+		int				condition,
+		KeyStroke		keyStroke,
+		String			command,
+		ActionListener	listener)
 	{
 		Action action = new KeyAction(command, listener);
 		create(component, condition, keyStroke, action);
@@ -175,10 +121,11 @@ public class KeyAction
 
 	//------------------------------------------------------------------
 
-	public static void create(JComponent        component,
-							  int               condition,
-							  ActionListener    listener,
-							  KeyCommandPair... keyCommandPairs)
+	public static void create(
+		JComponent			component,
+		int					condition,
+		ActionListener		listener,
+		KeyCommandPair...	keyCommandPairs)
 	{
 		for (KeyCommandPair keyCommandPair : keyCommandPairs)
 			create(component, condition, keyCommandPair.keyStroke, keyCommandPair.command, listener);
@@ -186,10 +133,11 @@ public class KeyAction
 
 	//------------------------------------------------------------------
 
-	public static void create(JComponent           component,
-							  int                  condition,
-							  ActionListener       listener,
-							  List<KeyCommandPair> keyCommandPairs)
+	public static void create(
+		JComponent						component,
+		int								condition,
+		ActionListener					listener,
+		List<? extends KeyCommandPair>	keyCommandPairs)
 	{
 		for (KeyCommandPair keyCommandPair : keyCommandPairs)
 			create(component, condition, keyCommandPair.keyStroke, keyCommandPair.command, listener);
@@ -201,7 +149,9 @@ public class KeyAction
 //  Instance methods : ActionListener interface
 ////////////////////////////////////////////////////////////////////////
 
-	public void actionPerformed(ActionEvent event)
+	@Override
+	public void actionPerformed(
+		ActionEvent	event)
 	{
 		event.setSource(null);
 		listener.actionPerformed(event);
@@ -210,10 +160,30 @@ public class KeyAction
 	//------------------------------------------------------------------
 
 ////////////////////////////////////////////////////////////////////////
-//  Instance variables
+//  Member records
 ////////////////////////////////////////////////////////////////////////
 
-	private	ActionListener	listener;
+
+	// RECORD: PAIRING OF A KEY STROKE AND A COMMAND
+
+
+	public record KeyCommandPair(
+		KeyStroke	keyStroke,
+		String		command)
+	{ }
+
+	//==================================================================
+
+
+	// RECORD: PAIRING OF A KEY STROKE AND AN ACTION
+
+
+	public record KeyActionPair(
+		KeyStroke	keyStroke,
+		Action		action)
+	{ }
+
+	//==================================================================
 
 }
 

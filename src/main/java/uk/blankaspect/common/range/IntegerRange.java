@@ -12,13 +12,7 @@ Class: integer range.
 
 package uk.blankaspect.common.range;
 
-//----------------------------------------------------------------------
-
-
-// IMPORTS
-
-
-import uk.blankaspect.common.exception.UnexpectedRuntimeException;
+import uk.blankaspect.common.exception2.UnexpectedRuntimeException;
 
 //----------------------------------------------------------------------
 

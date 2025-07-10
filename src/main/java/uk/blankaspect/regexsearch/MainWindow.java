@@ -2,7 +2,7 @@
 
 MainWindow.java
 
-Main window class.
+Class: main window.
 
 \*====================================================================*/
 
@@ -35,7 +35,6 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
 import java.io.File;
-import java.io.IOException;
 
 import java.nio.file.Path;
 
@@ -81,7 +80,7 @@ import uk.blankaspect.ui.swing.textarea.TextArea;
 //----------------------------------------------------------------------
 
 
-// MAIN WINDOW CLASS
+// CLASS: MAIN WINDOW
 
 
 class MainWindow
@@ -104,8 +103,8 @@ class MainWindow
 	private static final	String	WRITE_SEARCH_PARAMS_STR		= "Write search parameters";
 	private static final	String	SAVE_STR					= "Save";
 	private static final	String	DISCARD_STR					= "Discard";
-	private static final	String	SAVE_MESSAGE_STR			= "The search parameters have changed.\nDo you want to "
-																	+ "save the current search parameters?";
+	private static final	String	SAVE_MESSAGE_STR			=
+			"The search parameters have changed.\nDo you want to save the current search parameters?";
 	private static final	String	TARGET_NOT_FOUND_STR		= "Files in which the target was not found";
 	private static final	String	UNPROCESSED_STR				= "Unprocessed files or directories";
 	private static final	String	NO_CANONICAL_PATHNAME_STR	= "Failed to get canonical pathname";
@@ -333,12 +332,13 @@ class MainWindow
 
 	private static SearchParameters getSearchParams()
 	{
-		return App.INSTANCE.getSearchParams();
+		return RegexSearchApp.INSTANCE.getSearchParams();
 	}
 
 	//------------------------------------------------------------------
 
-	private static void setTextAreaColours(TextArea textArea)
+	private static void setTextAreaColours(
+		TextArea	textArea)
 	{
 		AppConfig config = AppConfig.INSTANCE;
 		textArea.setForeground(config.getTextAreaTextColour());
@@ -349,7 +349,8 @@ class MainWindow
 
 	//------------------------------------------------------------------
 
-	private static void editFile(String pathname)
+	private static void editFile(
+		String	pathname)
 		throws AppException
 	{
 		final	char	ESCAPE_CHAR					= '%';
@@ -403,16 +404,15 @@ class MainWindow
 		{
 			try
 			{
-				// Create process and start it
-				ProcessBuilder processBuilder = new ProcessBuilder(arguments);
-				processBuilder.inheritIO();
-				processBuilder.start();
+				// Start process
+				new ProcessBuilder(arguments).inheritIO().start();
 			}
-			catch (IOException e)
+			catch (Exception e)
 			{
 				SwingUtilities.invokeLater(() ->
-						App.INSTANCE.showErrorMessage(App.SHORT_NAME,
-													  new AppException(ErrorId.FAILED_TO_EXECUTE_EDITOR_COMMAND, e)));
+						RegexSearchApp.INSTANCE
+								.showErrorMessage(RegexSearchApp.SHORT_NAME,
+												  new AppException(ErrorId.FAILED_TO_EXECUTE_EDITOR_COMMAND, e)));
 			}
 		})
 		.start();
@@ -425,7 +425,8 @@ class MainWindow
 ////////////////////////////////////////////////////////////////////////
 
 	@Override
-	public void actionPerformed(ActionEvent event)
+	public void actionPerformed(
+		ActionEvent	event)
 	{
 		String command = event.getActionCommand();
 
@@ -442,7 +443,8 @@ class MainWindow
 ////////////////////////////////////////////////////////////////////////
 
 	@Override
-	public void menuCanceled(MenuEvent event)
+	public void menuCanceled(
+		MenuEvent	event)
 	{
 		// do nothing
 	}
@@ -450,7 +452,8 @@ class MainWindow
 	//------------------------------------------------------------------
 
 	@Override
-	public void menuDeselected(MenuEvent event)
+	public void menuDeselected(
+		MenuEvent	event)
 	{
 		// do nothing
 	}
@@ -458,7 +461,8 @@ class MainWindow
 	//------------------------------------------------------------------
 
 	@Override
-	public void menuSelected(MenuEvent event)
+	public void menuSelected(
+		MenuEvent	event)
 	{
 		Object eventSource = event.getSource();
 		for (Menu menu : Menu.values())
@@ -475,7 +479,8 @@ class MainWindow
 ////////////////////////////////////////////////////////////////////////
 
 	@Override
-	public void mouseClicked(MouseEvent event)
+	public void mouseClicked(
+		MouseEvent	event)
 	{
 		// do nothing
 	}
@@ -483,7 +488,8 @@ class MainWindow
 	//------------------------------------------------------------------
 
 	@Override
-	public void mouseEntered(MouseEvent event)
+	public void mouseEntered(
+		MouseEvent	event)
 	{
 		// do nothing
 	}
@@ -491,7 +497,8 @@ class MainWindow
 	//------------------------------------------------------------------
 
 	@Override
-	public void mouseExited(MouseEvent event)
+	public void mouseExited(
+		MouseEvent	event)
 	{
 		// do nothing
 	}
@@ -499,7 +506,8 @@ class MainWindow
 	//------------------------------------------------------------------
 
 	@Override
-	public void mousePressed(MouseEvent event)
+	public void mousePressed(
+		MouseEvent	event)
 	{
 		showContextMenu(event);
 	}
@@ -507,7 +515,8 @@ class MainWindow
 	//------------------------------------------------------------------
 
 	@Override
-	public void mouseReleased(MouseEvent event)
+	public void mouseReleased(
+		MouseEvent	event)
 	{
 		showContextMenu(event);
 	}
@@ -540,9 +549,10 @@ class MainWindow
 
 	//------------------------------------------------------------------
 
-	public void initTextModel(File         file,
-							  StringBuffer text,
-							  boolean      visible)
+	public void initTextModel(
+		File			file,
+		StringBuffer	text,
+		boolean			visible)
 	{
 		// Perform any deferred edit
 		deferredEdit();
@@ -584,24 +594,21 @@ class MainWindow
 
 			// Get x coordinate of view
 			TextArea.Line[] lines = textModel.getLines(selection.startRow, selection.startRow + 1);
-			int selectionX =
-						(lines.length == 0)
-							? 0
-							: textView.getFontMetrics(textView.getFont()).
-								stringWidth(lines[0].text.substring(0, lines[0].highlightStartOffset));
+			int selectionX = (lines.length == 0)
+									? 0
+									: textView.getFontMetrics(textView.getFont())
+											.stringWidth(lines[0].text.substring(0, lines[0].highlightStartOffset));
 			int verticalMargin = HIGHLIGHT_MARGIN_COLUMNS * textView.getColumnWidth();
-			int x = Math.min(Math.max(0, selectionX + verticalMargin -
-																	textView.getViewport().getWidth()),
+			int x = Math.min(Math.max(0, selectionX + verticalMargin - textView.getViewport().getWidth()),
 							 textView.getMaximumX());
 
 			// Get y coordinate of view
 			int numRows = textView.getRows();
 			int maxRowIndex = Math.max(0, textModel.getNumLines() - numRows);
 			int startRow = textView.getViewport().getViewPosition().y / textView.getRowHeight();
-			if ((selection.startRow < startRow + HIGHLIGHT_MARGIN_ROWS) ||
-				 (selection.endRow >= startRow + numRows - HIGHLIGHT_MARGIN_ROWS))
-				startRow = Math.min(Math.max(0, selection.startRow - HIGHLIGHT_MARGIN_ROWS),
-									maxRowIndex);
+			if ((selection.startRow < startRow + HIGHLIGHT_MARGIN_ROWS)
+					|| (selection.endRow >= startRow + numRows - HIGHLIGHT_MARGIN_ROWS))
+				startRow = Math.min(Math.max(0, selection.startRow - HIGHLIGHT_MARGIN_ROWS), maxRowIndex);
 			int y = startRow * textView.getRowHeight();
 
 			// Set view position
@@ -618,7 +625,8 @@ class MainWindow
 
 	//------------------------------------------------------------------
 
-	public void appendResult(TextSearcher.FileResult result)
+	public void appendResult(
+		TextSearcher.FileResult	result)
 	{
 		getResultList().addFile(result);
 		updateResultAreaViewPosition();
@@ -626,7 +634,8 @@ class MainWindow
 
 	//------------------------------------------------------------------
 
-	public void searchDialogClosed(TextSearcher.Option option)
+	public void searchDialogClosed(
+		TextSearcher.Option	option)
 	{
 		if (searchDialog != null)
 		{
@@ -637,7 +646,8 @@ class MainWindow
 
 	//------------------------------------------------------------------
 
-	public void executeCommand(AppCommand command)
+	public void executeCommand(
+		AppCommand	command)
 	{
 		try
 		{
@@ -694,7 +704,7 @@ class MainWindow
 		}
 		catch (AppException e)
 		{
-			App.INSTANCE.showErrorMessage(App.SHORT_NAME, e);
+			RegexSearchApp.INSTANCE.showErrorMessage(RegexSearchApp.SHORT_NAME, e);
 		}
 
 		updateCommands();
@@ -705,17 +715,16 @@ class MainWindow
 	public void updateCommands()
 	{
 		boolean isFileSet = (controlDialog != null) && !controlDialog.isBeyondLastFileSet();
-		boolean canEdit = (textModel != null) && (textModel.getFile() != null) &&
-						  (currentPathname != null) &&
-						  (AppConfig.INSTANCE.getEditorCommand() != null);
+		boolean canEdit = (textModel != null) && (textModel.getFile() != null) && (currentPathname != null)
+							&& (AppConfig.INSTANCE.getEditorCommand() != null);
 
 		AppCommand.IMPORT_FILE.setEnabled(isFileSet);
 		AppCommand.OPEN_SEARCH_PARAMETERS.setEnabled(!searching);
 		AppCommand.SAVE_SEARCH_PARAMETERS.setEnabled(!searching);
 		AppCommand.EXIT.setEnabled(true);
 		AppCommand.EDIT_FILE.setEnabled(canEdit);
-		AppCommand.EDIT_FILE_DEFERRED.setEnabled(canEdit && (deferredFile == null) && searching &&
-												  (searchKind == SearchDialog.Kind.REPLACE));
+		AppCommand.EDIT_FILE_DEFERRED.setEnabled(canEdit && (deferredFile == null) && searching
+													&& (searchKind == SearchDialog.Kind.REPLACE));
 		AppCommand.SEARCH.setEnabled(isFileSet && !searching);
 		AppCommand.COPY_RESULTS.setEnabled(!searching && !getResultList().isEmpty());
 		AppCommand.SAVE_RESULTS.setEnabled(!searching && getResultList().isSearchedFiles());
@@ -729,8 +738,9 @@ class MainWindow
 
 	//------------------------------------------------------------------
 
-	public void showContextMenu(MouseEvent event,
-								Component  component)
+	public void showContextMenu(
+		MouseEvent	event,
+		Component	component)
 	{
 		if ((event == null) || event.isPopupTrigger())
 		{
@@ -774,7 +784,8 @@ class MainWindow
 
 	//------------------------------------------------------------------
 
-	private void showContextMenu(MouseEvent event)
+	private void showContextMenu(
+		MouseEvent	event)
 	{
 		showContextMenu(event, textView);
 	}
@@ -790,8 +801,8 @@ class MainWindow
 
 	private void updateTitle()
 	{
-		setTitle((currentPathname == null) ? App.LONG_NAME + " " + App.INSTANCE.getVersionString()
-										   : App.SHORT_NAME + " - " + currentPathname);
+		setTitle((currentPathname == null) ? RegexSearchApp.LONG_NAME + " " + RegexSearchApp.INSTANCE.getVersionString()
+										   : RegexSearchApp.SHORT_NAME + " - " + currentPathname);
 	}
 
 	//------------------------------------------------------------------
@@ -804,7 +815,8 @@ class MainWindow
 
 	//------------------------------------------------------------------
 
-	private void showSearchDialog(SearchDialog.Kind dialogKind)
+	private void showSearchDialog(
+		SearchDialog.Kind	dialogKind)
 	{
 		searchDialog = SearchDialog.showDialog(controlDialog, dialogKind, controlDialog.getTargetString(true),
 											   currentPathname, textModel.getSelection().startRow,
@@ -823,7 +835,7 @@ class MainWindow
 		if ((searchParams.getFile() != null) && searchParams.isChanged())
 		{
 			String[] optionStrs = Utils.getOptionStrings(SAVE_STR, DISCARD_STR);
-			int result = JOptionPane.showOptionDialog(this, SAVE_MESSAGE_STR, App.SHORT_NAME,
+			int result = JOptionPane.showOptionDialog(this, SAVE_MESSAGE_STR, RegexSearchApp.SHORT_NAME,
 													  JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE,
 													  null, optionStrs, optionStrs[0]);
 			if (result == JOptionPane.YES_OPTION)
@@ -844,17 +856,18 @@ class MainWindow
 			openFileChooser.setDialogTitle(OPEN_SEARCH_PARAMS_STR);
 			openFileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 			openFileChooser.setFileFilter(new FilenameSuffixFilter(AppConstants.XML_FILES_STR,
-																   AppConstants.XML_FILE_SUFFIX));
+																   AppConstants.XML_FILENAME_EXTENSION));
 		}
 		openFileChooser.rescanCurrentDirectory();
-		return ((openFileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION)
-																		? openFileChooser.getSelectedFile()
-																		: null);
+		return (openFileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION)
+							? openFileChooser.getSelectedFile()
+							: null;
 	}
 
 	//------------------------------------------------------------------
 
-	private File chooseSave(File file)
+	private File chooseSave(
+		File	file)
 	{
 		if (saveFileChooser == null)
 		{
@@ -862,21 +875,22 @@ class MainWindow
 			saveFileChooser.setDialogTitle(SAVE_SEARCH_PARAMS_STR);
 			saveFileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 			saveFileChooser.setFileFilter(new FilenameSuffixFilter(AppConstants.XML_FILES_STR,
-																   AppConstants.XML_FILE_SUFFIX));
+																   AppConstants.XML_FILENAME_EXTENSION));
 		}
 		saveFileChooser.setSelectedFile((file == null) ? new File("") : file);
 		saveFileChooser.rescanCurrentDirectory();
-		return ((saveFileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION)
-								? Utils.appendSuffix(saveFileChooser.getSelectedFile(), AppConstants.XML_FILE_SUFFIX)
-								: null);
+		return (saveFileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION)
+							? Utils.appendSuffix(saveFileChooser.getSelectedFile(), AppConstants.XML_FILENAME_EXTENSION)
+							: null;
 	}
 
 	//------------------------------------------------------------------
 
-	private void search(Task task)
+	private void search(
+		Task	task)
 	{
 		// Perform search
-		TextSearcher textSearcher = App.INSTANCE.getTextSearcher();
+		TextSearcher textSearcher = RegexSearchApp.INSTANCE.getTextSearcher();
 		try
 		{
 			// Hide control dialog
@@ -914,7 +928,7 @@ class MainWindow
 		}
 		catch (AppException e)
 		{
-			App.INSTANCE.showErrorMessage(App.SHORT_NAME, e);
+			RegexSearchApp.INSTANCE.showErrorMessage(RegexSearchApp.SHORT_NAME, e);
 		}
 
 		// Update results at end of search
@@ -978,7 +992,7 @@ class MainWindow
 				}
 				catch (AppException e)
 				{
-					App.INSTANCE.showErrorMessage(App.SHORT_NAME, e);
+					RegexSearchApp.INSTANCE.showErrorMessage(RegexSearchApp.SHORT_NAME, e);
 				}
 			}
 		}
@@ -1044,7 +1058,7 @@ class MainWindow
 
 		// Open file
 		if (file != null)
-			App.INSTANCE.openSearchParams(file);
+			RegexSearchApp.INSTANCE.openSearchParams(file);
 
 		// Update components of control dialog
 		controlDialog.updateComponents();
@@ -1065,13 +1079,15 @@ class MainWindow
 		// Write file
 		String[] optionStrs = Utils.getOptionStrings(AppConstants.REPLACE_STR);
 		if ((file != null)
-			&& (!file.exists()
+				&& (!file.exists()
 				|| (JOptionPane.showOptionDialog(this, Utils.getPathname(file) + AppConstants.ALREADY_EXISTS_STR,
 												 SAVE_SEARCH_PARAMS_STR, JOptionPane.OK_CANCEL_OPTION,
 												 JOptionPane.WARNING_MESSAGE, null, optionStrs, optionStrs[1])
 																							== JOptionPane.OK_OPTION)))
+		{
 			TaskProgressDialog.showDialog(this, WRITE_SEARCH_PARAMS_STR,
 										  new Task.WriteSearchParams(searchParams, file));
+		}
 	}
 
 	//------------------------------------------------------------------
@@ -1193,7 +1209,7 @@ class MainWindow
 ////////////////////////////////////////////////////////////////////////
 
 
-	// MENUS
+	// ENUMERATION: MENUS
 
 
 	private enum Menu
@@ -1280,8 +1296,9 @@ class MainWindow
 	//  Constructors
 	////////////////////////////////////////////////////////////////////
 
-		private Menu(String text,
-					 int    keyCode)
+		private Menu(
+			String	text,
+			int		keyCode)
 		{
 			menu = new FMenu(text, keyCode);
 		}
@@ -1309,7 +1326,7 @@ class MainWindow
 
 		protected MainWindow getWindow()
 		{
-			return App.INSTANCE.getMainWindow();
+			return RegexSearchApp.INSTANCE.getMainWindow();
 		}
 
 		//--------------------------------------------------------------
@@ -1319,7 +1336,7 @@ class MainWindow
 	//==================================================================
 
 
-	// ERROR IDENTIFIERS
+	// ENUMERATION: ERROR IDENTIFIERS
 
 
 	private enum ErrorId
@@ -1346,7 +1363,8 @@ class MainWindow
 	//  Constructors
 	////////////////////////////////////////////////////////////////////
 
-		private ErrorId(String message)
+		private ErrorId(
+			String	message)
 		{
 			this.message = message;
 		}
@@ -1374,7 +1392,7 @@ class MainWindow
 ////////////////////////////////////////////////////////////////////////
 
 
-	// SCROLL PANE CLASS
+	// CLASS: SCROLL PANE
 
 
 	private static class ScrollPane
@@ -1399,11 +1417,11 @@ class MainWindow
 	//  Constructors
 	////////////////////////////////////////////////////////////////////
 
-		private ScrollPane(TextArea textArea)
+		private ScrollPane(
+			TextArea	textArea)
 		{
 			// Call superclass constructor
-			super(textArea, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
-				  JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+			super(textArea, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 
 			// Initialise instance variables
 			this.textArea = textArea;
@@ -1411,7 +1429,7 @@ class MainWindow
 			// Set viewport in text area
 			textArea.setViewport(getViewport());
 
-			// Set component attributes
+			// Set properties
 			setBackground(AppConfig.INSTANCE.getTextAreaBackgroundColour());
 			setCorner(JScrollPane.LOWER_RIGHT_CORNER, new JPanel());
 			GuiUtils.setViewportBorder(this, VERTICAL_MARGIN, HORIZONTAL_MARGIN);
@@ -1432,7 +1450,8 @@ class MainWindow
 	////////////////////////////////////////////////////////////////////
 
 		@Override
-		public void stateChanged(ChangeEvent event)
+		public void stateChanged(
+			ChangeEvent	event)
 		{
 			// Update viewport position if neither scroll bar knob is being dragged
 			if (!getVerticalScrollBar().getValueIsAdjusting() &&
@@ -1472,8 +1491,9 @@ class MainWindow
 	//  Constructors
 	////////////////////////////////////////////////////////////////////
 
-		private ResultArea(int columns,
-						   int rows)
+		private ResultArea(
+			int	columns,
+			int	rows)
 		{
 			// Call superclass constructor
 			super(columns, rows, MAX_NUM_COLUMNS, AppFont.RESULT_AREA.getFont());
@@ -1492,7 +1512,8 @@ class MainWindow
 	////////////////////////////////////////////////////////////////////
 
 		@Override
-		public void mouseDragged(MouseEvent event)
+		public void mouseDragged(
+			MouseEvent	event)
 		{
 			if (SwingUtilities.isLeftMouseButton(event) && (selectedIndex >= 0))
 			{
@@ -1509,7 +1530,8 @@ class MainWindow
 		//--------------------------------------------------------------
 
 		@Override
-		public void mouseMoved(MouseEvent event)
+		public void mouseMoved(
+			MouseEvent	event)
 		{
 			// do nothing
 		}
@@ -1521,7 +1543,8 @@ class MainWindow
 	////////////////////////////////////////////////////////////////////
 
 		@Override
-		public void mousePressed(MouseEvent event)
+		public void mousePressed(
+			MouseEvent	event)
 		{
 			super.mousePressed(event);
 
@@ -1546,7 +1569,8 @@ class MainWindow
 		//--------------------------------------------------------------
 
 		@Override
-		public void mouseReleased(MouseEvent event)
+		public void mouseReleased(
+			MouseEvent	event)
 		{
 			if (SwingUtilities.isLeftMouseButton(event) && (selectedIndex >= 0))
 			{
@@ -1560,7 +1584,7 @@ class MainWindow
 					}
 					catch (AppException e)
 					{
-						App.INSTANCE.showErrorMessage(App.SHORT_NAME, e);
+						RegexSearchApp.INSTANCE.showErrorMessage(RegexSearchApp.SHORT_NAME, e);
 					}
 				}
 
@@ -1577,7 +1601,8 @@ class MainWindow
 	//  Instance methods
 	////////////////////////////////////////////////////////////////////
 
-		private int getIndex(MouseEvent event)
+		private int getIndex(
+			MouseEvent	event)
 		{
 			int index = -1;
 			int x = event.getX();

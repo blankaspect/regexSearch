@@ -72,7 +72,7 @@ public class BaseException
 	 * @param message
 	 *          the detail message of the exception.
 	 * @param replacements
-	 *          the objects whose string representations will replace placeholders in {@code message}.
+	 *          the items whose string representations will replace placeholders in {@code message}.
 	 */
 
 	public BaseException(
@@ -93,7 +93,7 @@ public class BaseException
 	 * @param cause
 	 *          the underlying cause of the exception, which may be {@code null}.
 	 * @param replacements
-	 *          the objects whose string representations will replace placeholders in {@code message}.
+	 *          the items whose string representations will replace placeholders in {@code message}.
 	 */
 
 	public BaseException(
@@ -117,7 +117,7 @@ public class BaseException
 	 * @param  message
 	 *           the base message.
 	 * @param  replacements
-	 *           the objects whose string representations will replace placeholders in {@code message}.
+	 *           the items whose string representations will replace placeholders in {@code message}.
 	 * @return the composite message that was created from {@code message} and {@code replacements}.
 	 */
 
@@ -125,7 +125,7 @@ public class BaseException
 		String		message,
 		Object...	replacements)
 	{
-		return String.format(message, replacements);
+		return (replacements.length > 0) ? String.format(message, replacements) : message;
 	}
 
 	//------------------------------------------------------------------

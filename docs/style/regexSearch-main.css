@@ -6,25 +6,33 @@ Styles for RegexSearch project page
 
 @import url("blankaspect-project.css");
 
-h4
-{
+h4 {
   padding-bottom: 0.3em;
-  border-bottom: 1px solid #B4B8C8;
+  border-bottom: 1px solid;
 }
 
-ul.list li
-{
+ul.list li {
   margin-left: -0.5em;
 }
 
-ul.secondaryList
-{
+ul.secondaryList {
   margin-bottom: 0.25em;
 }
 
-ul.secondaryList li
-{
+ul.secondaryList li {
   margin-top: 0.2em;
+}
+
+@media (prefers-color-scheme: light) {
+  h1, h2, h3, h4, h5 {
+    border-bottom-color: #B4B8C8;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  h1, h2, h3, h4, h5 {
+    border-bottom-color: #606888;
+  }
 }
 
 /*--------------------------------------------------------------------*/

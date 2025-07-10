@@ -21,8 +21,8 @@ package uk.blankaspect.common.misc;
 import java.io.File;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 import uk.blankaspect.common.filesystem.PathnameUtils;
 
@@ -48,16 +48,18 @@ public class FilenameSuffixFilter
 //  Constructors
 ////////////////////////////////////////////////////////////////////////
 
-	public FilenameSuffixFilter(String    description,
-								String... suffixes)
+	public FilenameSuffixFilter(
+		String		description,
+		String...	suffixes)
 	{
-		this(description, Arrays.asList(suffixes));
+		this(description, List.of(suffixes));
 	}
 
 	//------------------------------------------------------------------
 
-	public FilenameSuffixFilter(String       description,
-								List<String> suffixes)
+	public FilenameSuffixFilter(
+		String				description,
+		Iterable<String>	suffixes)
 	{
 		this.suffixes = new ArrayList<>();
 		StringBuilder buffer = new StringBuilder(128);
@@ -82,7 +84,8 @@ public class FilenameSuffixFilter
 ////////////////////////////////////////////////////////////////////////
 
 	@Override
-	public boolean accept(File file)
+	public boolean accept(
+		File	file)
 	{
 		return file.isDirectory() || accepts(file.getName());
 	}
@@ -94,14 +97,14 @@ public class FilenameSuffixFilter
 ////////////////////////////////////////////////////////////////////////
 
 	@Override
-	public boolean equals(Object obj)
+	public boolean equals(
+		Object	obj)
 	{
-		if (obj instanceof FilenameSuffixFilter)
-		{
-			FilenameSuffixFilter filter = (FilenameSuffixFilter)obj;
-			return (description.equals(filter.description) && suffixes.equals(filter.suffixes));
-		}
-		return false;
+		if (this == obj)
+			return true;
+
+		return (obj instanceof FilenameSuffixFilter other) && Objects.equals(description, other.description)
+				&& Objects.equals(suffixes, other.suffixes);
 	}
 
 	//------------------------------------------------------------------
@@ -109,7 +112,7 @@ public class FilenameSuffixFilter
 	@Override
 	public int hashCode()
 	{
-		return description.hashCode() * 31 + suffixes.hashCode();
+		return 31 * description.hashCode() + suffixes.hashCode();
 	}
 
 	//------------------------------------------------------------------
@@ -126,14 +129,16 @@ public class FilenameSuffixFilter
 //  Instance methods
 ////////////////////////////////////////////////////////////////////////
 
-	public String getSuffix(int index)
+	public String getSuffix(
+		int	index)
 	{
 		return suffixes.get(index);
 	}
 
 	//------------------------------------------------------------------
 
-	public boolean accepts(String filename)
+	public boolean accepts(
+		String	filename)
 	{
 		return (filename != null) && PathnameUtils.suffixMatches(filename, suffixes);
 	}

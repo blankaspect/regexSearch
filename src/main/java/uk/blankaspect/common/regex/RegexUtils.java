@@ -18,7 +18,7 @@ package uk.blankaspect.common.regex;
 // IMPORTS
 
 
-import java.util.Arrays;
+import java.util.List;
 
 import java.util.regex.PatternSyntaxException;
 
@@ -175,7 +175,7 @@ public class RegexUtils
 	public static String joinAlternatives(
 		CharSequence...	words)
 	{
-		return joinAlternatives(Arrays.asList(words));
+		return joinAlternatives(List.of(words));
 	}
 
 	//------------------------------------------------------------------

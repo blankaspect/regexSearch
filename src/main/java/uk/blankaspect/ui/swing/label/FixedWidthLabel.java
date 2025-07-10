@@ -39,7 +39,8 @@ public abstract class FixedWidthLabel
 //  Constructors
 ////////////////////////////////////////////////////////////////////////
 
-	protected FixedWidthLabel(String text)
+	protected FixedWidthLabel(
+		String	text)
 	{
 		super(text);
 		setHorizontalAlignment(SwingConstants.TRAILING);
@@ -60,6 +61,7 @@ public abstract class FixedWidthLabel
 //  Instance methods : MaxValueMap.IEntry interface
 ////////////////////////////////////////////////////////////////////////
 
+	@Override
 	public int getValue()
 	{
 		return getPreferredSize().width;
@@ -67,7 +69,9 @@ public abstract class FixedWidthLabel
 
 	//------------------------------------------------------------------
 
-	public void setValue(int value)
+	@Override
+	public void setValue(
+		int	value)
 	{
 		setPreferredSize(new Dimension(value, getPreferredSize().height));
 	}

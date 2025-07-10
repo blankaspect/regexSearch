@@ -22,6 +22,15 @@ public interface IDataInput
 {
 
 ////////////////////////////////////////////////////////////////////////
+//  Constants
+////////////////////////////////////////////////////////////////////////
+
+	/** Miscellaneous strings. */
+	String	NULL_DATA_STR				= "Null data";
+	String	OFFSET_OUT_OF_BOUNDS_STR	= "Offset out of bounds: ";
+	String	LENGTH_OUT_OF_BOUNDS_STR	= "Length out of bounds: ";
+
+////////////////////////////////////////////////////////////////////////
 //  Methods
 ////////////////////////////////////////////////////////////////////////
 
@@ -31,7 +40,7 @@ public interface IDataInput
 	 * @return the length of the data that is available from this input.
 	 */
 
-	long getLength();
+	long length();
 
 	//------------------------------------------------------------------
 

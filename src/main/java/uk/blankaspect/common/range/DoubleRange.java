@@ -20,7 +20,7 @@ package uk.blankaspect.common.range;
 
 import java.text.NumberFormat;
 
-import uk.blankaspect.common.exception.UnexpectedRuntimeException;
+import uk.blankaspect.common.exception2.UnexpectedRuntimeException;
 
 //----------------------------------------------------------------------
 
@@ -104,12 +104,11 @@ public class DoubleRange
 	@Override
 	public boolean equals(Object obj)
 	{
-		if (obj instanceof DoubleRange)
-		{
-			DoubleRange range = (DoubleRange)obj;
-			return ((lowerBound == range.lowerBound) && (upperBound == range.upperBound));
-		}
-		return false;
+		if (this == obj)
+			return true;
+
+		return (obj instanceof DoubleRange other) && (lowerBound == other.lowerBound)
+				&& (upperBound == other.upperBound);
 	}
 
 	//------------------------------------------------------------------
@@ -118,8 +117,8 @@ public class DoubleRange
 	public int hashCode()
 	{
 		long bits = Double.doubleToLongBits(lowerBound);
-		bits ^= Double.doubleToLongBits(upperBound) * 31;
-		return ((int)bits ^ (int)(bits >> 32));
+		bits ^= 31 * Double.doubleToLongBits(upperBound);
+		return (int)bits ^ (int)(bits >> 32);
 	}
 
 	//------------------------------------------------------------------

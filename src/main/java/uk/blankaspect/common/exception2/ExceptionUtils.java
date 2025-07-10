@@ -26,6 +26,8 @@ import java.util.List;
 
 import java.util.stream.Collectors;
 
+import uk.blankaspect.common.stack.StackUtils;
+
 //----------------------------------------------------------------------
 
 
@@ -202,9 +204,13 @@ public class ExceptionUtils
 	/**
 	 * Writes the following items to the standard error stream on separate lines:
 	 * <ul style="margin-top: 0.25em;">
-	 *   <li>a string representation of the location of the element of the call stack at the specified index relative to
-	 *       the caller of this method (index = 0), and</li>
-	 *   <li>a string representation of the specified object.</li>
+	 *   <li>
+		   a string representation of the location of the element of the call stack at the specified index relative to
+	 *     the caller of this method (index = 0), and
+	 *   </li>
+	 *   <li>
+	 *     a string representation of the specified object.
+	 *   </li>
 	 * </ul>
 	 *
 	 * @param obj
@@ -218,7 +224,7 @@ public class ExceptionUtils
 		Object	obj,
 		int		stackIndex)
 	{
-		System.err.println(Thread.currentThread().getStackTrace()[stackIndex + 2]);
+		System.err.println(StackUtils.toStackTraceString(StackUtils.stackFrame(2)));
 		System.err.println(obj);
 	}
 

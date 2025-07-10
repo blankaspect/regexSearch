@@ -20,7 +20,6 @@ package uk.blankaspect.regexsearch;
 
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Dialog;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -73,6 +72,8 @@ import uk.blankaspect.common.misc.FileWritingMode;
 import uk.blankaspect.common.misc.MaxValueMap;
 
 import uk.blankaspect.common.number.NumberUtils;
+
+import uk.blankaspect.common.tuple.StringPair;
 
 import uk.blankaspect.ui.swing.action.KeyAction;
 
@@ -1007,9 +1008,8 @@ class PreferencesDialog
 
 	private PreferencesDialog(Window owner)
 	{
-
 		// Call superclass constructor
-		super(owner, TITLE_STR, Dialog.ModalityType.APPLICATION_MODAL);
+		super(owner, TITLE_STR, ModalityType.APPLICATION_MODAL);
 
 		// Set icons
 		setIconImages(owner.getIconImages());
@@ -1146,7 +1146,7 @@ class PreferencesDialog
 		// Resize dialog to its preferred size
 		pack();
 
-		// Set location of dialog box
+		// Set location of dialog
 		if (location == null)
 			location = GuiUtils.getComponentLocation(this, owner);
 		setLocation(location);
@@ -1156,7 +1156,6 @@ class PreferencesDialog
 
 		// Show dialog
 		setVisible(true);
-
 	}
 
 	//------------------------------------------------------------------
@@ -1345,7 +1344,7 @@ class PreferencesDialog
 			defaultSearchParamsFileChooser.setApproveButtonToolTipText(SELECT_FILE_STR);
 			defaultSearchParamsFileChooser.
 								setFileFilter(new FilenameSuffixFilter(AppConstants.XML_FILES_STR,
-																	   AppConstants.XML_FILE_SUFFIX));
+																	   AppConstants.XML_FILENAME_EXTENSION));
 		}
 		defaultSearchParamsFileChooser.setSelectedFile(defaultSearchParamsField.getCanonicalFile());
 		defaultSearchParamsFileChooser.rescanCurrentDirectory();
@@ -1450,7 +1449,7 @@ class PreferencesDialog
 		}
 		catch (AppException e)
 		{
-			JOptionPane.showMessageDialog(this, e, App.SHORT_NAME, JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(this, e, RegexSearchApp.SHORT_NAME, JOptionPane.ERROR_MESSAGE);
 		}
 		if (accepted)
 			onClose();
@@ -1469,7 +1468,7 @@ class PreferencesDialog
 		}
 		catch (AppException e)
 		{
-			JOptionPane.showMessageDialog(this, e, App.SHORT_NAME, JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(this, e, RegexSearchApp.SHORT_NAME, JOptionPane.ERROR_MESSAGE);
 		}
 	}
 
@@ -1984,15 +1983,12 @@ class PreferencesDialog
 		upperPanel.add(paramEditorSizeLabel);
 
 		// Panel: parameter editor size
-		paramEditorSizePanel = new DimensionsSpinnerPanel(config.getParameterEditorSize().width,
-														  ParameterEditor.MIN_NUM_COLUMNS,
-														  ParameterEditor.MAX_NUM_COLUMNS,
-														  PARAMETER_EDITOR_WIDTH_FIELD_LENGTH,
-														  config.getParameterEditorSize().height,
-														  ParameterEditor.MIN_NUM_ROWS,
-														  ParameterEditor.MAX_NUM_ROWS,
-														  PARAMETER_EDITOR_HEIGHT_FIELD_LENGTH,
-														  new String[] { COLUMNS_STR, ROWS_STR });
+		paramEditorSizePanel =
+				new DimensionsSpinnerPanel(config.getParameterEditorSize().width, ParameterEditor.MIN_NUM_COLUMNS,
+										   ParameterEditor.MAX_NUM_COLUMNS, PARAMETER_EDITOR_WIDTH_FIELD_LENGTH,
+										   config.getParameterEditorSize().height, ParameterEditor.MIN_NUM_ROWS,
+										   ParameterEditor.MAX_NUM_ROWS, PARAMETER_EDITOR_HEIGHT_FIELD_LENGTH,
+										   StringPair.of(COLUMNS_STR, ROWS_STR));
 
 		gbc.gridx = 1;
 		gbc.gridy = gridY++;
@@ -2093,15 +2089,12 @@ class PreferencesDialog
 		textViewPanel.add(viewableSizeLabel);
 
 		// Panel: text-view size
-		textViewSizePanel = new DimensionsSpinnerPanel(config.getTextViewViewableSize().width,
-													   AppConfig.MIN_TEXT_VIEW_NUM_COLUMNS,
-													   AppConfig.MAX_TEXT_VIEW_NUM_COLUMNS,
-													   TEXT_VIEW_WIDTH_FIELD_LENGTH,
-													   config.getTextViewViewableSize().height,
-													   AppConfig.MIN_TEXT_VIEW_NUM_ROWS,
-													   AppConfig.MAX_TEXT_VIEW_NUM_ROWS,
-													   TEXT_VIEW_HEIGHT_FIELD_LENGTH,
-													   new String[] { COLUMNS_STR, ROWS_STR });
+		textViewSizePanel =
+				new DimensionsSpinnerPanel(config.getTextViewViewableSize().width, AppConfig.MIN_TEXT_VIEW_NUM_COLUMNS,
+										   AppConfig.MAX_TEXT_VIEW_NUM_COLUMNS, TEXT_VIEW_WIDTH_FIELD_LENGTH,
+										   config.getTextViewViewableSize().height, AppConfig.MIN_TEXT_VIEW_NUM_ROWS,
+										   AppConfig.MAX_TEXT_VIEW_NUM_ROWS, TEXT_VIEW_HEIGHT_FIELD_LENGTH,
+										   StringPair.of(COLUMNS_STR, ROWS_STR));
 
 		gbc.gridx = 1;
 		gbc.gridy = gridY++;

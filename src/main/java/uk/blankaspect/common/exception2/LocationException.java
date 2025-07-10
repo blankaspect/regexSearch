@@ -45,7 +45,7 @@ public class LocationException
 	 * @param location
 	 *          the location with which the exception will be associated, which may be {@code null}.
 	 * @param replacements
-	 *          the objects whose string representations will replace placeholders in {@code message}.
+	 *          the items whose string representations will replace placeholders in {@code message}.
 	 */
 
 	public LocationException(
@@ -69,7 +69,7 @@ public class LocationException
 	 * @param location
 	 *          the location with which the exception will be associated, which may be {@code null}.
 	 * @param replacements
-	 *          the objects whose string representations will replace placeholders in {@code message}.
+	 *          the items whose string representations will replace placeholders in {@code message}.
 	 */
 
 	public LocationException(
@@ -93,7 +93,7 @@ public class LocationException
 	 * @param location
 	 *          the location with which the exception will be associated, which may be {@code null}.
 	 * @param replacements
-	 *          the objects whose string representations will replace placeholders in {@code message}.
+	 *          the items whose string representations will replace placeholders in {@code message}.
 	 */
 
 	public LocationException(
@@ -119,7 +119,7 @@ public class LocationException
 	 * @param  location
 	 *           the location that will be prefixed to {@code message}, which may be {@code null}.
 	 * @param  replacements
-	 *           the objects whose string representations will replace placeholders in {@code message}.
+	 *           the items whose string representations will replace placeholders in {@code message}.
 	 * @return the composite message that was created from {@code message}, {@code location} and {@code replacements}.
 	 */
 

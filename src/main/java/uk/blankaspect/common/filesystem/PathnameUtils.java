@@ -22,11 +22,13 @@ import java.io.File;
 
 import java.nio.file.Path;
 
-import java.util.Arrays;
+import java.util.List;
 
 import uk.blankaspect.common.function.IFunction2;
 
 import uk.blankaspect.common.misc.SystemUtils;
+
+import uk.blankaspect.common.os.OsUtils;
 
 import uk.blankaspect.common.property.PropertyString;
 
@@ -53,7 +55,7 @@ public class PathnameUtils
 //  Class variables
 ////////////////////////////////////////////////////////////////////////
 
-	private static	boolean	ignoreFilenameCase	= (File.separatorChar == '\\');
+	private static	boolean	ignoreFilenameCase	= OsUtils.isWindows();
 
 ////////////////////////////////////////////////////////////////////////
 //  Constructors
@@ -100,7 +102,7 @@ public class PathnameUtils
 			if ((str.length() == prefixLength) || (str.charAt(prefixLength) == File.separatorChar)
 					|| (str.charAt(prefixLength) == '/'))
 			{
-				String pathname = SystemUtils.getUserHomePathname();
+				String pathname = SystemUtils.userHomeDirectoryPathname();
 				if (pathname != null)
 					str = pathname + str.substring(prefixLength);
 			}
@@ -117,7 +119,7 @@ public class PathnameUtils
 		// If pathname starts with user's home directory, replace it with '~'
 		if (abbreviateUserHome)
 		{
-			String userHome = SystemUtils.getUserHomePathname();
+			String userHome = SystemUtils.userHomeDirectoryPathname();
 			if ((userHome != null) && pathname.startsWith(userHome))
 				pathname = PathnameUtils.USER_HOME_PREFIX + pathname.substring(userHome.length());
 		}
@@ -139,7 +141,7 @@ public class PathnameUtils
 			// If pathname starts with '~', replace it with user's home directory
 			if (pathname.startsWith(USER_HOME_PREFIX))
 			{
-				String userHome = SystemUtils.getUserHomePathname();
+				String userHome = SystemUtils.userHomeDirectoryPathname();
 				if (userHome != null)
 					pathname = userHome + pathname.substring(USER_HOME_PREFIX.length());
 			}
@@ -173,7 +175,8 @@ public class PathnameUtils
 			int pathnameLength = pathname.length();
 			int suffixLength = suffix.length();
 			if ((pathnameLength >= suffixLength)
-				&& matcher.invoke(pathname.subSequence(pathnameLength - suffixLength, pathnameLength).toString(), suffix))
+					&& matcher.invoke(pathname.subSequence(pathnameLength - suffixLength, pathnameLength).toString(),
+									  suffix))
 				return true;
 		}
 		return false;
@@ -196,7 +199,7 @@ public class PathnameUtils
 		CharSequence	pathname,
 		String...		suffixes)
 	{
-		return suffixMatches(pathname, Arrays.asList(suffixes));
+		return suffixMatches(pathname, List.of(suffixes));
 	}
 
 	//------------------------------------------------------------------

@@ -59,22 +59,19 @@ public class TextFieldUtils
 												.addPropertyChangeListener(PERMANENT_FOCUS_OWNER_PROPERTY_KEY, event ->
 		{
 			// If old focus owner was text field, clear its selection
-			Object oldValue = event.getOldValue();
-			if (oldValue instanceof JTextField)
+			if (event.getOldValue() instanceof JTextField textField)
 			{
 				SwingUtilities.invokeLater(() ->
 				{
-					JTextField field = (JTextField)oldValue;
-					int pos = field.getCaretPosition();
-					field.setCaretPosition(pos);
-					field.moveCaretPosition(pos);
+					int pos = textField.getCaretPosition();
+					textField.setCaretPosition(pos);
+					textField.moveCaretPosition(pos);
 				});
 			}
 
 			// If new focus owner is text field, select all its text
-			Object newValue = event.getNewValue();
-			if ((newValue instanceof JTextField) && !(newValue instanceof JPasswordField))
-				SwingUtilities.invokeLater(() -> ((JTextField)newValue).selectAll());
+			if ((event.getNewValue() instanceof JTextField textField) && !(textField instanceof JPasswordField))
+				SwingUtilities.invokeLater(textField::selectAll);
 		});
 	}
 

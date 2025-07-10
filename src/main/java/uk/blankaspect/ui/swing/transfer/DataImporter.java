@@ -64,7 +64,8 @@ public class DataImporter
 //  Class methods
 ////////////////////////////////////////////////////////////////////////
 
-	public static boolean isString(DataFlavor[] flavours)
+	public static boolean isString(
+		DataFlavor[]	flavours)
 	{
 		for (DataFlavor flavour : flavours)
 		{
@@ -76,7 +77,8 @@ public class DataImporter
 
 	//------------------------------------------------------------------
 
-	public static boolean isFileList(DataFlavor[] flavours)
+	public static boolean isFileList(
+		DataFlavor[]	flavours)
 	{
 		for (DataFlavor flavour : flavours)
 		{
@@ -88,7 +90,8 @@ public class DataImporter
 
 	//------------------------------------------------------------------
 
-	public static List<File> getFiles(Transferable transferable)
+	public static List<File> getFiles(
+		Transferable	transferable)
 		throws IOException, UnsupportedFlavorException
 	{
 		return getFiles(transferable, false);
@@ -96,8 +99,9 @@ public class DataImporter
 
 	//------------------------------------------------------------------
 
-	public static List<File> getFiles(Transferable transferable,
-									  boolean      allowAnyUri)
+	public static List<File> getFiles(
+		Transferable	transferable,
+		boolean			allowAnyUri)
 		throws IOException, UnsupportedFlavorException
 	{
 		List<File> files = new ArrayList<>();
@@ -106,31 +110,34 @@ public class DataImporter
 			if (transferable.isDataFlavorSupported(DataFlavor.javaFileListFlavor))
 			{
 				Object transferData = transferable.getTransferData(DataFlavor.javaFileListFlavor);
-				if (transferData instanceof List<?>)
+				if (transferData instanceof List<?> list)
 				{
-					for (Object obj : (List<?>)transferData)
+					for (Object obj : list)
 					{
-						if (obj instanceof File)
-							files.add((File)obj);
+						if (obj instanceof File file)
+							files.add(file);
 					}
 				}
 			}
 			else
 			{
-				String[] strs = ((String)transferable.getTransferData(URI_LIST_FLAVOUR)).split("[\\r\\n]+");
-				for (String str : strs)
+				if (transferable.getTransferData(URI_LIST_FLAVOUR) instanceof String text)
 				{
-					try
+					String[] strs = text.split("[\\r\\n]+");
+					for (String str : strs)
 					{
-						URI uri = new URI(str);
-						if (FILE_SCHEME_STR.equals(uri.getScheme()))
-							files.add(new File(uri));
-						else if (allowAnyUri)
-							files.add(new File(str));
-					}
-					catch (URISyntaxException e)
-					{
-						ExceptionUtils.printStderrLocated(e);
+						try
+						{
+							URI uri = new URI(str);
+							if (FILE_SCHEME_STR.equals(uri.getScheme()))
+								files.add(new File(uri));
+							else if (allowAnyUri)
+								files.add(new File(str));
+						}
+						catch (URISyntaxException e)
+						{
+							ExceptionUtils.printStderrLocated(e);
+						}
 					}
 				}
 			}

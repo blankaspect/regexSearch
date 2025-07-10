@@ -96,7 +96,7 @@ public class ImageCache
 		BufferedImage image = null;
 		try
 		{
-			image = ImageIO.read(new ByteArrayInputStream(ImageData.DEFAULT_IMAGE));
+			image = ImageIO.read(new ByteArrayInputStream(ImgData.DEFAULT_IMAGE));
 		}
 		catch (IOException e)
 		{
@@ -322,8 +322,11 @@ public class ImageCache
 //  Image data
 ////////////////////////////////////////////////////////////////////////
 
-	/** PNG image data. */
-	private interface ImageData
+	/**
+	 * PNG image data.
+	 */
+
+	private interface ImgData
 	{
 		byte[]	DEFAULT_IMAGE	=
 		{

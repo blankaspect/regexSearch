@@ -53,6 +53,7 @@ import uk.blankaspect.common.exception2.FileException;
 import uk.blankaspect.common.exception2.LocationException;
 
 import uk.blankaspect.common.filesystem.FilenameUtils;
+import uk.blankaspect.common.filesystem.PathUtils;
 
 //----------------------------------------------------------------------
 
@@ -80,6 +81,12 @@ public class ResourceUtils
 	/** The character that separates adjacent elements of the fully qualified name of a class. */
 	private static final	char	CLASS_NAME_SEPARATOR_CHAR	= '.';
 
+	/** The length of the buffer that is used by {@link #readBytes(Class, String)}. */
+	private static final	int		READ_BUFFER_LENGTH	= 1 << 12;	// 4096
+
+	/** The length of the buffer that is used by {@link #copyResource(Class, String, Path)}. */
+	private static final	int		COPY_BUFFER_LENGTH	= 1 << 14;	// 16384
+
 	/** Miscellaneous strings. */
 	private static final	String	FILE_NOT_FOUND_STR	= "File was not found";
 	private static final	String	FILE_TOO_LONG_STR	= "File is too long";
@@ -87,18 +94,38 @@ public class ResourceUtils
 	/** Error messages. */
 	private interface ErrorMsg
 	{
-		String	RESOURCE_NOT_FOUND_STR			= "The resource was not found.";
-		String	FAILED_TO_OPEN_FILE				= "Failed to open the file.";
-		String	FAILED_TO_CLOSE_FILE			= "Failed to close the file.";
-		String	FAILED_TO_LOCK_FILE				= "Failed to lock the file.";
-		String	FAILED_TO_READ_FILE_ATTRIBUTES	= "Failed to read the attributes of the file.";
-		String	FAILED_TO_CREATE_DIRECTORY		= "Failed to create the directory.";
-		String	FAILED_TO_CREATE_TEMPORARY_FILE	= "Failed to create a temporary file.";
-		String	FAILED_TO_DELETE_FILE			= "Failed to delete the existing file.";
-		String	FAILED_TO_RENAME_FILE			= "Temporary file: %s\n"
-													+ "Failed to rename the temporary file to the specified filename.";
-		String	ERROR_READING_FILE				= "An error occurred when reading the file.";
-		String	ERROR_WRITING_FILE				= "An error occurred when writing the file.";
+		String	RESOURCE_NOT_FOUND_STR =
+				"The resource was not found.";
+
+		String	FAILED_TO_OPEN_FILE =
+				"Failed to open the file.";
+
+		String	FAILED_TO_CLOSE_FILE =
+				"Failed to close the file.";
+
+		String	FAILED_TO_LOCK_FILE =
+				"Failed to lock the file.";
+
+		String	FAILED_TO_READ_FILE_ATTRIBUTES =
+				"Failed to read the attributes of the file.";
+
+		String	FAILED_TO_CREATE_DIRECTORY =
+				"Failed to create the directory.";
+
+		String	FAILED_TO_CREATE_TEMPORARY_FILE =
+				"Failed to create a temporary file.";
+
+		String	FAILED_TO_DELETE_FILE =
+				"Failed to delete the existing file.";
+
+		String	FAILED_TO_RENAME_FILE =
+				"Temporary file: %s\nFailed to rename the temporary file to the specified filename.";
+
+		String	ERROR_READING_FILE =
+				"An error occurred when reading the file.";
+
+		String	ERROR_WRITING_FILE =
+				"An error occurred when writing the file.";
 	}
 
 ////////////////////////////////////////////////////////////////////////
@@ -273,7 +300,7 @@ public class ResourceUtils
 	 *           the name of the resource.
 	 * @return a byte array of the contents of the resource.
 	 * @throws IOException
-	 *           if an error occurred when reading the resource.
+	 *           if an error occurs when reading the resource.
 	 */
 
 	public static byte[] readBytes(
@@ -286,8 +313,8 @@ public class ResourceUtils
 			throw new IllegalArgumentException("Null name");
 
 		// Open input stream on resource
-		InputStream inStream = (cls == null) ? ClassLoader.getSystemResourceAsStream(name)
-											 : cls.getResourceAsStream(name);
+		InputStream inStream =
+				(cls == null) ? ClassLoader.getSystemResourceAsStream(name) : cls.getResourceAsStream(name);
 		if (inStream == null)
 			throw new IOException(FILE_NOT_FOUND_STR + ": " + name);
 
@@ -300,7 +327,7 @@ public class ResourceUtils
 			while (true)
 			{
 				// Allocate buffer for block
-				byte[] buffer = new byte[4096];
+				byte[] buffer = new byte[READ_BUFFER_LENGTH];
 
 				// Read block
 				int blockLength = inStream.read(buffer);
@@ -314,7 +341,7 @@ public class ResourceUtils
 					dataBlocks.add(buffer, 0, blockLength);
 
 				// Test cumulative length of data
-				if (dataBlocks.getLength() > Integer.MAX_VALUE)
+				if (dataBlocks.length() > Integer.MAX_VALUE)
 					throw new IOException(FILE_TOO_LONG_STR + ": " + name);
 			}
 		}
@@ -340,7 +367,7 @@ public class ResourceUtils
 	 * @param  name
 	 *           the name of the desired resource.
 	 * @throws IOException
-	 *           if an error occurred when reading the resource.
+	 *           if an error occurs when reading the resource.
 	 */
 
 	public static String readText(
@@ -365,7 +392,7 @@ public class ResourceUtils
 	 * @return encoding
 	 *           the character encoding that will be used to decode the contents of the resource.
 	 * @throws IOException
-	 *           if an error occurred when reading the resource.
+	 *           if an error occurs when reading the resource.
 	 */
 
 	public static String readText(
@@ -390,7 +417,7 @@ public class ResourceUtils
 	 *           the name of the resource.
 	 * @return a list of the lines of text that are the contents of the resource.
 	 * @throws IOException
-	 *           if an error occurred when reading the resource.
+	 *           if an error occurs when reading the resource.
 	 */
 
 	public static List<String> readLines(
@@ -416,7 +443,7 @@ public class ResourceUtils
 	 *           the character encoding that will be used to decode the contents of the resource.
 	 * @return a list of the lines of text that are the contents of the resource.
 	 * @throws IOException
-	 *           if an error occurred when reading the resource.
+	 *           if an error occurs when reading the resource.
 	 */
 
 	public static List<String> readLines(
@@ -432,8 +459,8 @@ public class ResourceUtils
 			throw new IllegalArgumentException("Null encoding");
 
 		// Open input stream on resource
-		InputStream inStream = (cls == null) ? ClassLoader.getSystemResourceAsStream(name)
-											 : cls.getResourceAsStream(name);
+		InputStream inStream =
+				(cls == null) ? ClassLoader.getSystemResourceAsStream(name) : cls.getResourceAsStream(name);
 		if (inStream == null)
 			throw new IOException(FILE_NOT_FOUND_STR + ": " + name);
 
@@ -482,7 +509,7 @@ public class ResourceUtils
 	 * @param  outFile
 	 *           the file-system location to which the resource will be written.
 	 * @throws LocationException
-	 *           if an error occurred when reading the resource or writing the output file.
+	 *           if an error occurs when reading the resource or writing the output file.
 	 */
 
 	public static void copyResource(
@@ -491,8 +518,6 @@ public class ResourceUtils
 		Path		outFile)
 		throws LocationException
 	{
-		final	int	BUFFER_LENGTH	= 1 << 14;	// 16384
-
 		// Validate arguments
 		if (name == null)
 			throw new IllegalArgumentException("Null name");
@@ -534,7 +559,7 @@ public class ResourceUtils
 			}
 
 			// Create parent directory
-			Path directory = outFile.toAbsolutePath().getParent();
+			Path directory = PathUtils.absParent(outFile);
 			try
 			{
 				Files.createDirectories(directory);
@@ -577,7 +602,7 @@ public class ResourceUtils
 			}
 
 			// Allocate buffer
-			byte[] buffer = new byte[BUFFER_LENGTH];
+			byte[] buffer = new byte[COPY_BUFFER_LENGTH];
 
 			// Read resource and write output file
 			int blockLength = 0;
@@ -658,8 +683,7 @@ public class ResourceUtils
 			}
 			catch (Exception e)
 			{
-				String pathname = tempFile.toAbsolutePath().toString();
-				throw new FileException(ErrorMsg.FAILED_TO_RENAME_FILE, e, outFile, pathname);
+				throw new FileException(ErrorMsg.FAILED_TO_RENAME_FILE, e, outFile, PathUtils.abs(tempFile));
 			}
 
 			// Copy timestamp of resource to output file

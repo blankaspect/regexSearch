@@ -53,7 +53,7 @@ public class FileException
 	 * @param location
 	 *          the location with which the exception will be associated, which may be {@code null}.
 	 * @param replacements
-	 *          the objects whose string representations will replace placeholders in {@code message}.
+	 *          the items whose string representations will replace placeholders in {@code message}.
 	 */
 
 	public FileException(
@@ -77,7 +77,7 @@ public class FileException
 	 * @param location
 	 *          the location with which the exception will be associated, which may be {@code null}.
 	 * @param replacements
-	 *          the objects whose string representations will replace placeholders in {@code message}.
+	 *          the items whose string representations will replace placeholders in {@code message}.
 	 */
 
 	public FileException(
@@ -104,7 +104,7 @@ public class FileException
 	 * @param location
 	 *          the location with which the exception will be associated, which may be {@code null}.
 	 * @param replacements
-	 *          the objects whose string representations will replace placeholders in {@code message}.
+	 *          the items whose string representations will replace placeholders in {@code message}.
 	 */
 
 	public FileException(
@@ -133,7 +133,7 @@ public class FileException
 	public static String locationToString(
 		Path	location)
 	{
-		return (location == null) ? null : location.toAbsolutePath().toString();
+		return (location == null) ? null : location.toAbsolutePath().normalize().toString();
 	}
 
 	//------------------------------------------------------------------
@@ -146,7 +146,7 @@ public class FileException
 	 * @param  location
 	 *           the location that will be prefixed to {@code message}, which may be {@code null}.
 	 * @param  replacements
-	 *          the objects whose string representations will replace placeholders in {@code message}.
+	 *          the items whose string representations will replace placeholders in {@code message}.
 	 * @return a composite detail message created from {@code message}, {@code location} and {@code replacements}.
 	 */
 

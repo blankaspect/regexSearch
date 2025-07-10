@@ -145,7 +145,7 @@ public class ArrowButton
 		this.bar = bar;
 		active = Active.ARMED;
 
-		// Set attributes
+		// Set properties
 		setBorder(null);
 	}
 

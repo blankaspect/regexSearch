@@ -2,7 +2,7 @@
 
 DimensionsSpinnerPanel.java
 
-Dimensions spinner panel class.
+Class: dimensions spinner panel.
 
 \*====================================================================*/
 
@@ -23,16 +23,15 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import uk.blankaspect.ui.swing.button.LinkedPairButton;
+import uk.blankaspect.common.tuple.StringPair;
+
+import uk.blankaspect.ui.swing.button.LinkUnlinkButton;
 
 import uk.blankaspect.ui.swing.font.FontKey;
 import uk.blankaspect.ui.swing.font.FontUtils;
@@ -44,12 +43,12 @@ import uk.blankaspect.ui.swing.spinner.FIntegerSpinner;
 //----------------------------------------------------------------------
 
 
-// DIMENSIONS SPINNER PANEL CLASS
+// CLASS: DIMENSIONS SPINNER PANEL
 
 
 public class DimensionsSpinnerPanel
 	extends JPanel
-	implements ActionListener, ChangeListener
+	implements ChangeListener
 {
 
 ////////////////////////////////////////////////////////////////////////
@@ -60,6 +59,14 @@ public class DimensionsSpinnerPanel
 	private static final	String	AND_STR		= " and ";
 
 ////////////////////////////////////////////////////////////////////////
+//  Instance variables
+////////////////////////////////////////////////////////////////////////
+
+	private	FIntegerSpinner		value1Spinner;
+	private	FIntegerSpinner		value2Spinner;
+	private	LinkUnlinkButton	linkButton;
+
+////////////////////////////////////////////////////////////////////////
 //  Constructors
 ////////////////////////////////////////////////////////////////////////
 
@@ -67,16 +74,16 @@ public class DimensionsSpinnerPanel
 	 * @throws IllegalArgumentException
 	 */
 
-	public DimensionsSpinnerPanel(int      value1,
-								  int      value2,
-								  int      minValue,
-								  int      maxValue,
-								  int      maxLength,
-								  String[] text,
-								  boolean  linked)
+	public DimensionsSpinnerPanel(
+		int			value1,
+		int			value2,
+		int			minValue,
+		int			maxValue,
+		int			maxLength,
+		StringPair	text,
+		boolean		linked)
 	{
-		this(value1, minValue, maxValue, maxLength, value2, minValue, maxValue, maxLength, text, true,
-			 linked);
+		this(value1, minValue, maxValue, maxLength, value2, minValue, maxValue, maxLength, text, true, linked);
 	}
 
 	//------------------------------------------------------------------
@@ -85,18 +92,18 @@ public class DimensionsSpinnerPanel
 	 * @throws IllegalArgumentException
 	 */
 
-	public DimensionsSpinnerPanel(int      value1,
-								  int      minValue1,
-								  int      maxValue1,
-								  int      maxLength1,
-								  int      value2,
-								  int      minValue2,
-								  int      maxValue2,
-								  int      maxLength2,
-								  String[] text)
+	public DimensionsSpinnerPanel(
+		int			value1,
+		int			minValue1,
+		int			maxValue1,
+		int			maxLength1,
+		int			value2,
+		int			minValue2,
+		int			maxValue2,
+		int			maxLength2,
+		StringPair	text)
 	{
-		this(value1, minValue1, maxValue1, maxLength1, value2, minValue2, maxValue2, maxLength2, text,
-			 false, false);
+		this(value1, minValue1, maxValue1, maxLength1, value2, minValue2, maxValue2, maxLength2, text, false, false);
 	}
 
 	//------------------------------------------------------------------
@@ -105,22 +112,19 @@ public class DimensionsSpinnerPanel
 	 * @throws IllegalArgumentException
 	 */
 
-	private DimensionsSpinnerPanel(int      value1,
-								   int      minValue1,
-								   int      maxValue1,
-								   int      maxLength1,
-								   int      value2,
-								   int      minValue2,
-								   int      maxValue2,
-								   int      maxLength2,
-								   String[] text,
-								   boolean  linkable,
-								   boolean  linked)
+	private DimensionsSpinnerPanel(
+		int			value1,
+		int			minValue1,
+		int			maxValue1,
+		int			maxLength1,
+		int			value2,
+		int			minValue2,
+		int			maxValue2,
+		int			maxLength2,
+		StringPair	text,
+		boolean		linkable,
+		boolean		linked)
 	{
-		// Validate arguments
-		if ((text != null) && (text.length < 2))
-			throw new IllegalArgumentException();
-
 		// Set layout manager
 		GridBagLayout gridBag = new GridBagLayout();
 		GridBagConstraints gbc = new GridBagConstraints();
@@ -180,8 +184,13 @@ public class DimensionsSpinnerPanel
 		// Button: link
 		if (linkable)
 		{
-			linkButton = new LinkedPairButton((text == null) ? null : text[0] + AND_STR + text[1]);
-			linkButton.addActionListener(this);
+			linkButton = LinkUnlinkButton.horizontal();
+			linkButton.setToolTipText((text == null) ? null : text.first() + AND_STR + text.second());
+			linkButton.addActionListener(event ->
+			{
+				if (linkButton.isSelected())
+					value2Spinner.setIntValue(value1Spinner.getIntValue());
+			});
 			if (value1 == value2)
 				linkButton.setSelected(linked);
 
@@ -201,7 +210,7 @@ public class DimensionsSpinnerPanel
 		// Label: value1 by value2
 		if (text != null)
 		{
-			JLabel byLabel = new FLabel("(" + text[0] + " " + getTimesString() + " " + text[1] + ")");
+			JLabel byLabel = new FLabel("(" + text.first() + " " + getTimesString() + " " + text.second() + ")");
 
 			gbc.gridx = gridX++;
 			gbc.gridy = 0;
@@ -225,21 +234,7 @@ public class DimensionsSpinnerPanel
 
 	public static String getTimesString()
 	{
-		return (FontUtils.getAppFont(FontKey.MAIN).canDisplay(TIMES_CHAR)
-																					? Character.toString(TIMES_CHAR)
-																					: "x");
-	}
-
-	//------------------------------------------------------------------
-
-////////////////////////////////////////////////////////////////////////
-//  Instance methods : ActionListener interface
-////////////////////////////////////////////////////////////////////////
-
-	public void actionPerformed(ActionEvent event)
-	{
-		if (linkButton.isSelected())
-			value2Spinner.setIntValue(value1Spinner.getIntValue());
+		return FontUtils.getAppFont(FontKey.MAIN).canDisplay(TIMES_CHAR) ? Character.toString(TIMES_CHAR) : "x";
 	}
 
 	//------------------------------------------------------------------
@@ -248,7 +243,9 @@ public class DimensionsSpinnerPanel
 //  Instance methods : ChangeListener interface
 ////////////////////////////////////////////////////////////////////////
 
-	public void stateChanged(ChangeEvent event)
+	@Override
+	public void stateChanged(
+		ChangeEvent	event)
 	{
 		Object eventSource = event.getSource();
 
@@ -322,22 +319,25 @@ public class DimensionsSpinnerPanel
 
 	//------------------------------------------------------------------
 
-	public void setValue1(int value)
+	public void setValue1(
+		int	value)
 	{
 		value1Spinner.setIntValue(value);
 	}
 
 	//------------------------------------------------------------------
 
-	public void setValue2(int value)
+	public void setValue2(
+		int	value)
 	{
 		value2Spinner.setIntValue(value);
 	}
 
 	//------------------------------------------------------------------
 
-	public void setValues(int value1,
-						  int value2)
+	public void setValues(
+		int	value1,
+		int	value2)
 	{
 		if ((linkButton != null) && (value1 != value2))
 			linkButton.setSelected(false);
@@ -351,7 +351,8 @@ public class DimensionsSpinnerPanel
 	 * @throws IllegalStateException
 	 */
 
-	public void setLinked(boolean linked)
+	public void setLinked(
+		boolean	linked)
 	{
 		if (linkButton == null)
 			throw new IllegalStateException();
@@ -360,14 +361,6 @@ public class DimensionsSpinnerPanel
 	}
 
 	//------------------------------------------------------------------
-
-////////////////////////////////////////////////////////////////////////
-//  Instance variables
-////////////////////////////////////////////////////////////////////////
-
-	private	FIntegerSpinner		value1Spinner;
-	private	FIntegerSpinner		value2Spinner;
-	private	LinkedPairButton	linkButton;
 
 }
 

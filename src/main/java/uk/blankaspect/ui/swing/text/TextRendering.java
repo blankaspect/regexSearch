@@ -240,9 +240,9 @@ public class TextRendering
 			String	key)
 		{
 			return Stream.of(values())
-							.filter(value -> value.key.equals(key))
-							.findFirst()
-							.orElse(null);
+					.filter(value -> value.key.equals(key))
+					.findFirst()
+					.orElse(null);
 		}
 
 		//--------------------------------------------------------------
@@ -251,9 +251,9 @@ public class TextRendering
 			Object	hintValue)
 		{
 			return Stream.of(values())
-							.filter(value -> value.hintValue.equals(hintValue))
-							.findFirst()
-							.orElse(null);
+					.filter(value -> value.hintValue.equals(hintValue))
+					.findFirst()
+					.orElse(null);
 		}
 
 		//--------------------------------------------------------------
@@ -375,9 +375,9 @@ public class TextRendering
 			String	key)
 		{
 			return Stream.of(values())
-							.filter(value -> value.key.equals(key))
-							.findFirst()
-							.orElse(null);
+					.filter(value -> value.key.equals(key))
+					.findFirst()
+					.orElse(null);
 		}
 
 		//--------------------------------------------------------------
@@ -386,9 +386,9 @@ public class TextRendering
 			Object	hintValue)
 		{
 			return Stream.of(values())
-							.filter(value -> value.hintValue.equals(hintValue))
-							.findFirst()
-							.orElse(null);
+					.filter(value -> value.hintValue.equals(hintValue))
+					.findFirst()
+					.orElse(null);
 		}
 
 		//--------------------------------------------------------------

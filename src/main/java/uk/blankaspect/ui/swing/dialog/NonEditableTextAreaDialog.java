@@ -190,19 +190,19 @@ public class NonEditableTextAreaDialog
 ////////////////////////////////////////////////////////////////////////
 
 	protected NonEditableTextAreaDialog(Window owner,
-										String titleStr,
+										String title,
 										String key,
 										int    numColumns,
 										int    numRows,
 										String text)
 	{
-		this(owner, titleStr, key, numColumns, numRows, text, false);
+		this(owner, title, key, numColumns, numRows, text, false);
 	}
 
 	//------------------------------------------------------------------
 
 	protected NonEditableTextAreaDialog(Window  owner,
-										String  titleStr,
+										String  title,
 										String  key,
 										int     numColumns,
 										int     numRows,
@@ -210,7 +210,7 @@ public class NonEditableTextAreaDialog
 										boolean canClear)
 	{
 		// Call superclass constructor
-		super(owner, titleStr, key, numColumns, numRows, getCommands(canClear), Command.CLOSE, text);
+		super(owner, title, key, numColumns, numRows, getCommands(canClear), Command.CLOSE, text);
 
 		// Initialise instance variables
 		this.canClear = canClear;

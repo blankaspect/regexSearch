@@ -24,6 +24,8 @@ import uk.blankaspect.common.filesystem.PathnameUtils;
 
 import uk.blankaspect.common.misc.SystemUtils;
 
+import uk.blankaspect.common.os.OsUtils;
+
 //----------------------------------------------------------------------
 
 
@@ -66,7 +68,7 @@ public class PropertiesPathname
 			pathname = System.getProperty(APP_PREFIX + PROPERTIES_DIR_PROPERTY_KEY);
 			if (pathname == null)
 			{
-				if (File.separatorChar == '\\')
+				if (OsUtils.isWindows())
 				{
 					pathname = System.getenv(WINDOWS_APP_CONFIG_DIR_KEY);
 					if (pathname != null)
@@ -74,7 +76,7 @@ public class PropertiesPathname
 				}
 				else
 				{
-					pathname = SystemUtils.getUserHomePathname();
+					pathname = SystemUtils.userHomeDirectoryPathname();
 					if (pathname != null)
 						pathname += File.separator + UNIX_PROPERTIES_DIR_PREFIX;
 				}

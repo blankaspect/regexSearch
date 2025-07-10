@@ -2,7 +2,7 @@
 
 MaxValueMap.java
 
-Maximum-value map class.
+Class: maximum-value map.
 
 \*====================================================================*/
 
@@ -26,38 +26,17 @@ import java.util.Map;
 //----------------------------------------------------------------------
 
 
-// MAXIMUM-VALUE MAP CLASS
+// CLASS: MAXIMUM-VALUE MAP
 
 
 public class MaxValueMap
 {
 
 ////////////////////////////////////////////////////////////////////////
-//  Member interfaces
+//  Class variables
 ////////////////////////////////////////////////////////////////////////
 
-
-	// MAP ENTRY INTERFACE
-
-
-	public interface IEntry
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Methods
-	////////////////////////////////////////////////////////////////////
-
-		int getValue();
-
-		//--------------------------------------------------------------
-
-		void setValue(int value);
-
-		//--------------------------------------------------------------
-
-	}
-
-	//==================================================================
+	private static	Map<String, List<IEntry>>	map	= new HashMap<>();
 
 ////////////////////////////////////////////////////////////////////////
 //  Constructors
@@ -73,22 +52,25 @@ public class MaxValueMap
 //  Class methods
 ////////////////////////////////////////////////////////////////////////
 
-	public static List<IEntry> getEntries(String key)
+	public static List<IEntry> getEntries(
+		String	key)
 	{
 		return map.get(key);
 	}
 
 	//------------------------------------------------------------------
 
-	public static void removeAll(String key)
+	public static void removeAll(
+		String	key)
 	{
 		map.remove(key);
 	}
 
 	//------------------------------------------------------------------
 
-	public static void add(String key,
-						   IEntry entry)
+	public static void add(
+		String	key,
+		IEntry	entry)
 	{
 		if (key != null)
 		{
@@ -104,7 +86,8 @@ public class MaxValueMap
 
 	//------------------------------------------------------------------
 
-	public static void update(String key)
+	public static void update(
+		String	key)
 	{
 		List<IEntry> entries = map.get(key);
 		if (entries != null)
@@ -125,10 +108,32 @@ public class MaxValueMap
 	//------------------------------------------------------------------
 
 ////////////////////////////////////////////////////////////////////////
-//  Class variables
+//  Member interfaces
 ////////////////////////////////////////////////////////////////////////
 
-	private static	Map<String, List<IEntry>>	map	= new HashMap<>();
+
+	// INTERFACE: MAP ENTRY
+
+
+	public interface IEntry
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Methods
+	////////////////////////////////////////////////////////////////////
+
+		int getValue();
+
+		//--------------------------------------------------------------
+
+		void setValue(
+			int	value);
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
 
 }
 

@@ -20,7 +20,6 @@ package uk.blankaspect.regexsearch;
 
 import java.awt.Image;
 
-import java.util.Arrays;
 import java.util.List;
 
 import uk.blankaspect.ui.swing.image.ImageCache;
@@ -61,7 +60,7 @@ public class Images
 	{
 		ImageCache.addDirectory(Images.class, DIRECTORY);
 
-		APP_ICON_IMAGES = Arrays.asList
+		APP_ICON_IMAGES = List.of
 		(
 			ImageCache.getImage(ImageFilename.APP_16),
 			ImageCache.getImage(ImageFilename.APP_32),

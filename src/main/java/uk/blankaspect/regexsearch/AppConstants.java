@@ -55,8 +55,8 @@ interface AppConstants
 	String	XML_VERSION_STR		= "1.0";
 	String	CLIPBOARD_STR		= "// Clipboard //";
 
-	// Filename suffixes
-	String	XML_FILE_SUFFIX	= ".xml";
+	// Filename extensions
+	String	XML_FILENAME_EXTENSION	= ".xml";
 
 	// File-filter descriptions
 	String	XML_FILES_STR	= "XML files";

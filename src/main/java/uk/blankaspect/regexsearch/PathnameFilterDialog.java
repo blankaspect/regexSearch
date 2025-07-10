@@ -2,7 +2,7 @@
 
 PathnameFilterDialog.java
 
-Pathname filter dialog class.
+Class: pathname-filter dialog.
 
 \*====================================================================*/
 
@@ -19,7 +19,6 @@ package uk.blankaspect.regexsearch;
 
 
 import java.awt.Component;
-import java.awt.Dialog;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
@@ -67,7 +66,7 @@ import uk.blankaspect.ui.swing.textfield.FTextField;
 //----------------------------------------------------------------------
 
 
-// PATHNAME FILTER DIALOG CLASS
+// CLASS: PATHNAME-FILTER DIALOG
 
 
 class PathnameFilterDialog
@@ -76,10 +75,26 @@ class PathnameFilterDialog
 {
 
 ////////////////////////////////////////////////////////////////////////
+//  Class variables
+////////////////////////////////////////////////////////////////////////
+
+	private static	Point	location;
+
+////////////////////////////////////////////////////////////////////////
+//  Instance variables
+////////////////////////////////////////////////////////////////////////
+
+	private	FileSet.FilterKind	filterKind;
+	private	boolean				accepted;
+	private	boolean				adjusting;
+	private	JTextField			filterField;
+	private	PatternListPanel	patternListPanel;
+
+////////////////////////////////////////////////////////////////////////
 //  Constants
 ////////////////////////////////////////////////////////////////////////
 
-	private static final	int	FILTER_FIELD_NUM_COLUMNS	= 40;
+	private static final	int		FILTER_FIELD_NUM_COLUMNS	= 40;
 
 	private static final	String	FILTER_STR		= "filter";
 	private static final	String	PATTERN_STR		= "Pattern";
@@ -93,238 +108,17 @@ class PathnameFilterDialog
 	}
 
 ////////////////////////////////////////////////////////////////////////
-//  Enumerated types
-////////////////////////////////////////////////////////////////////////
-
-
-	// ERROR IDENTIFIERS
-
-
-	private enum ErrorId
-		implements AppException.IId
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constants
-	////////////////////////////////////////////////////////////////////
-
-		NO_FILTER
-		("No filter was specified.");
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private ErrorId(String message)
-		{
-			this.message = message;
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : AppException.IId interface
-	////////////////////////////////////////////////////////////////////
-
-		public String getMessage()
-		{
-			return message;
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance variables
-	////////////////////////////////////////////////////////////////////
-
-		private	String	message;
-
-	}
-
-	//==================================================================
-
-////////////////////////////////////////////////////////////////////////
-//  Member classes : non-inner classes
-////////////////////////////////////////////////////////////////////////
-
-
-	// PATTERN DIALOG CLASS
-
-
-	private static class PatternDialog
-		extends SingleTextFieldDialog
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constants
-	////////////////////////////////////////////////////////////////////
-
-		private static final	String	KEY	= PatternDialog.class.getCanonicalName();
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private PatternDialog(Window             owner,
-							  String             titleStr,
-							  FileSet.FilterKind filterKind,
-							  String             pattern)
-		{
-			super(owner, titleStr, KEY + "." + filterKind, PATTERN_STR, pattern);
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Class methods
-	////////////////////////////////////////////////////////////////////
-
-		private static String showDialog(Component          parent,
-										 String             titleStr,
-										 FileSet.FilterKind filterKind,
-										 String             pattern)
-		{
-			PatternDialog dialog = new PatternDialog(GuiUtils.getWindow(parent), titleStr,
-													 filterKind, pattern);
-			dialog.setVisible(true);
-			return dialog.getText();
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : overriding methods
-	////////////////////////////////////////////////////////////////////
-
-		@Override
-		protected boolean isTextValid()
-		{
-			try
-			{
-				if (getField().getText().isEmpty())
-					throw new AppException(ErrorId.NO_FILTER);
-				return true;
-			}
-			catch (AppException e)
-			{
-				GuiUtils.setFocus(getField());
-				JOptionPane.showMessageDialog(this, e, App.SHORT_NAME, JOptionPane.ERROR_MESSAGE);
-				return false;
-			}
-		}
-
-		//--------------------------------------------------------------
-
-	}
-
-	//==================================================================
-
-////////////////////////////////////////////////////////////////////////
-//  Member classes : inner classes
-////////////////////////////////////////////////////////////////////////
-
-
-	// PATTERN LIST PANEL CLASS
-
-
-	private class PatternListPanel
-		extends SingleSelectionListPanel<String>
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constants
-	////////////////////////////////////////////////////////////////////
-
-		private static final	int	NUM_COLUMNS	= 32;
-		private static final	int	NUM_ROWS	= 8;
-
-		private static final	String	DELETE_MESSAGE_STR	= "Do you want to delete the selected " +
-																"pattern?";
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private PatternListPanel(List<String> patterns)
-		{
-			super(NUM_COLUMNS, NUM_ROWS, patterns, FileSet.MAX_NUM_FILTER_PATTERNS, null);
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : overriding methods
-	////////////////////////////////////////////////////////////////////
-
-		@Override
-		protected String getAddElement()
-		{
-			return PatternDialog.showDialog(this, getTitleString(ADD_STR), filterKind, null);
-		}
-
-		//--------------------------------------------------------------
-
-		@Override
-		protected String getEditElement(int index)
-		{
-			return PatternDialog.showDialog(this, getTitleString(EDIT_STR), filterKind,
-											getElement(index));
-		}
-
-		//--------------------------------------------------------------
-
-		@Override
-		protected boolean confirmDelete()
-		{
-			String[] optionStrs = Utils.getOptionStrings(DELETE_STR);
-			return (JOptionPane.showOptionDialog(this, DELETE_MESSAGE_STR, getTitleString(DELETE_STR),
-												 JOptionPane.OK_CANCEL_OPTION,
-												 JOptionPane.QUESTION_MESSAGE, null, optionStrs,
-												 optionStrs[1]) == JOptionPane.OK_OPTION);
-		}
-
-		//--------------------------------------------------------------
-
-		@Override
-		protected void modelChanged()
-		{
-			if (!adjusting)
-			{
-				adjusting = true;
-				filterField.setText(FileSet.patternsToString(getElements()));
-				adjusting = false;
-			}
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods
-	////////////////////////////////////////////////////////////////////
-
-		private String getTitleString(String actionStr)
-		{
-			return (actionStr + " " + PATTERN_STR.toLowerCase() + " : " + filterKind + " " + FILTER_STR);
-		}
-
-		//--------------------------------------------------------------
-
-	}
-
-	//==================================================================
-
-////////////////////////////////////////////////////////////////////////
 //  Constructors
 ////////////////////////////////////////////////////////////////////////
 
-	private PathnameFilterDialog(Window             owner,
-								 String             titleStr,
-								 FileSet.FilterKind filterKind,
-								 String             patterns)
+	private PathnameFilterDialog(
+		Window				owner,
+		String				title,
+		FileSet.FilterKind	filterKind,
+		String				patterns)
 	{
-
 		// Call superclass constructor
-		super(owner, titleStr, Dialog.ModalityType.APPLICATION_MODAL);
+		super(owner, title, ModalityType.APPLICATION_MODAL);
 
 		// Set icons
 		setIconImages(owner.getIconImages());
@@ -375,9 +169,7 @@ class PathnameFilterDialog
 		controlPanel.add(filterField);
 
 		// Panel: pattern selection list
-		patternListPanel = new PatternListPanel((patterns == null)
-																? null
-																: FileSet.stringToPatterns(patterns));
+		patternListPanel = new PatternListPanel((patterns == null) ? null : FileSet.stringToPatterns(patterns));
 
 		gbc.gridx = 1;
 		gbc.gridy = gridY++;
@@ -458,7 +250,8 @@ class PathnameFilterDialog
 		addWindowListener(new WindowAdapter()
 		{
 			@Override
-			public void windowClosing(WindowEvent event)
+			public void windowClosing(
+				WindowEvent	event)
 			{
 				onClose();
 			}
@@ -470,7 +263,7 @@ class PathnameFilterDialog
 		// Resize dialog to its preferred size
 		pack();
 
-		// Set location of dialog box
+		// Set location of dialog
 		if (location == null)
 			location = GuiUtils.getComponentLocation(this, owner);
 		setLocation(location);
@@ -480,7 +273,6 @@ class PathnameFilterDialog
 
 		// Show dialog
 		setVisible(true);
-
 	}
 
 	//------------------------------------------------------------------
@@ -489,13 +281,13 @@ class PathnameFilterDialog
 //  Class methods
 ////////////////////////////////////////////////////////////////////////
 
-	public static String showDialog(Component          parent,
-									String             titleStr,
-									FileSet.FilterKind filterKind,
-									String             patterns)
+	public static String showDialog(
+		Component			parent,
+		String				title,
+		FileSet.FilterKind	filterKind,
+		String				patterns)
 	{
-		return new PathnameFilterDialog(GuiUtils.getWindow(parent), titleStr, filterKind,
-										patterns).getPatterns();
+		return new PathnameFilterDialog(GuiUtils.getWindow(parent), title, filterKind, patterns).getPatterns();
 	}
 
 	//------------------------------------------------------------------
@@ -504,7 +296,8 @@ class PathnameFilterDialog
 //  Instance methods : ActionListener interface
 ////////////////////////////////////////////////////////////////////////
 
-	public void actionPerformed(ActionEvent event)
+	public void actionPerformed(
+		ActionEvent	event)
 	{
 		String command = event.getActionCommand();
 
@@ -521,21 +314,24 @@ class PathnameFilterDialog
 //  Instance methods : DocumentListener interface
 ////////////////////////////////////////////////////////////////////////
 
-	public void changedUpdate(DocumentEvent event)
+	public void changedUpdate(
+		DocumentEvent	event)
 	{
 		// do nothing
 	}
 
 	//------------------------------------------------------------------
 
-	public void insertUpdate(DocumentEvent event)
+	public void insertUpdate(
+		DocumentEvent	event)
 	{
 		updateList();
 	}
 
 	//------------------------------------------------------------------
 
-	public void removeUpdate(DocumentEvent event)
+	public void removeUpdate(
+		DocumentEvent	event)
 	{
 		updateList();
 	}
@@ -548,7 +344,7 @@ class PathnameFilterDialog
 
 	private String getPatterns()
 	{
-		return (accepted ? FileSet.patternsToString(patternListPanel.getElements()) : null);
+		return accepted ? FileSet.patternsToString(patternListPanel.getElements()) : null;
 	}
 
 	//------------------------------------------------------------------
@@ -583,20 +379,226 @@ class PathnameFilterDialog
 	//------------------------------------------------------------------
 
 ////////////////////////////////////////////////////////////////////////
-//  Class variables
+//  Enumerated types
 ////////////////////////////////////////////////////////////////////////
 
-	private static	Point	location;
+
+	// ENUMERATION: ERROR IDENTIFIERS
+
+
+	private enum ErrorId
+		implements AppException.IId
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Constants
+	////////////////////////////////////////////////////////////////////
+
+		NO_FILTER
+		("No filter was specified.");
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance variables
+	////////////////////////////////////////////////////////////////////
+
+		private	String	message;
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private ErrorId(
+			String	message)
+		{
+			this.message = message;
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : AppException.IId interface
+	////////////////////////////////////////////////////////////////////
+
+		public String getMessage()
+		{
+			return message;
+		}
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
 
 ////////////////////////////////////////////////////////////////////////
-//  Instance variables
+//  Member classes : non-inner classes
 ////////////////////////////////////////////////////////////////////////
 
-	private	FileSet.FilterKind	filterKind;
-	private	boolean				accepted;
-	private	boolean				adjusting;
-	private	JTextField			filterField;
-	private	PatternListPanel	patternListPanel;
+
+	// CLASS: PATTERN DIALOG
+
+
+	private static class PatternDialog
+		extends SingleTextFieldDialog
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Constants
+	////////////////////////////////////////////////////////////////////
+
+		private static final	String	KEY	= PatternDialog.class.getCanonicalName();
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private PatternDialog(
+			Window				owner,
+			String				title,
+			FileSet.FilterKind	filterKind,
+			String				pattern)
+		{
+			super(owner, title, KEY + "." + filterKind, PATTERN_STR, pattern);
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Class methods
+	////////////////////////////////////////////////////////////////////
+
+		private static String showDialog(
+			Component			parent,
+			String				title,
+			FileSet.FilterKind	filterKind,
+			String				pattern)
+		{
+			PatternDialog dialog = new PatternDialog(GuiUtils.getWindow(parent), title, filterKind, pattern);
+			dialog.setVisible(true);
+			return dialog.getText();
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : overriding methods
+	////////////////////////////////////////////////////////////////////
+
+		@Override
+		protected boolean isTextValid()
+		{
+			try
+			{
+				if (getField().getText().isEmpty())
+					throw new AppException(ErrorId.NO_FILTER);
+				return true;
+			}
+			catch (AppException e)
+			{
+				GuiUtils.setFocus(getField());
+				JOptionPane.showMessageDialog(this, e, RegexSearchApp.SHORT_NAME, JOptionPane.ERROR_MESSAGE);
+				return false;
+			}
+		}
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
+
+////////////////////////////////////////////////////////////////////////
+//  Member classes : inner classes
+////////////////////////////////////////////////////////////////////////
+
+
+	// CLASS: PATTERN LIST PANEL
+
+
+	private class PatternListPanel
+		extends SingleSelectionListPanel<String>
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Constants
+	////////////////////////////////////////////////////////////////////
+
+		private static final	int		NUM_COLUMNS	= 32;
+		private static final	int		NUM_ROWS	= 8;
+
+		private static final	String	DELETE_MESSAGE_STR	= "Do you want to delete the selected pattern?";
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private PatternListPanel(
+			List<String>	patterns)
+		{
+			super(NUM_COLUMNS, NUM_ROWS, patterns, FileSet.MAX_NUM_FILTER_PATTERNS, null);
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : overriding methods
+	////////////////////////////////////////////////////////////////////
+
+		@Override
+		protected String getAddElement()
+		{
+			return PatternDialog.showDialog(this, getTitleString(ADD_STR), filterKind, null);
+		}
+
+		//--------------------------------------------------------------
+
+		@Override
+		protected String getEditElement(int index)
+		{
+			return PatternDialog.showDialog(this, getTitleString(EDIT_STR), filterKind, getElement(index));
+		}
+
+		//--------------------------------------------------------------
+
+		@Override
+		protected boolean confirmDelete()
+		{
+			String[] optionStrs = Utils.getOptionStrings(DELETE_STR);
+			return (JOptionPane.showOptionDialog(this, DELETE_MESSAGE_STR, getTitleString(DELETE_STR),
+												 JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null,
+												 optionStrs, optionStrs[1]) == JOptionPane.OK_OPTION);
+		}
+
+		//--------------------------------------------------------------
+
+		@Override
+		protected void modelChanged()
+		{
+			if (!adjusting)
+			{
+				adjusting = true;
+				filterField.setText(FileSet.patternsToString(getElements()));
+				adjusting = false;
+			}
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods
+	////////////////////////////////////////////////////////////////////
+
+		private String getTitleString(
+			String	actionStr)
+		{
+			return actionStr + " " + PATTERN_STR.toLowerCase() + " : " + filterKind + " " + FILTER_STR;
+		}
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
 
 }
 

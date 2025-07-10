@@ -2,7 +2,7 @@
 
 Task.java
 
-Task class.
+Class: task.
 
 \*====================================================================*/
 
@@ -29,12 +29,28 @@ import uk.blankaspect.common.ui.progress.IProgressView;
 //----------------------------------------------------------------------
 
 
-// TASK CLASS
+// CLASS: TASK
 
 
 public abstract class Task
 	implements Runnable
 {
+
+////////////////////////////////////////////////////////////////////////
+//  Class variables
+////////////////////////////////////////////////////////////////////////
+
+	private static	AppException	exception;
+	private static	boolean			cancelled;
+	private static	IProgressView	progressView;
+	private static	int				threadId;
+	private static	List<Thread>	threads		= new ArrayList<>();
+
+////////////////////////////////////////////////////////////////////////
+//  Instance variables
+////////////////////////////////////////////////////////////////////////
+
+	private	boolean	primary;
 
 ////////////////////////////////////////////////////////////////////////
 //  Constructors
@@ -73,7 +89,7 @@ public abstract class Task
 
 	public static synchronized boolean isExceptionOrCancelled()
 	{
-		return ((exception != null) || cancelled);
+		return (exception != null) || cancelled;
 	}
 
 	//------------------------------------------------------------------
@@ -85,8 +101,9 @@ public abstract class Task
 
 	//------------------------------------------------------------------
 
-	public static synchronized void setException(AppException exception,
-												 boolean      overwrite)
+	public static synchronized void setException(
+		AppException	exception,
+		boolean			overwrite)
 	{
 		if (overwrite || (Task.exception == null))
 			Task.exception = exception;
@@ -94,14 +111,16 @@ public abstract class Task
 
 	//------------------------------------------------------------------
 
-	public static synchronized void setCancelled(boolean cancelled)
+	public static synchronized void setCancelled(
+		boolean	cancelled)
 	{
 		Task.cancelled = cancelled;
 	}
 
 	//------------------------------------------------------------------
 
-	public static synchronized void setProgressView(IProgressView progressView)
+	public static synchronized void setProgressView(
+		IProgressView	progressView)
 	{
 		Task.progressView = progressView;
 	}
@@ -115,7 +134,8 @@ public abstract class Task
 
 	//------------------------------------------------------------------
 
-	public static synchronized int addThread(Thread thread)
+	public static synchronized int addThread(
+		Thread	thread)
 	{
 		threads.add(thread);
 		return threads.size();
@@ -196,22 +216,6 @@ public abstract class Task
 	}
 
 	//------------------------------------------------------------------
-
-////////////////////////////////////////////////////////////////////////
-//  Class variables
-////////////////////////////////////////////////////////////////////////
-
-	private static	AppException	exception;
-	private static	boolean			cancelled;
-	private static	IProgressView	progressView;
-	private static	int				threadId;
-	private static	List<Thread>	threads		= new ArrayList<>();
-
-////////////////////////////////////////////////////////////////////////
-//  Instance variables
-////////////////////////////////////////////////////////////////////////
-
-	private	boolean	primary;
 
 }
 

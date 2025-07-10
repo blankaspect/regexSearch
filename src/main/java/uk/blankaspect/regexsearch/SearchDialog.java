@@ -2,7 +2,7 @@
 
 SearchDialog.java
 
-Search dialog class.
+Class: search dialog.
 
 \*====================================================================*/
 
@@ -59,7 +59,7 @@ import uk.blankaspect.ui.swing.misc.GuiUtils;
 //----------------------------------------------------------------------
 
 
-// SEARCH DIALOG CLASS
+// CLASS: SEARCH DIALOG
 
 
 class SearchDialog
@@ -94,7 +94,8 @@ class SearchDialog
 		new OptionEx
 		(
 			Option.GLOBAL,
-			"Search for all remaining occurrences in the current file and all subsequent files without further prompting"
+			"Search for all remaining occurrences in the current file and all subsequent files without "
+					+ "further prompting"
 		),
 		new OptionEx
 		(
@@ -205,7 +206,7 @@ class SearchDialog
 		int		endOffset)
 	{
 		// Call superclass constructor
-		super(owner, dialogKind.getTitleString());
+		super(owner, dialogKind.getTitle());
 
 		// Set icons
 		setIconImages(owner.getIconImages());
@@ -407,7 +408,7 @@ class SearchDialog
 		topPanel.add(questionIcon);
 
 		// Label: question
-		JLabel questionLabel = new FLabel(dialogKind.getQuestionString());
+		JLabel questionLabel = new FLabel(dialogKind.getQuestion());
 
 		gbc.gridx = 1;
 		gbc.gridy = gridY++;
@@ -508,7 +509,7 @@ class SearchDialog
 		// Resize dialog to its preferred size
 		pack();
 
-		// Set location of dialog box
+		// Set location of dialog
 		if (locations == null)
 			locations = new Point[Kind.values().length];
 		Point location = locations[dialogKind.ordinal()];
@@ -582,7 +583,7 @@ class SearchDialog
 		locations[dialogKind.ordinal()] = getLocation();
 		setVisible(false);
 		dispose();
-		App.INSTANCE.getMainWindow().searchDialogClosed(option);
+		RegexSearchApp.INSTANCE.getMainWindow().searchDialogClosed(option);
 	}
 
 	//------------------------------------------------------------------
@@ -630,8 +631,8 @@ class SearchDialog
 	//  Instance variables
 	////////////////////////////////////////////////////////////////////
 
-		private	String		titleStr;
-		private	String		questionStr;
+		private	String		title;
+		private	String		question;
 		private	OptionEx[]	options;
 		private	int			defaultFocusIndex;
 
@@ -640,13 +641,13 @@ class SearchDialog
 	////////////////////////////////////////////////////////////////////
 
 		private Kind(
-			String		titleStr,
-			String		questionStr,
+			String		title,
+			String		question,
 			OptionEx[]	options,
 			int			defaultFocusIndex)
 		{
-			this.titleStr = titleStr;
-			this.questionStr = questionStr;
+			this.title = title;
+			this.question = question;
 			this.options = options;
 			this.defaultFocusIndex = defaultFocusIndex;
 		}
@@ -657,16 +658,16 @@ class SearchDialog
 	//  Instance methods
 	////////////////////////////////////////////////////////////////////
 
-		public String getTitleString()
+		public String getTitle()
 		{
-			return titleStr;
+			return title;
 		}
 
 		//--------------------------------------------------------------
 
-		public String getQuestionString()
+		public String getQuestion()
 		{
-			return questionStr;
+			return question;
 		}
 
 		//--------------------------------------------------------------

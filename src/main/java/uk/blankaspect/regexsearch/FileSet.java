@@ -508,12 +508,12 @@ class FileSet
 	public int hashCode()
 	{
 		int code = kind.ordinal();
-		code = code * 31 + pathnames.hashCode();
-		code = code * 31 + pathnameIndex;
-		code = code * 31 + inclusionFilters.hashCode();
-		code = code * 31 + inclusionFilterIndex;
-		code = code * 31 + exclusionFilters.hashCode();
-		code = code * 31 + exclusionFilterIndex;
+		code = 31 * code + pathnames.hashCode();
+		code = 31 * code + pathnameIndex;
+		code = 31 * code + inclusionFilters.hashCode();
+		code = 31 * code + inclusionFilterIndex;
+		code = 31 * code + exclusionFilters.hashCode();
+		code = 31 * code + exclusionFilterIndex;
 		return code;
 	}
 

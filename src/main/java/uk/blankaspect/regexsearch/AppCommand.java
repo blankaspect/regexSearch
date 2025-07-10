@@ -217,7 +217,7 @@ enum AppCommand
 
 	public void actionPerformed(ActionEvent event)
 	{
-		App.INSTANCE.getMainWindow().executeCommand(this);
+		RegexSearchApp.INSTANCE.getMainWindow().executeCommand(this);
 	}
 
 	//------------------------------------------------------------------

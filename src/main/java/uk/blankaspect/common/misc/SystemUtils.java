@@ -2,7 +2,7 @@
 
 SystemUtils.java
 
-System utility methods class.
+Class: system utility methods.
 
 \*====================================================================*/
 
@@ -15,7 +15,15 @@ package uk.blankaspect.common.misc;
 //----------------------------------------------------------------------
 
 
-// SYSTEM UTILITY METHODS CLASS
+// IMPORTS
+
+
+import java.nio.file.Path;
+
+//----------------------------------------------------------------------
+
+
+// CLASS: SYSTEM UTILITY METHODS
 
 
 public class SystemUtils
@@ -25,11 +33,16 @@ public class SystemUtils
 //  Constants
 ////////////////////////////////////////////////////////////////////////
 
-	private static final	String	USER_HOME_PROPERTY_KEY					= "user.home";
-	private static final	String	CURRENT_WORKING_DIRECTORY_PROPERTY_KEY	= "user.dir";
-	private static final	String	LINE_SEPARATOR_PROPERTY_KEY				= "line.separator";
-
 	private static final	String	DEFAULT_LINE_SEPARATOR	= "\n";
+
+	/** Keys of system properties. */
+	private interface SystemPropertyKey
+	{
+		String	LINE_SEPARATOR	= "line.separator";
+		String	TEMP_DIR		= "java.io.tmpdir";
+		String	USER_HOME_DIR	= "user.home";
+		String	WORKING_DIR		= "user.dir";
+	}
 
 ////////////////////////////////////////////////////////////////////////
 //  Constructors
@@ -49,23 +62,51 @@ public class SystemUtils
 //  Class methods
 ////////////////////////////////////////////////////////////////////////
 
-	public static String getUserHomePathname()
+	public static String lineSeparator()
 	{
-		return System.getProperty(USER_HOME_PROPERTY_KEY);
+		return System.getProperty(SystemPropertyKey.LINE_SEPARATOR, DEFAULT_LINE_SEPARATOR);
 	}
 
 	//------------------------------------------------------------------
 
-	public static String getCurrentWorkingDirectoryPathname()
+	public static String userHomeDirectoryPathname()
 	{
-		return System.getProperty(CURRENT_WORKING_DIRECTORY_PROPERTY_KEY, ".");
+		return System.getProperty(SystemPropertyKey.USER_HOME_DIR, ".");
 	}
 
 	//------------------------------------------------------------------
 
-	public static String getLineSeparator()
+	public static Path userHomeDirectory()
 	{
-		return System.getProperty(LINE_SEPARATOR_PROPERTY_KEY, DEFAULT_LINE_SEPARATOR);
+		return Path.of(userHomeDirectoryPathname());
+	}
+
+	//------------------------------------------------------------------
+
+	public static String workingDirectoryPathname()
+	{
+		return System.getProperty(SystemPropertyKey.WORKING_DIR, ".");
+	}
+
+	//------------------------------------------------------------------
+
+	public static Path workingDirectory()
+	{
+		return Path.of(workingDirectoryPathname());
+	}
+
+	//------------------------------------------------------------------
+
+	public static String tempDirectoryPathname()
+	{
+		return System.getProperty(SystemPropertyKey.TEMP_DIR, ".");
+	}
+
+	//------------------------------------------------------------------
+
+	public static Path tempDirectory()
+	{
+		return Path.of(tempDirectoryPathname());
 	}
 
 	//------------------------------------------------------------------

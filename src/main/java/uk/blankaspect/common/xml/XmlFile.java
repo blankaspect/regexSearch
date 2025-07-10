@@ -2,7 +2,7 @@
 
 XmlFile.java
 
-XML file class.
+Class: XML file.
 
 \*====================================================================*/
 
@@ -44,7 +44,7 @@ import uk.blankaspect.common.filesystem.FilenameUtils;
 //----------------------------------------------------------------------
 
 
-// XML FILE CLASS
+// CLASS: XML FILE
 
 
 public class XmlFile
@@ -57,122 +57,6 @@ public class XmlFile
 	private static final	String	XML_VERSION_STR	= "1.0";
 
 	private static final	String	FILE_STR	= "file";
-
-////////////////////////////////////////////////////////////////////////
-//  Enumerated types
-////////////////////////////////////////////////////////////////////////
-
-
-	// ERROR IDENTIFIERS
-
-
-	private enum ErrorId
-		implements AppException.IId
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constants
-	////////////////////////////////////////////////////////////////////
-
-		FILE_DOES_NOT_EXIST
-		("The %1 does not exist."),
-
-		FAILED_TO_OPEN_FILE
-		("Failed to open the %1."),
-
-		FAILED_TO_CLOSE_FILE
-		("Failed to close the %1."),
-
-		FAILED_TO_LOCK_FILE
-		("Failed to lock the %1."),
-
-		ERROR_READING_FILE
-		("An error occurred while reading the %1."),
-
-		ERROR_WRITING_FILE
-		("An error occurred while writing the %1."),
-
-		FILE_ACCESS_NOT_PERMITTED
-		("Access to the %1 was not permitted."),
-
-		FAILED_TO_CREATE_DIRECTORY
-		("Failed to create the directory."),
-
-		FAILED_TO_CREATE_TEMPORARY_FILE
-		("Failed to create a temporary %1."),
-
-		FAILED_TO_DELETE_FILE
-		("Failed to delete the existing %1."),
-
-		FAILED_TO_RENAME_FILE
-		("Failed to rename the temporary %1."),
-
-		NOT_ENOUGH_MEMORY
-		("There was not enough memory to read the %1."),
-
-		INVALID_DOCUMENT
-		("The document is not valid."),
-
-		UNEXPECTED_DOCUMENT_FORMAT
-		("The document does not have the expected format.");
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private ErrorId(String message)
-		{
-			this.message = message;
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : AppException.IId interface
-	////////////////////////////////////////////////////////////////////
-
-		public String getMessage()
-		{
-			return message;
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance variables
-	////////////////////////////////////////////////////////////////////
-
-		private	String	message;
-
-	}
-
-	//==================================================================
-
-////////////////////////////////////////////////////////////////////////
-//  Member interfaces
-////////////////////////////////////////////////////////////////////////
-
-
-	// ELEMENT WRITER INTERFACE
-
-
-	public interface IElementWriter
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Methods
-	////////////////////////////////////////////////////////////////////
-
-		void writeElement(XmlWriter writer,
-						  Element   element,
-						  int       indent)
-			throws IOException;
-
-		//--------------------------------------------------------------
-
-	}
-
-	//==================================================================
 
 ////////////////////////////////////////////////////////////////////////
 //  Constructors
@@ -188,7 +72,8 @@ public class XmlFile
 //  Class methods
 ////////////////////////////////////////////////////////////////////////
 
-	public static Document read(File file)
+	public static Document read(
+		File	file)
 		throws AppException
 	{
 		return read(file, null, false);
@@ -196,8 +81,9 @@ public class XmlFile
 
 	//------------------------------------------------------------------
 
-	public static Document read(File file,
-								URI  baseUri)
+	public static Document read(
+		File	file,
+		URI		baseUri)
 		throws AppException
 	{
 		return read(file, baseUri, false);
@@ -205,9 +91,10 @@ public class XmlFile
 
 	//------------------------------------------------------------------
 
-	public static Document read(File    file,
-								URI     baseUri,
-								boolean validate)
+	public static Document read(
+		File	file,
+		URI		baseUri,
+		boolean	validate)
 		throws AppException
 	{
 		FileInputStream inStream = null;
@@ -288,8 +175,10 @@ public class XmlFile
 				throw new FileException(e, file);
 			}
 			if (!XmlUtils.getErrorHandler().isEmpty())
+			{
 				throw new XmlValidationException(ErrorId.INVALID_DOCUMENT, file,
 												 XmlUtils.getErrorHandler().getErrorStrings());
+			}
 
 			// Close input stream
 			try
@@ -328,7 +217,8 @@ public class XmlFile
 
 	//------------------------------------------------------------------
 
-	public static Document read(URL url)
+	public static Document read(
+		URL	url)
 		throws AppException
 	{
 		return read(url, null, false);
@@ -336,8 +226,9 @@ public class XmlFile
 
 	//------------------------------------------------------------------
 
-	public static Document read(URL url,
-								URI baseUri)
+	public static Document read(
+		URL	url,
+		URI	baseUri)
 		throws AppException
 	{
 		return read(url, baseUri, false);
@@ -345,9 +236,10 @@ public class XmlFile
 
 	//------------------------------------------------------------------
 
-	public static Document read(URL     url,
-								URI     baseUri,
-								boolean validate)
+	public static Document read(
+		URL		url,
+		URI		baseUri,
+		boolean	validate)
 		throws AppException
 	{
 		InputStream inStream = null;
@@ -383,8 +275,10 @@ public class XmlFile
 				throw new UrlException(e, url);
 			}
 			if (!XmlUtils.getErrorHandler().isEmpty())
+			{
 				throw new XmlValidationException(ErrorId.INVALID_DOCUMENT, url,
 												 XmlUtils.getErrorHandler().getErrorStrings());
+			}
 
 			// Close input stream
 			try
@@ -428,9 +322,10 @@ public class XmlFile
 	 * @throws AppException
 	 */
 
-	public static void write(File           file,
-							 Document       document,
-							 IElementWriter elementWriter)
+	public static void write(
+		File			file,
+		Document		document,
+		IElementWriter	elementWriter)
 		throws AppException
 	{
 		write(file, document, XmlWriter.Standalone.NONE, elementWriter);
@@ -443,10 +338,11 @@ public class XmlFile
 	 * @throws AppException
 	 */
 
-	public static void write(File                 file,
-							 Document             document,
-							 XmlWriter.Standalone standalone,
-							 IElementWriter       elementWriter)
+	public static void write(
+		File					file,
+		Document				document,
+		XmlWriter.Standalone	standalone,
+		IElementWriter			elementWriter)
 		throws AppException
 	{
 		// Validate arguments
@@ -588,6 +484,125 @@ public class XmlFile
 	}
 
 	//------------------------------------------------------------------
+
+////////////////////////////////////////////////////////////////////////
+//  Enumerated types
+////////////////////////////////////////////////////////////////////////
+
+
+	// ENUMERATION: ERROR IDENTIFIERS
+
+
+	private enum ErrorId
+		implements AppException.IId
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Constants
+	////////////////////////////////////////////////////////////////////
+
+		FILE_DOES_NOT_EXIST
+		("The %1 does not exist."),
+
+		FAILED_TO_OPEN_FILE
+		("Failed to open the %1."),
+
+		FAILED_TO_CLOSE_FILE
+		("Failed to close the %1."),
+
+		FAILED_TO_LOCK_FILE
+		("Failed to lock the %1."),
+
+		ERROR_READING_FILE
+		("An error occurred while reading the %1."),
+
+		ERROR_WRITING_FILE
+		("An error occurred while writing the %1."),
+
+		FILE_ACCESS_NOT_PERMITTED
+		("Access to the %1 was not permitted."),
+
+		FAILED_TO_CREATE_DIRECTORY
+		("Failed to create the directory."),
+
+		FAILED_TO_CREATE_TEMPORARY_FILE
+		("Failed to create a temporary %1."),
+
+		FAILED_TO_DELETE_FILE
+		("Failed to delete the existing %1."),
+
+		FAILED_TO_RENAME_FILE
+		("Failed to rename the temporary %1."),
+
+		NOT_ENOUGH_MEMORY
+		("There was not enough memory to read the %1."),
+
+		INVALID_DOCUMENT
+		("The document is not valid."),
+
+		UNEXPECTED_DOCUMENT_FORMAT
+		("The document does not have the expected format.");
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance variables
+	////////////////////////////////////////////////////////////////////
+
+		private	String	message;
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private ErrorId(
+			String	message)
+		{
+			this.message = message;
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : AppException.IId interface
+	////////////////////////////////////////////////////////////////////
+
+		@Override
+		public String getMessage()
+		{
+			return message;
+		}
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
+
+////////////////////////////////////////////////////////////////////////
+//  Member interfaces
+////////////////////////////////////////////////////////////////////////
+
+
+	// INTERFACE: ELEMENT WRITER
+
+
+	public interface IElementWriter
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Methods
+	////////////////////////////////////////////////////////////////////
+
+		void writeElement(
+			XmlWriter	writer,
+			Element		element,
+			int			indent)
+			throws IOException;
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
 
 }
 

@@ -71,7 +71,7 @@ public class ChannelUtils
 	 * @param  buffer
 	 *           the buffer to which bytes will be written.
 	 * @throws IOException
-	 *           if an error occurred when reading from the channel.
+	 *           if an error occurs when reading from the channel.
 	 */
 
 	public static void read(
@@ -97,7 +97,7 @@ public class ChannelUtils
 	 * @param  length
 	 *           the number of bytes that will be read from {@code channel}.
 	 * @throws IOException
-	 *           if an error occurred when reading from the channel.
+	 *           if an error occurs when reading from the channel.
 	 */
 
 	public static void read(
@@ -130,7 +130,7 @@ public class ChannelUtils
 	 * @param  buffer
 	 *           the buffer to which bytes will be written.
 	 * @throws IOException
-	 *           if an error occurred when reading from the channel.
+	 *           if an error occurs when reading from the channel.
 	 */
 
 	public static void read(
@@ -162,7 +162,7 @@ public class ChannelUtils
 	 * @param  data
 	 *           the data that will be written to the channel.
 	 * @throws IOException
-	 *           if an error occurred when writing to the channel.
+	 *           if an error occurs when writing to the channel.
 	 */
 
 	public static void write(
@@ -187,7 +187,7 @@ public class ChannelUtils
 	 * @param  length
 	 *           the number of bytes that will be written to {@code channel}.
 	 * @throws IOException
-	 *           if an error occurred when writing to the channel.
+	 *           if an error occurs when writing to the channel.
 	 */
 
 	public static void write(
@@ -219,7 +219,7 @@ public class ChannelUtils
 	 * @param  data
 	 *           the data that will be written to the channel.
 	 * @throws IOException
-	 *           if an error occurred when writing to the channel.
+	 *           if an error occurs when writing to the channel.
 	 */
 
 	public static void write(

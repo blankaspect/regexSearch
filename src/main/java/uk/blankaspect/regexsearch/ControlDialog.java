@@ -126,7 +126,7 @@ class ControlDialog
 
 	private static final	Insets	ICON_BUTTON_MARGINS		= new Insets(1, 1, 1, 1);
 
-	private static final	String	TITLE_STR				= App.SHORT_NAME + " : Control";
+	private static final	String	TITLE_STR				= RegexSearchApp.SHORT_NAME + " : Control";
 	private static final	String	FILE_SET_KIND_STR		= "File-set kind";
 	private static final	String	PATHNAME_STR			= "Pathname";
 	private static final	String	INCLUDE_STR				= "Include";
@@ -760,7 +760,7 @@ class ControlDialog
 		fileSetControlPanel.add(fileSetKindComboBox);
 
 		// Filler: file-set control panel
-		Box.Filler fileSetControlPanelFiller = GuiUtils.createFiller();
+		Box.Filler fileSetControlPanelFiller = GuiUtils.spacer();
 
 		gbc.gridx = gridX++;
 		gbc.gridy = 0;
@@ -1336,7 +1336,6 @@ class ControlDialog
 
 		// Make window visible
 		setVisible(true);
-
 	}
 
 	//------------------------------------------------------------------
@@ -1354,7 +1353,7 @@ class ControlDialog
 
 	private static SearchParameters getSearchParams()
 	{
-		return App.INSTANCE.getSearchParams();
+		return RegexSearchApp.INSTANCE.getSearchParams();
 	}
 
 	//------------------------------------------------------------------

@@ -22,7 +22,7 @@ import java.awt.Color;
 
 import java.text.DecimalFormat;
 
-import uk.blankaspect.common.exception.ValueOutOfBoundsException;
+import uk.blankaspect.common.exception2.ValueOutOfBoundsException;
 
 import uk.blankaspect.common.number.NumberUtils;
 

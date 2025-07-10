@@ -23,7 +23,6 @@ import java.awt.FontMetrics;
 import java.io.File;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 //----------------------------------------------------------------------
@@ -130,7 +129,7 @@ public class TextUtils
 	public static StringWidth getWidestString(FontMetrics fontMetrics,
 											  String...   strs)
 	{
-		return getWidestString(fontMetrics, Arrays.asList(strs));
+		return getWidestString(fontMetrics, List.of(strs));
 	}
 
 	//------------------------------------------------------------------

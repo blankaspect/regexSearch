@@ -251,7 +251,7 @@ class FilterEditor
 
 		private PatternField()
 		{
-			// Set attributes
+			// Set properties
 			AppFont.TEXT_FIELD.apply(this);
 			GuiUtils.setPaddedLineBorder(this, VERTICAL_MARGIN, HORIZONTAL_MARGIN);
 			setForeground(AppConstants.TEXT_COLOUR);
@@ -415,7 +415,7 @@ class FilterEditor
 			}
 			catch (AppException e)
 			{
-				App.INSTANCE.showErrorMessage(App.SHORT_NAME, e);
+				RegexSearchApp.INSTANCE.showErrorMessage(RegexSearchApp.SHORT_NAME, e);
 			}
 		}
 
@@ -495,8 +495,8 @@ class FilterEditor
 
 		// Add commands to action map
 		for (KeyAction.KeyCommandPair command : KEY_COMMANDS)
-			KeyAction.create(this, JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT, command.keyStroke,
-							 getAction(command.command));
+			KeyAction.create(this, JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT, command.keyStroke(),
+							 getAction(command.command()));
 	}
 
 	//------------------------------------------------------------------
@@ -524,11 +524,8 @@ class FilterEditor
 	{
 		return ((itemsSubmenu == null)
 					? str
-					: TextUtils.getLimitedWidthString(str,
-													  itemsSubmenu.
-																getFontMetrics(itemsSubmenu.getFont()),
-													  MAX_MENU_ITEM_WIDTH,
-													  TextUtils.RemovalMode.END));
+					: TextUtils.getLimitedWidthString(str, itemsSubmenu.getFontMetrics(itemsSubmenu.getFont()),
+													  MAX_MENU_ITEM_WIDTH, TextUtils.RemovalMode.END));
 	}
 
 	//------------------------------------------------------------------

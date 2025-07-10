@@ -44,7 +44,7 @@ public interface IByteDataSource
 	 *
 	 * @return the next available block of byte data, or {@code null} if no more data is available.
 	 * @throws IOException
-	 *           if an error occurred when extracting the data from the source.
+	 *           if an error occurs when extracting the data from the source.
 	 */
 
 	ByteData nextData()
@@ -53,132 +53,85 @@ public interface IByteDataSource
 	//------------------------------------------------------------------
 
 ////////////////////////////////////////////////////////////////////////
-//  Member classes : non-inner classes
+//  Member records
 ////////////////////////////////////////////////////////////////////////
 
 
-	// CLASS: BYTE DATA
+	// RECORD: BYTE DATA
 
 
 	/**
-	 * This class encapsulates a block of byte data that is returned by a {@linkplain IByteDataSource#nextData() data
+	 * This record encapsulates a block of byte data that is returned by a {@linkplain IByteDataSource#nextData() data
 	 * source}.
+	 *
+	 * @param buffer
+	 *          the buffer that contains the byte data.
+	 * @param offset
+	 *          the offset to the start of the data within {@code buffer}.
+	 * @param length
+	 *          the length of the data.
 	 */
 
-	public static class ByteData
+	record ByteData(
+		byte[]	buffer,
+		int		offset,
+		int		length)
 	{
 
 	////////////////////////////////////////////////////////////////////
-	//  Instance variables
-	////////////////////////////////////////////////////////////////////
-
-		/** The buffer that contains the data. */
-		private	byte[]	buffer;
-
-		/** The offset to the start of the data within {@link #buffer}. */
-		private	int		offset;
-
-		/** The length of the data. */
-		private	int		length;
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
+	//  Class methods
 	////////////////////////////////////////////////////////////////////
 
 		/**
-		 * Creates a new instance of a block of byte data that contains the specified data.  The instance does not copy
-		 * the specified data; it keeps a reference to the array that is passed as an argument.
+		 * Creates and returns a new instance of a block of byte data that contains the specified data.  The instance
+		 * does not copy the specified data; it keeps a reference to the array that is passed as an argument.
 		 *
-		 * @param data
-		 *          the array that contains the byte data.
+		 * @param  data
+		 *           the array that contains the byte data.
+		 * @return a new instance of a block of byte data.
 		 */
 
-		public ByteData(
+		public static ByteData of(
 			byte[]	data)
 		{
 			// Validate arguments
 			if (data == null)
-				throw new IllegalArgumentException("Null data");
+				throw new IllegalArgumentException(NULL_DATA_STR);
 
-			// Initialise instance variables
-			buffer = data;
-			length = data.length;
+			// Create data block and return it
+			return new ByteData(data, 0, data.length);
 		}
 
 		//--------------------------------------------------------------
 
 		/**
-		 * Creates a new instance of a block of byte data that contains the specified data.  The instance does not copy
-		 * the specified data; it keeps a reference to the array that is passed as an argument.
+		 * Creates and returns a new instance of a block of byte data that contains the specified data.  The instance
+		 * does not copy the specified data; it keeps a reference to the array that is passed as an argument.
 		 *
-		 * @param data
-		 *          the array that contains the byte data.
-		 * @param offset
-		 *          the offset to the start of the data within {@code data}.
-		 * @param length
-		 *          the length of the data.
+		 * @param  data
+		 *           the array that contains the byte data.
+		 * @param  offset
+		 *           the offset to the start of the data within {@code data}.
+		 * @param  length
+		 *           the length of the data.
+		 * @return a new instance of a block of byte data.
 		 */
 
-		public ByteData(
+		public static ByteData of(
 			byte[]	data,
 			int		offset,
 			int		length)
 		{
 			// Validate arguments
 			if (data == null)
-				throw new IllegalArgumentException("Null data");
+				throw new IllegalArgumentException(NULL_DATA_STR);
 			if ((offset < 0) || (offset > data.length))
-				throw new IllegalArgumentException("Offset out of bounds: " + offset);
+				throw new IllegalArgumentException(OFFSET_OUT_OF_BOUNDS_STR + offset);
 			if ((length < 0) || (length > data.length - offset))
-				throw new IllegalArgumentException("Length out of bounds: " + length);
+				throw new IllegalArgumentException(LENGTH_OUT_OF_BOUNDS_STR + length);
 
-			// Initialise instance variables
-			buffer = data;
-			this.offset = offset;
-			this.length = length;
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods
-	////////////////////////////////////////////////////////////////////
-
-		/**
-		 * Returns the array that contains the byte data.
-		 *
-		 * @return the array that contains the byte data.
-		 */
-
-		public byte[] getBuffer()
-		{
-			return buffer;
-		}
-
-		//--------------------------------------------------------------
-
-		/**
-		 * Returns the offset to the start of the byte data within the {@linkplain #getBuffer() buffer}.
-		 *
-		 * @return the offset to the start of the byte data within the buffer.
-		 */
-
-		public int getOffset()
-		{
-			return offset;
-		}
-
-		//--------------------------------------------------------------
-
-		/**
-		 * Returns the length of the byte data within the {@linkplain #getBuffer() buffer}.
-		 *
-		 * @return the length of the byte data within the buffer.
-		 */
-
-		public int getLength()
-		{
-			return length;
+			// Create data block and return it
+			return new ByteData(data, offset, length);
 		}
 
 		//--------------------------------------------------------------

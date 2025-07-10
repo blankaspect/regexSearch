@@ -23,7 +23,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 
-import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 
@@ -33,6 +32,7 @@ import uk.blankaspect.common.exception2.FileException;
 import uk.blankaspect.common.exception2.LocationException;
 import uk.blankaspect.common.exception2.UrlException;
 
+import uk.blankaspect.common.filesystem.DirectoryUtils;
 import uk.blankaspect.common.filesystem.PathnameUtils;
 
 //----------------------------------------------------------------------
@@ -100,12 +100,12 @@ public class JarUtils
 	 *           if an exception occurred when traversing the directory structure.
 	 */
 
-	public static List<Path> getJars(
+	public static List<Path> findJars(
 		Path	directory)
 		throws FileException
 	{
-		return PathUtils.getLocations(directory, path ->
-				Files.isRegularFile(path) && PathnameUtils.suffixMatches(path, JAR_FILENAME_EXTENSION));
+		return DirectoryUtils.findFiles(directory, location ->
+				PathnameUtils.suffixMatches(location, JAR_FILENAME_EXTENSION));
 	}
 
 	//------------------------------------------------------------------

@@ -138,8 +138,10 @@ class FileTransferHandler
 	{
 		boolean supported = !support.isDrop() || ((support.getSourceDropActions() & COPY) == COPY);
 		if (supported)
-			supported = App.INSTANCE.getMainWindow().getControlDialog().canAddFileSet() &&
-						DataImporter.isFileList(support.getDataFlavors());
+		{
+			supported = RegexSearchApp.INSTANCE.getMainWindow().getControlDialog().canAddFileSet()
+							&& DataImporter.isFileList(support.getDataFlavors());
+		}
 		if (support.isDrop() && supported)
 			support.setDropAction(COPY);
 		return supported;
@@ -179,7 +181,7 @@ class FileTransferHandler
 			}
 			catch (AppException e)
 			{
-				App.INSTANCE.showErrorMessage(App.SHORT_NAME, e);
+				RegexSearchApp.INSTANCE.showErrorMessage(RegexSearchApp.SHORT_NAME, e);
 			}
 		}
 		return false;

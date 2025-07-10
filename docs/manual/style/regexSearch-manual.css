@@ -6,34 +6,50 @@ Styles for RegexSearch manual
 
 @import url("blankaspect-manual.css");
 
-p.quotation
-{
+p.quotation {
   font-size: 90%;
   margin-top: 0.6em;
   margin-left: 2.0em;
   margin-right: 2.0em;
 }
 
-p.shaded
-{
-  background-color: #F8F6E0;
-}
-
-table.regex
-{
+table.regex {
   margin-left: 2.5%;
   margin-right: 2.5%;
 }
-table.regex td
-{
-  border: 1px solid #B4B8C8;
+table.regex td {
+  border: 1px solid;
   padding: 0.1em 0.6em;
 }
-table.regex td.shaded
-{
+table.regex td.shaded {
   vertical-align: top;
-  background-color: #F8F6E0;
   white-space: nowrap;
+}
+
+@media (prefers-color-scheme: light) {
+  p.shaded {
+    background-color: #F8F6E0;
+  }
+
+  table.regex td {
+    border-color: #B4B8C8;
+  }
+  table.regex td.shaded {
+    background-color: #F8F6E0;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  p.shaded {
+    background-color: #203038;
+  }
+
+  table.regex td {
+    border-color: #606888;
+  }
+  table.regex td.shaded {
+    background-color: #382420;
+  }
 }
 
 /*--------------------------------------------------------------------*/

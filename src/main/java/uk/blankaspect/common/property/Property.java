@@ -21,7 +21,6 @@ package uk.blankaspect.common.property;
 import java.text.NumberFormat;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
@@ -71,6 +70,176 @@ public abstract class Property
 	}
 
 ////////////////////////////////////////////////////////////////////////
+//  Class variables
+////////////////////////////////////////////////////////////////////////
+
+	private static	SystemSource	systemSource;
+
+////////////////////////////////////////////////////////////////////////
+//  Instance variables
+////////////////////////////////////////////////////////////////////////
+
+	protected	String			key;
+	protected	boolean			changed;
+	protected	List<IObserver>	observers;
+
+////////////////////////////////////////////////////////////////////////
+//  Constructors
+////////////////////////////////////////////////////////////////////////
+
+	protected Property(String key)
+	{
+		this.key = key;
+	}
+
+	//------------------------------------------------------------------
+
+////////////////////////////////////////////////////////////////////////
+//  Class methods
+////////////////////////////////////////////////////////////////////////
+
+	public static ISource getSystemSource()
+	{
+		if (systemSource == null)
+			systemSource = new SystemSource();
+		return systemSource;
+	}
+
+	//------------------------------------------------------------------
+
+	public static String indexToKey(int index)
+	{
+		return NumberUtils.uIntToDecString(index, NUM_INDEX_DIGITS, '0');
+	}
+
+	//------------------------------------------------------------------
+
+	public static String keyToName(String  key,
+								   boolean upperCaseInitial)
+	{
+		StringBuilder buffer = new StringBuilder(key.length());
+		int index = 0;
+		while (index < key.length())
+		{
+			int startIndex = index;
+			index = key.indexOf(KEY_SEPARATOR_CHAR, index);
+			if (index < 0)
+				index = key.length();
+			if (index > startIndex)
+			{
+				char ch = key.charAt(startIndex);
+				buffer.append(((startIndex > 0) || upperCaseInitial) ? Character.toUpperCase(ch) : ch);
+				buffer.append(key.substring(startIndex + 1, index));
+			}
+			++index;
+		}
+		return buffer.toString();
+	}
+
+	//------------------------------------------------------------------
+
+	public static String concatenateKeys(CharSequence... keys)
+	{
+		// Calculate length of buffer
+		int length = -1;
+		for (CharSequence key : keys)
+			length += key.length() + 1;
+
+		// Concatenate keys
+		StringBuilder buffer = new StringBuilder(length);
+		for (int i = 0; i < keys.length; i++)
+		{
+			if (i > 0)
+				buffer.append(KEY_SEPARATOR_CHAR);
+			buffer.append(keys[i]);
+		}
+		return buffer.toString();
+	}
+
+	//------------------------------------------------------------------
+
+////////////////////////////////////////////////////////////////////////
+//  Abstract methods
+////////////////////////////////////////////////////////////////////////
+
+	public abstract void get(ISource[] sources)
+		throws AppException;
+
+	//------------------------------------------------------------------
+
+	public abstract boolean put(ITarget target);
+
+	//------------------------------------------------------------------
+
+////////////////////////////////////////////////////////////////////////
+//  Instance methods : IStringKeyed interface
+////////////////////////////////////////////////////////////////////////
+
+	@Override
+	public String getKey()
+	{
+		return key;
+	}
+
+	//------------------------------------------------------------------
+
+////////////////////////////////////////////////////////////////////////
+//  Instance methods
+////////////////////////////////////////////////////////////////////////
+
+	public boolean isChanged()
+	{
+		return changed;
+	}
+
+	//------------------------------------------------------------------
+
+	public void setChanged(boolean changed)
+	{
+		this.changed = changed;
+	}
+
+	//------------------------------------------------------------------
+
+	public String addObserver(IObserver observer)
+	{
+		if (observers == null)
+			observers = new ArrayList<>();
+		if (!observers.contains(observer))
+			observers.add(observer);
+		return key;
+	}
+
+	//------------------------------------------------------------------
+
+	public void removeObserver(IObserver observer)
+	{
+		if (observers != null)
+			observers.remove(observer);
+	}
+
+	//------------------------------------------------------------------
+
+	protected void setChanged()
+	{
+		changed = true;
+		notifyObservers();
+	}
+
+	//------------------------------------------------------------------
+
+	protected void notifyObservers()
+	{
+		if (observers != null)
+		{
+			for (int i = observers.size() - 1; i >= 0; i--)
+				observers.get(i).propertyChanged(this);
+		}
+	}
+
+	//------------------------------------------------------------------
+
+////////////////////////////////////////////////////////////////////////
 //  Enumerated types
 ////////////////////////////////////////////////////////////////////////
 
@@ -105,6 +274,12 @@ public abstract class Property
 		("The list index is out of order.");
 
 	////////////////////////////////////////////////////////////////////
+	//  Instance variables
+	////////////////////////////////////////////////////////////////////
+
+		private	String	message;
+
+	////////////////////////////////////////////////////////////////////
 	//  Constructors
 	////////////////////////////////////////////////////////////////////
 
@@ -119,18 +294,13 @@ public abstract class Property
 	//  Instance methods : AppException.IId interface
 	////////////////////////////////////////////////////////////////////
 
+		@Override
 		public String getMessage()
 		{
 			return message;
 		}
 
 		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance variables
-	////////////////////////////////////////////////////////////////////
-
-		private	String	message;
 
 	}
 
@@ -251,6 +421,12 @@ public abstract class Property
 	{
 
 	////////////////////////////////////////////////////////////////////
+	//  Instance variables
+	////////////////////////////////////////////////////////////////////
+
+		protected	T	value;
+
+	////////////////////////////////////////////////////////////////////
 	//  Constructors
 	////////////////////////////////////////////////////////////////////
 
@@ -311,7 +487,7 @@ public abstract class Property
 
 		public boolean isEqualValue(Object obj)
 		{
-			return ((value == null) ? (obj == null) : value.equals(obj));
+			return (value == null) ? (obj == null) : value.equals(obj);
 		}
 
 		//--------------------------------------------------------------
@@ -327,12 +503,6 @@ public abstract class Property
 
 		//--------------------------------------------------------------
 
-	////////////////////////////////////////////////////////////////////
-	//  Instance variables
-	////////////////////////////////////////////////////////////////////
-
-		protected	T	value;
-
 	}
 
 	//==================================================================
@@ -344,6 +514,12 @@ public abstract class Property
 	public static abstract class EnumProperty<E extends Enum<E> & IStringKeyed>
 		extends SimpleProperty<E>
 	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance variables
+	////////////////////////////////////////////////////////////////////
+
+		protected	Class<E>	cls;
 
 	////////////////////////////////////////////////////////////////////
 	//  Constructors
@@ -386,12 +562,6 @@ public abstract class Property
 		}
 
 		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance variables
-	////////////////////////////////////////////////////////////////////
-
-		protected	Class<E>	cls;
 
 	}
 
@@ -493,6 +663,13 @@ public abstract class Property
 	{
 
 	////////////////////////////////////////////////////////////////////
+	//  Instance variables
+	////////////////////////////////////////////////////////////////////
+
+		protected	int	lowerBound;
+		protected	int	upperBound;
+
+	////////////////////////////////////////////////////////////////////
 	//  Constructors
 	////////////////////////////////////////////////////////////////////
 
@@ -528,13 +705,6 @@ public abstract class Property
 
 		//--------------------------------------------------------------
 
-	////////////////////////////////////////////////////////////////////
-	//  Instance variables
-	////////////////////////////////////////////////////////////////////
-
-		protected	int	lowerBound;
-		protected	int	upperBound;
-
 	}
 
 	//==================================================================
@@ -546,6 +716,13 @@ public abstract class Property
 	public static abstract class LongProperty
 		extends SimpleProperty<Long>
 	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance variables
+	////////////////////////////////////////////////////////////////////
+
+		protected	long	lowerBound;
+		protected	long	upperBound;
 
 	////////////////////////////////////////////////////////////////////
 	//  Constructors
@@ -583,13 +760,6 @@ public abstract class Property
 
 		//--------------------------------------------------------------
 
-	////////////////////////////////////////////////////////////////////
-	//  Instance variables
-	////////////////////////////////////////////////////////////////////
-
-		protected	long	lowerBound;
-		protected	long	upperBound;
-
 	}
 
 	//==================================================================
@@ -601,6 +771,14 @@ public abstract class Property
 	public static abstract class DoubleProperty
 		extends SimpleProperty<Double>
 	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance variables
+	////////////////////////////////////////////////////////////////////
+
+		protected	double			lowerBound;
+		protected	double			upperBound;
+		protected	NumberFormat	format;
 
 	////////////////////////////////////////////////////////////////////
 	//  Constructors
@@ -649,14 +827,6 @@ public abstract class Property
 
 		//--------------------------------------------------------------
 
-	////////////////////////////////////////////////////////////////////
-	//  Instance variables
-	////////////////////////////////////////////////////////////////////
-
-		protected	double			lowerBound;
-		protected	double			upperBound;
-		protected	NumberFormat	format;
-
 	}
 
 	//==================================================================
@@ -668,6 +838,13 @@ public abstract class Property
 	public static abstract class PropertyList<T>
 		extends Property
 	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance variables
+	////////////////////////////////////////////////////////////////////
+
+		protected	int		maxNumValues;
+		protected	List<T>	values;
 
 	////////////////////////////////////////////////////////////////////
 	//  Constructors
@@ -855,13 +1032,6 @@ public abstract class Property
 
 		//--------------------------------------------------------------
 
-	////////////////////////////////////////////////////////////////////
-	//  Instance variables
-	////////////////////////////////////////////////////////////////////
-
-		protected	int		maxNumValues;
-		protected	List<T>	values;
-
 	}
 
 	//==================================================================
@@ -873,6 +1043,13 @@ public abstract class Property
 	public static abstract class PropertyMap<E extends Enum<E> & IStringKeyed, T>
 		extends Property
 	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance variables
+	////////////////////////////////////////////////////////////////////
+
+		protected	Class<E>		mapKeyClass;
+		protected	EnumMap<E, T>	values;
 
 	////////////////////////////////////////////////////////////////////
 	//  Constructors
@@ -1031,17 +1208,10 @@ public abstract class Property
 
 		protected Iterable<E> getMapKeys()
 		{
-			return Arrays.asList(mapKeyClass.getEnumConstants());
+			return List.of(mapKeyClass.getEnumConstants());
 		}
 
 		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance variables
-	////////////////////////////////////////////////////////////////////
-
-		protected	Class<E>		mapKeyClass;
-		protected	EnumMap<E, T>	values;
 
 	}
 
@@ -1054,6 +1224,15 @@ public abstract class Property
 	public static abstract class PropertyListMap<E extends Enum<E> & IStringKeyed, T>
 		extends Property
 	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance variables
+	////////////////////////////////////////////////////////////////////
+
+		protected	String				listKey;
+		protected	Class<E>			mapKeyClass;
+		protected	int					maxNumValues;
+		protected	EnumMap<E, List<T>>	values;
 
 	////////////////////////////////////////////////////////////////////
 	//  Constructors
@@ -1242,15 +1421,6 @@ public abstract class Property
 
 		//--------------------------------------------------------------
 
-	////////////////////////////////////////////////////////////////////
-	//  Instance variables
-	////////////////////////////////////////////////////////////////////
-
-		protected	String				listKey;
-		protected	Class<E>			mapKeyClass;
-		protected	int					maxNumValues;
-		protected	EnumMap<E, List<T>>	values;
-
 	}
 
 	//==================================================================
@@ -1263,6 +1433,14 @@ public abstract class Property
 												E2 extends Enum<E2> & IStringKeyed, T>
 		extends Property
 	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance variables
+	////////////////////////////////////////////////////////////////////
+
+		protected	Class<E1>					map1KeyClass;
+		protected	Class<E2>					map2KeyClass;
+		protected	EnumMap<E1, EnumMap<E2, T>>	values;
 
 	////////////////////////////////////////////////////////////////////
 	//  Constructors
@@ -1426,14 +1604,6 @@ public abstract class Property
 
 		//--------------------------------------------------------------
 
-	////////////////////////////////////////////////////////////////////
-	//  Instance variables
-	////////////////////////////////////////////////////////////////////
-
-		protected	Class<E1>					map1KeyClass;
-		protected	Class<E2>					map2KeyClass;
-		protected	EnumMap<E1, EnumMap<E2, T>>	values;
-
 	}
 
 	//==================================================================
@@ -1444,6 +1614,14 @@ public abstract class Property
 
 	public static class Input
 	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance variables
+	////////////////////////////////////////////////////////////////////
+
+		private	ISource	source;
+		private	String	key;
+		private	String	value;
 
 	////////////////////////////////////////////////////////////////////
 	//  Constructors
@@ -1818,14 +1996,6 @@ public abstract class Property
 
 		//--------------------------------------------------------------
 
-	////////////////////////////////////////////////////////////////////
-	//  Instance variables
-	////////////////////////////////////////////////////////////////////
-
-		private	ISource	source;
-		private	String	key;
-		private	String	value;
-
 	}
 
 	//==================================================================
@@ -1984,6 +2154,12 @@ public abstract class Property
 		private static final	String	VALUE_STR	= "Value: ";
 
 	////////////////////////////////////////////////////////////////////
+	//  Instance variables
+	////////////////////////////////////////////////////////////////////
+
+		private	String	prefix;
+
+	////////////////////////////////////////////////////////////////////
 	//  Constructors
 	////////////////////////////////////////////////////////////////////
 
@@ -2018,12 +2194,6 @@ public abstract class Property
 
 		//--------------------------------------------------------------
 
-	////////////////////////////////////////////////////////////////////
-	//  Instance variables
-	////////////////////////////////////////////////////////////////////
-
-		private	String	prefix;
-
 	}
 
 	//==================================================================
@@ -2056,6 +2226,7 @@ public abstract class Property
 	//  Instance methods : ISource interface
 	////////////////////////////////////////////////////////////////////
 
+		@Override
 		public String getSourceName()
 		{
 			return SYSTEM_PROPERTY_STR;
@@ -2063,6 +2234,7 @@ public abstract class Property
 
 		//--------------------------------------------------------------
 
+		@Override
 		public String getProperty(String key)
 		{
 			return System.getProperty(APP_PREFIX + key);
@@ -2073,175 +2245,6 @@ public abstract class Property
 	}
 
 	//==================================================================
-
-////////////////////////////////////////////////////////////////////////
-//  Constructors
-////////////////////////////////////////////////////////////////////////
-
-	protected Property(String key)
-	{
-		this.key = key;
-	}
-
-	//------------------------------------------------------------------
-
-////////////////////////////////////////////////////////////////////////
-//  Class methods
-////////////////////////////////////////////////////////////////////////
-
-	public static ISource getSystemSource()
-	{
-		if (systemSource == null)
-			systemSource = new SystemSource();
-		return systemSource;
-	}
-
-	//------------------------------------------------------------------
-
-	public static String indexToKey(int index)
-	{
-		return NumberUtils.uIntToDecString(index, NUM_INDEX_DIGITS, '0');
-	}
-
-	//------------------------------------------------------------------
-
-	public static String keyToName(String  key,
-								   boolean upperCaseInitial)
-	{
-		StringBuilder buffer = new StringBuilder(key.length());
-		int index = 0;
-		while (index < key.length())
-		{
-			int startIndex = index;
-			index = key.indexOf(KEY_SEPARATOR_CHAR, index);
-			if (index < 0)
-				index = key.length();
-			if (index > startIndex)
-			{
-				char ch = key.charAt(startIndex);
-				buffer.append(((startIndex > 0) || upperCaseInitial) ? Character.toUpperCase(ch) : ch);
-				buffer.append(key.substring(startIndex + 1, index));
-			}
-			++index;
-		}
-		return buffer.toString();
-	}
-
-	//------------------------------------------------------------------
-
-	public static String concatenateKeys(CharSequence... keys)
-	{
-		// Calculate length of buffer
-		int length = -1;
-		for (CharSequence key : keys)
-			length += key.length() + 1;
-
-		// Concatenate keys
-		StringBuilder buffer = new StringBuilder(length);
-		for (int i = 0; i < keys.length; i++)
-		{
-			if (i > 0)
-				buffer.append(KEY_SEPARATOR_CHAR);
-			buffer.append(keys[i]);
-		}
-		return buffer.toString();
-	}
-
-	//------------------------------------------------------------------
-
-////////////////////////////////////////////////////////////////////////
-//  Abstract methods
-////////////////////////////////////////////////////////////////////////
-
-	public abstract void get(ISource[] sources)
-		throws AppException;
-
-	//------------------------------------------------------------------
-
-	public abstract boolean put(ITarget target);
-
-	//------------------------------------------------------------------
-
-////////////////////////////////////////////////////////////////////////
-//  Instance methods : IStringKeyed interface
-////////////////////////////////////////////////////////////////////////
-
-	public String getKey()
-	{
-		return key;
-	}
-
-	//------------------------------------------------------------------
-
-////////////////////////////////////////////////////////////////////////
-//  Instance methods
-////////////////////////////////////////////////////////////////////////
-
-	public boolean isChanged()
-	{
-		return changed;
-	}
-
-	//------------------------------------------------------------------
-
-	public void setChanged(boolean changed)
-	{
-		this.changed = changed;
-	}
-
-	//------------------------------------------------------------------
-
-	public String addObserver(IObserver observer)
-	{
-		if (observers == null)
-			observers = new ArrayList<>();
-		if (!observers.contains(observer))
-			observers.add(observer);
-		return key;
-	}
-
-	//------------------------------------------------------------------
-
-	public void removeObserver(IObserver observer)
-	{
-		if (observers != null)
-			observers.remove(observer);
-	}
-
-	//------------------------------------------------------------------
-
-	protected void setChanged()
-	{
-		changed = true;
-		notifyObservers();
-	}
-
-	//------------------------------------------------------------------
-
-	protected void notifyObservers()
-	{
-		if (observers != null)
-		{
-			for (int i = observers.size() - 1; i >= 0; i--)
-				observers.get(i).propertyChanged(this);
-		}
-	}
-
-	//------------------------------------------------------------------
-
-////////////////////////////////////////////////////////////////////////
-//  Class variables
-////////////////////////////////////////////////////////////////////////
-
-	private static	SystemSource	systemSource;
-
-////////////////////////////////////////////////////////////////////////
-//  Instance variables
-////////////////////////////////////////////////////////////////////////
-
-	protected	String			key;
-	protected	boolean			changed;
-	protected	List<IObserver>	observers;
 
 }
 

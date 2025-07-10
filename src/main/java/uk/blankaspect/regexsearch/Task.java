@@ -65,7 +65,7 @@ abstract class Task
 			// Perform task
 			try
 			{
-				App.INSTANCE.getTextSearcher().startSearch(params);
+				RegexSearchApp.INSTANCE.getTextSearcher().startSearch(params);
 			}
 			catch (TaskCancelledException e)
 			{
@@ -120,7 +120,7 @@ abstract class Task
 			// Perform task
 			try
 			{
-				App.INSTANCE.getTextSearcher().resumeSearch(option);
+				RegexSearchApp.INSTANCE.getTextSearcher().resumeSearch(option);
 			}
 			catch (TaskCancelledException e)
 			{

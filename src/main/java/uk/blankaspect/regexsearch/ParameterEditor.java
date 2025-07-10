@@ -335,8 +335,8 @@ class ParameterEditor
 		// Add commands to action map
 		for (KeyAction.KeyCommandPair command : KEY_COMMANDS)
 		{
-			KeyAction.create(this, JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT, command.keyStroke,
-							 getAction(command.command));
+			KeyAction.create(this, JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT, command.keyStroke(),
+							 getAction(command.command()));
 		}
 	}
 
@@ -945,11 +945,11 @@ class ParameterEditor
 
 			private ItemDialog(
 				Window		owner,
-				String		titleStr,
+				String		title,
 				ParamKind	paramKind,
 				String		pattern)
 			{
-				super(owner, titleStr, KEY + "." + paramKind.getKey(), paramKind.toString(), pattern);
+				super(owner, title, KEY + "." + paramKind.getKey(), paramKind.toString(), pattern);
 			}
 
 			//----------------------------------------------------------
@@ -960,11 +960,11 @@ class ParameterEditor
 
 			private static String showDialog(
 				Component	parent,
-				String		titleStr,
+				String		title,
 				ParamKind	paramKind,
 				String		pattern)
 			{
-				ItemDialog dialog = new ItemDialog(GuiUtils.getWindow(parent), titleStr, paramKind, pattern);
+				ItemDialog dialog = new ItemDialog(GuiUtils.getWindow(parent), title, paramKind, pattern);
 				dialog.setVisible(true);
 				return dialog.getText();
 			}
@@ -1005,7 +1005,7 @@ class ParameterEditor
 		private TextArea(
 			int	tabWidth)
 		{
-			// Set attributes
+			// Set properties
 			AppFont.PARAMETER_EDITOR.apply(this);
 			setBorder(null);
 			setForeground(AppConstants.TEXT_COLOUR);
@@ -1017,7 +1017,8 @@ class ParameterEditor
 			setFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS,
 								  Collections.singleton(KeyStroke.getKeyStroke(KeyEvent.VK_TAB, 0)));
 			setFocusTraversalKeys(KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS,
-								  Collections.singleton(KeyStroke.getKeyStroke(KeyEvent.VK_TAB, KeyEvent.SHIFT_DOWN_MASK)));
+								  Collections.singleton(KeyStroke.getKeyStroke(KeyEvent.VK_TAB,
+																			   KeyEvent.SHIFT_DOWN_MASK)));
 
 			// Add listeners
 			addMouseListener(this);
@@ -1337,7 +1338,7 @@ class ParameterEditor
 			}
 			catch (AppException e)
 			{
-				App.INSTANCE.showErrorMessage(App.SHORT_NAME, e);
+				RegexSearchApp.INSTANCE.showErrorMessage(RegexSearchApp.SHORT_NAME, e);
 			}
 		}
 

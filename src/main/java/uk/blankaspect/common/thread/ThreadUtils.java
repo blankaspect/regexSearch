@@ -12,6 +12,12 @@ Class: thread-related utilti methods.
 
 package uk.blankaspect.common.thread;
 
+//----------------------------------------------------------------------
+
+
+// IMPORTS
+
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -25,7 +31,7 @@ import java.util.stream.Collectors;
 
 
 /**
- * This class contains utility methods that relate to threads.
+ * This class contains utility methods that relate to {@linkplain Thread threads}.
  */
 
 public class ThreadUtils
@@ -81,7 +87,8 @@ public class ThreadUtils
 	 * @return a string representation of the elements of a stack trace of {@code thread}.
 	 */
 
-	public static String getStackTraceString(Thread thread)
+	public static String getStackTraceString(
+		Thread	thread)
 	{
 		return joinStackTraceStrings(getStackTraceStrings(thread, 1, Integer.MAX_VALUE));
 	}
@@ -100,8 +107,9 @@ public class ThreadUtils
 	 * @return a string representation of the elements of a stack trace of {@code thread}.
 	 */
 
-	public static String getStackTraceString(Thread thread,
-											 int    maxNumElements)
+	public static String getStackTraceString(
+		Thread	thread,
+		int		maxNumElements)
 	{
 		return joinStackTraceStrings(getStackTraceStrings(thread, 1, maxNumElements));
 	}
@@ -124,9 +132,10 @@ public class ThreadUtils
 	 * @return a string representation of the elements of a stack trace of {@code thread}.
 	 */
 
-	public static String getStackTraceString(Thread thread,
-											 int    index,
-											 int    maxNumElements)
+	public static String getStackTraceString(
+		Thread	thread,
+		int		index,
+		int		maxNumElements)
 	{
 		return joinStackTraceStrings(getStackTraceStrings(thread, index + 1, maxNumElements));
 	}
@@ -142,7 +151,8 @@ public class ThreadUtils
 	 * @return a list of string representations of the elements of a stack trace of {@code thread}.
 	 */
 
-	public static List<String> getStackTraceStrings(Thread thread)
+	public static List<String> getStackTraceStrings(
+		Thread	thread)
 	{
 		return getStackTraceStrings(thread, 1, Integer.MAX_VALUE);
 	}
@@ -161,8 +171,9 @@ public class ThreadUtils
 	 * @return a list of string representations of the elements of a stack trace of {@code thread}.
 	 */
 
-	public static List<String> getStackTraceStrings(Thread thread,
-													int    maxNumElements)
+	public static List<String> getStackTraceStrings(
+		Thread	thread,
+		int		maxNumElements)
 	{
 		return getStackTraceStrings(thread, 1, maxNumElements);
 	}
@@ -185,9 +196,10 @@ public class ThreadUtils
 	 * @return a list of string representations of the elements of a stack trace of {@code thread}.
 	 */
 
-	public static List<String> getStackTraceStrings(Thread thread,
-													int    index,
-													int    maxNumElements)
+	public static List<String> getStackTraceStrings(
+		Thread	thread,
+		int		index,
+		int		maxNumElements)
 	{
 		// Validate arguments
 		if (index < 0)
@@ -223,7 +235,8 @@ public class ThreadUtils
 	 *         elements have been joined with a line feed.
 	 */
 
-	public static String joinStackTraceStrings(Collection<String> strs)
+	public static String joinStackTraceStrings(
+		Collection<String>	strs)
 	{
 		String prefix = "\tat ";
 		return strs.stream().collect(Collectors.joining("\n" + prefix, prefix, ""));

@@ -203,7 +203,7 @@ class Utils
 	{
 		String pathname = PropertiesPathname.getPathname();
 		if (pathname != null)
-			pathname += App.NAME_KEY;
+			pathname += RegexSearchApp.NAME_KEY;
 		return pathname;
 	}
 

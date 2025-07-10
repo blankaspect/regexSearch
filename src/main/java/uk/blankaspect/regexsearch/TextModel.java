@@ -400,7 +400,7 @@ class TextModel
 		// Replace the matched text
 		buffer.replace(startIndex, endIndex, replacement);
 
-		// Set the "model has changed" flag
+		// Set the 'model has changed' flag
 		changed = (replacementKind == ReplacementKind.RESTORE) ? oldChanged : true;
 
 		// Get the index of the start line of the matched text

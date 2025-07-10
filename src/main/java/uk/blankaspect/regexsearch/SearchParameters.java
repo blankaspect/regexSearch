@@ -157,7 +157,7 @@ class SearchParameters
 		("The document does not have the expected format."),
 
 		UNSUPPORTED_DOCUMENT_VERSION
-		("The version of the document (%1) is not supported by this version of " + App.SHORT_NAME + "."),
+		("The version of the document (%1) is not supported by this version of " + RegexSearchApp.SHORT_NAME + "."),
 
 		NO_ATTRIBUTE
 		("The required attribute is missing."),
@@ -619,7 +619,7 @@ class SearchParameters
 			}
 			catch (AppException e)
 			{
-				App.INSTANCE.showErrorMessage(App.SHORT_NAME, e);
+				RegexSearchApp.INSTANCE.showErrorMessage(RegexSearchApp.SHORT_NAME, e);
 			}
 		}
 	}

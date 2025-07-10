@@ -378,7 +378,7 @@ public class TextArea
 		fractionalMetrics = TextRendering.getFractionalMetrics();
 		model = new DefaultModel();
 
-		// Set component attributes
+		// Set properties
 		setFont(font);
 		setOpaque(true);
 		setFocusable(true);

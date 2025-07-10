@@ -33,13 +33,31 @@ public class Icons
 //  Constants
 ////////////////////////////////////////////////////////////////////////
 
-	public static final	ImageIcon	ARROW_LEFT	= new ImageIcon(ImageData.ARROW_LEFT);
-	public static final	ImageIcon	ARROW_RIGHT	= new ImageIcon(ImageData.ARROW_RIGHT);
-	public static final	ImageIcon	MINUS		= new ImageIcon(ImageData.MINUS);
-	public static final	ImageIcon	PLUS		= new ImageIcon(ImageData.PLUS);
-	public static final	ImageIcon	RHOMB_PAIR	= new ImageIcon(ImageData.RHOMB_PAIR);
+	public static final	ImageIcon	ARROW_LEFT	= new ImageIcon(ImgData.ARROW_LEFT);
+	public static final	ImageIcon	ARROW_RIGHT	= new ImageIcon(ImgData.ARROW_RIGHT);
+	public static final	ImageIcon	MINUS		= new ImageIcon(ImgData.MINUS);
+	public static final	ImageIcon	PLUS		= new ImageIcon(ImgData.PLUS);
+	public static final	ImageIcon	RHOMB_PAIR	= new ImageIcon(ImgData.RHOMB_PAIR);
 
-	private interface ImageData
+////////////////////////////////////////////////////////////////////////
+//  Constructors
+////////////////////////////////////////////////////////////////////////
+
+	private Icons()
+	{
+	}
+
+	//------------------------------------------------------------------
+
+////////////////////////////////////////////////////////////////////////
+//  Image data
+////////////////////////////////////////////////////////////////////////
+
+	/**
+	 * PNG image data.
+	 */
+
+	private interface ImgData
 	{
 		byte[]	ARROW_LEFT	=
 		{
@@ -124,15 +142,7 @@ public class Icons
 		};
 	}
 
-////////////////////////////////////////////////////////////////////////
-//  Constructors
-////////////////////////////////////////////////////////////////////////
-
-	private Icons()
-	{
-	}
-
-	//------------------------------------------------------------------
+	//==================================================================
 
 }
 

@@ -178,10 +178,10 @@ class PathnameEditor
 		////////////////////////////////////////////////////////////////
 
 			private PathnameDialog(Window owner,
-								   String titleStr,
+								   String title,
 								   String pathname)
 			{
-				super(owner, titleStr, KEY, PATHNAME_STR, pathname, 0,
+				super(owner, title, KEY, PATHNAME_STR, pathname, 0,
 					  AppConfig.INSTANCE.isShowUnixPathnames());
 			}
 
@@ -192,10 +192,10 @@ class PathnameEditor
 		////////////////////////////////////////////////////////////////
 
 			private static String showDialog(Component parent,
-											 String    titleStr,
+											 String    title,
 											 String    pathname)
 			{
-				PathnameDialog dialog = new PathnameDialog(GuiUtils.getWindow(parent), titleStr,
+				PathnameDialog dialog = new PathnameDialog(GuiUtils.getWindow(parent), title,
 														   pathname);
 				dialog.setVisible(true);
 				return dialog.getPathname();
@@ -322,7 +322,7 @@ class PathnameEditor
 			// Call superclass constructor
 			super(0);
 
-			// Set attributes
+			// Set properties
 			AppFont.TEXT_FIELD.apply(this);
 			GuiUtils.setPaddedLineBorder(this, VERTICAL_MARGIN, HORIZONTAL_MARGIN);
 			setUnixStyle(AppConfig.INSTANCE.isShowUnixPathnames());
@@ -500,7 +500,7 @@ class PathnameEditor
 			}
 			catch (AppException e)
 			{
-				App.INSTANCE.showErrorMessage(App.SHORT_NAME, e);
+				RegexSearchApp.INSTANCE.showErrorMessage(RegexSearchApp.SHORT_NAME, e);
 			}
 		}
 
@@ -581,8 +581,8 @@ class PathnameEditor
 
 		// Add commands to action map
 		for (KeyAction.KeyCommandPair command : KEY_COMMANDS)
-			KeyAction.create(this, JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT, command.keyStroke,
-							 getAction(command.command));
+			KeyAction.create(this, JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT, command.keyStroke(),
+							 getAction(command.command()));
 	}
 
 	//------------------------------------------------------------------
@@ -596,7 +596,7 @@ class PathnameEditor
 	{
 		if (fileChooser == null)
 		{
-			fileChooser = new JFileChooser(SystemUtils.getUserHomePathname());
+			fileChooser = new JFileChooser(SystemUtils.userHomeDirectoryPathname());
 			fileChooser.setApproveButtonMnemonic(KeyEvent.VK_S);
 		}
 		fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
@@ -621,6 +621,7 @@ class PathnameEditor
 //  Instance methods : ListEditor.ITextModel interface
 ////////////////////////////////////////////////////////////////////////
 
+	@Override
 	public String getText()
 	{
 		String str = pathnameField.getText();

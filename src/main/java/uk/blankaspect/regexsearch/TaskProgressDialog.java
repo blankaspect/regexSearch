@@ -2,7 +2,7 @@
 
 TaskProgressDialog.java
 
-Task progress dialog class.
+Class: task-progress dialog.
 
 \*====================================================================*/
 
@@ -20,7 +20,6 @@ package uk.blankaspect.regexsearch;
 
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.FontMetrics;
@@ -65,7 +64,7 @@ import uk.blankaspect.ui.swing.text.TextUtils;
 //----------------------------------------------------------------------
 
 
-// TASK PROGRESS DIALOG CLASS
+// CLASS: TASK-PROGRESS DIALOG
 
 
 class TaskProgressDialog
@@ -96,7 +95,6 @@ class TaskProgressDialog
 //  Instance variables
 ////////////////////////////////////////////////////////////////////////
 
-	private	Task		task;
 	private	boolean		stopped;
 	private	InfoField	infoField1;
 	private	InfoField	infoField2;
@@ -106,21 +104,18 @@ class TaskProgressDialog
 //  Constructors
 ////////////////////////////////////////////////////////////////////////
 
-	private TaskProgressDialog(Window owner,
-							   String titleStr,
-							   Task   task)
+	private TaskProgressDialog(
+		Window	owner,
+		String	title,
+		Task	task)
 		throws AppException
 	{
-
 		// Call superclass constructor
-		super(owner, titleStr, Dialog.ModalityType.APPLICATION_MODAL);
+		super(owner, title, ModalityType.APPLICATION_MODAL);
 
 		// Set icons
 		if (owner != null)
 			setIconImages(owner.getIconImages());
-
-		// Initialise instance variables
-		this.task = task;
 
 
 		//----  Info fields
@@ -201,7 +196,29 @@ class TaskProgressDialog
 		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 
 		// Handle window events
-		addWindowListener(new WindowEventHandler());
+		addWindowListener(new WindowAdapter()
+		{
+			@Override
+			public void windowOpened(
+				WindowEvent	event)
+			{
+				Task.setProgressView((TaskProgressDialog)event.getWindow());
+				Task.setException(null, true);
+				Task.setCancelled(false);
+				task.start();
+			}
+
+			@Override
+			public void windowClosing(
+				WindowEvent	event)
+			{
+				location = getLocation();
+				if (stopped)
+					dispose();
+				else
+					Task.setCancelled(true);
+			}
+		});
 
 		// Prevent dialog from being resized
 		setResizable(false);
@@ -209,7 +226,7 @@ class TaskProgressDialog
 		// Resize dialog to its preferred size
 		pack();
 
-		// Set location of dialog box
+		// Set location of dialog
 		if (location == null)
 			location = GuiUtils.getComponentLocation(this, owner);
 		setLocation(location);
@@ -222,7 +239,6 @@ class TaskProgressDialog
 
 		// Throw any exception from task thread
 		Task.throwIfException();
-
 	}
 
 	//------------------------------------------------------------------
@@ -231,12 +247,13 @@ class TaskProgressDialog
 //  Class methods
 ////////////////////////////////////////////////////////////////////////
 
-	public static void showDialog(Component parent,
-								  String    titleStr,
-								  Task      task)
+	public static void showDialog(
+		Component	parent,
+		String		title,
+		Task		task)
 		throws AppException
 	{
-		new TaskProgressDialog(GuiUtils.getWindow(parent), titleStr, task);
+		new TaskProgressDialog(GuiUtils.getWindow(parent), title, task);
 	}
 
 	//------------------------------------------------------------------
@@ -245,7 +262,9 @@ class TaskProgressDialog
 //  Instance methods : ActionListener interface
 ////////////////////////////////////////////////////////////////////////
 
-	public void actionPerformed(ActionEvent event)
+	@Override
+	public void actionPerformed(
+		ActionEvent	event)
 	{
 		if (event.getActionCommand().equals(Command.CLOSE))
 			onClose();
@@ -257,29 +276,44 @@ class TaskProgressDialog
 //  Instance methods : IProgressView interface
 ////////////////////////////////////////////////////////////////////////
 
-	public void setInfo(String str)
+	@Override
+	public void setInfo(
+		String	str)
 	{
 		// do nothing
 	}
 
 	//------------------------------------------------------------------
 
-	public void setInfo(String str,
-						File   file)
+	@Override
+	public void setInfo(
+		String	str,
+		File	file)
 	{
 		// do nothing
 	}
 
 	//------------------------------------------------------------------
 
-	public void setProgress(int    index,
-							double value)
+	@Override
+	public void setProgress(
+		int		index,
+		double	value)
 	{
 		// do nothing
 	}
 
 	//------------------------------------------------------------------
 
+	@Override
+	public int getNumProgressIndicators()
+	{
+		return 0;
+	}
+
+	//------------------------------------------------------------------
+
+	@Override
 	public void waitForIdle()
 	{
 		EventQueue eventQueue = getToolkit().getSystemEventQueue();
@@ -291,6 +325,7 @@ class TaskProgressDialog
 
 	//------------------------------------------------------------------
 
+	@Override
 	public void close()
 	{
 		stopped = true;
@@ -303,10 +338,26 @@ class TaskProgressDialog
 //  Instance methods
 ////////////////////////////////////////////////////////////////////////
 
-	public void setInfo(File file,
-						int  numFiles)
+	public void setInfo(
+		File	file,
+		int		numFiles)
 	{
-		SwingUtilities.invokeLater(new DoSetInfo(file, numFiles));
+		SwingUtilities.invokeLater(() ->
+		{
+			FontMetrics fontMetrics = infoField1.getFontMetrics(infoField1.getFont());
+			if (file == null)
+			{
+				infoField1.setText(AppConstants.CLIPBOARD_STR);
+				infoField2.setText(null);
+			}
+			else
+			{
+				infoField1.setText(TextUtils.getLimitedWidthPathname(Utils.getPathname(file), fontMetrics,
+																	 infoField1.getWidth(),
+																	 Utils.getFileSeparatorChar()));
+				infoField2.setText("[ " + numFiles + " ]");
+			}
+		});
 	}
 
 	//------------------------------------------------------------------
@@ -324,12 +375,18 @@ class TaskProgressDialog
 ////////////////////////////////////////////////////////////////////////
 
 
-	// INFORMATION FIELD CLASS
+	// CLASS: INFORMATION FIELD
 
 
 	private static class InfoField
 		extends JComponent
 	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance variables
+	////////////////////////////////////////////////////////////////////
+
+		private	String	text;
 
 	////////////////////////////////////////////////////////////////////
 	//  Constructors
@@ -338,8 +395,7 @@ class TaskProgressDialog
 		private InfoField()
 		{
 			AppFont.MAIN.apply(this);
-			setPreferredSize(new Dimension(INFO_FIELD_WIDTH,
-										   getFontMetrics(getFont()).getHeight()));
+			setPreferredSize(new Dimension(INFO_FIELD_WIDTH, getFontMetrics(getFont()).getHeight()));
 			setOpaque(true);
 			setFocusable(false);
 		}
@@ -351,7 +407,8 @@ class TaskProgressDialog
 	////////////////////////////////////////////////////////////////////
 
 		@Override
-		protected void paintComponent(Graphics gr)
+		protected void paintComponent(
+			Graphics	gr)
 		{
 			// Create copy of graphics context
 			gr = gr.create();
@@ -378,125 +435,11 @@ class TaskProgressDialog
 	//  Instance methods
 	////////////////////////////////////////////////////////////////////
 
-		public void setText(String text)
+		public void setText(
+			String	text)
 		{
 			this.text = text;
 			repaint();
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance variables
-	////////////////////////////////////////////////////////////////////
-
-		private	String	text;
-
-	}
-
-	//==================================================================
-
-////////////////////////////////////////////////////////////////////////
-//  Member classes : inner classes
-////////////////////////////////////////////////////////////////////////
-
-
-	// SET INFO CLASS
-
-
-	private class DoSetInfo
-		implements Runnable
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private DoSetInfo(File file,
-						  int  numFiles)
-		{
-			this.file = file;
-			this.numFiles = numFiles;
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : Runnable interface
-	////////////////////////////////////////////////////////////////////
-
-		public void run()
-		{
-			FontMetrics fontMetrics = infoField1.getFontMetrics(infoField1.getFont());
-			if (file == null)
-			{
-				infoField1.setText(AppConstants.CLIPBOARD_STR);
-				infoField2.setText(null);
-			}
-			else
-			{
-				infoField1.setText(TextUtils.getLimitedWidthPathname(Utils.getPathname(file),
-																	 fontMetrics,
-																	 infoField1.getWidth(),
-																	 Utils.getFileSeparatorChar()));
-				infoField2.setText("[ " + numFiles + " ]");
-			}
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance variables
-	////////////////////////////////////////////////////////////////////
-
-		private	File	file;
-		private	int		numFiles;
-
-	}
-
-	//==================================================================
-
-
-	// WINDOW EVENT HANDLER CLASS
-
-
-	private class WindowEventHandler
-		extends WindowAdapter
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private WindowEventHandler()
-		{
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : overriding methods
-	////////////////////////////////////////////////////////////////////
-
-		@Override
-		public void windowOpened(WindowEvent event)
-		{
-			Task.setProgressView((TaskProgressDialog)event.getWindow());
-			Task.setException(null, true);
-			Task.setCancelled(false);
-			task.start();
-		}
-
-		//--------------------------------------------------------------
-
-		@Override
-		public void windowClosing(WindowEvent event)
-		{
-			location = getLocation();
-			if (stopped)
-				dispose();
-			else
-				Task.setCancelled(true);
 		}
 
 		//--------------------------------------------------------------

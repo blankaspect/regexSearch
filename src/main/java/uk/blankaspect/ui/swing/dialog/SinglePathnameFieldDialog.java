@@ -2,7 +2,7 @@
 
 SinglePathnameFieldDialog.java
 
-Single pathname field dialog class.
+Class: single pathname-field dialog.
 
 \*====================================================================*/
 
@@ -19,7 +19,6 @@ package uk.blankaspect.ui.swing.dialog;
 
 
 import java.awt.Component;
-import java.awt.Dialog;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
@@ -35,7 +34,7 @@ import java.awt.event.WindowEvent;
 
 import java.io.File;
 
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.swing.BorderFactory;
@@ -65,7 +64,7 @@ import uk.blankaspect.ui.swing.textfield.PathnameField;
 //----------------------------------------------------------------------
 
 
-// SINGLE PATHNAME FIELD DIALOG CLASS
+// CLASS: SINGLE PATHNAME-FIELD DIALOG
 
 
 public class SinglePathnameFieldDialog
@@ -88,75 +87,46 @@ public class SinglePathnameFieldDialog
 	}
 
 ////////////////////////////////////////////////////////////////////////
-//  Member classes : non-inner classes
+//  Class variables
 ////////////////////////////////////////////////////////////////////////
 
+	private static	Map<String, Point>	locations	= new HashMap<>();
 
-	// FIELD CLASS
+////////////////////////////////////////////////////////////////////////
+//  Instance variables
+////////////////////////////////////////////////////////////////////////
 
-
-	private static class Field
-		extends PathnameField
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private Field(String  pathname,
-					  int     numColumns,
-					  boolean unixStyle)
-		{
-			super(pathname, numColumns);
-			FontUtils.setAppFont(FontKey.TEXT_FIELD, this);
-			GuiUtils.setTextComponentMargins(this);
-			setUnixStyle(unixStyle);
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : overriding methods
-	////////////////////////////////////////////////////////////////////
-
-		@Override
-		protected int getColumnWidth()
-		{
-			return FontUtils.getCharWidth('0', getFontMetrics(getFont()));
-		}
-
-		//--------------------------------------------------------------
-
-	}
-
-	//==================================================================
+	private	String			key;
+	private	boolean			accepted;
+	private	PathnameField	field;
 
 ////////////////////////////////////////////////////////////////////////
 //  Constructors
 ////////////////////////////////////////////////////////////////////////
 
-	protected SinglePathnameFieldDialog(Window owner,
-										String titleStr,
-										String key,
-										String labelStr,
-										String pathname)
+	protected SinglePathnameFieldDialog(
+		Window	owner,
+		String	title,
+		String	key,
+		String	labelStr,
+		String	pathname)
 	{
-		this(owner, titleStr, key, labelStr, pathname, 0, false);
+		this(owner, title, key, labelStr, pathname, 0, false);
 	}
 
 	//------------------------------------------------------------------
 
-	protected SinglePathnameFieldDialog(Window  owner,
-										String  titleStr,
-										String  key,
-										String  labelStr,
-										String  pathname,
-										int     numColumns,
-										boolean unixStyle)
+	protected SinglePathnameFieldDialog(
+		Window	owner,
+		String	title,
+		String	key,
+		String	labelStr,
+		String	pathname,
+		int		numColumns,
+		boolean	unixStyle)
 	{
-
 		// Call superclass constructor
-		super(owner, titleStr, Dialog.ModalityType.APPLICATION_MODAL);
+		super(owner, title, ModalityType.APPLICATION_MODAL);
 
 		// Set icons
 		if (owner != null)
@@ -274,7 +244,8 @@ public class SinglePathnameFieldDialog
 		addWindowListener(new WindowAdapter()
 		{
 			@Override
-			public void windowClosing(WindowEvent event)
+			public void windowClosing(
+				WindowEvent	event)
 			{
 				onClose();
 			}
@@ -286,7 +257,7 @@ public class SinglePathnameFieldDialog
 		// Resize dialog to its preferred size
 		pack();
 
-		// Set location of dialog box
+		// Set location of dialog
 		Point location = locations.get(key);
 		if (location == null)
 			location = GuiUtils.getComponentLocation(this, owner);
@@ -294,7 +265,6 @@ public class SinglePathnameFieldDialog
 
 		// Set default button
 		getRootPane().setDefaultButton(okButton);
-
 	}
 
 	//------------------------------------------------------------------
@@ -303,32 +273,33 @@ public class SinglePathnameFieldDialog
 //  Class methods
 ////////////////////////////////////////////////////////////////////////
 
-	public static String showDialog(Component parent,
-									String    titleStr,
-									String    key,
-									String    labelStr,
-									String    pathname)
+	public static String showDialog(
+		Component	parent,
+		String		title,
+		String		key,
+		String		labelStr,
+		String		pathname)
 	{
-		SinglePathnameFieldDialog dialog = new SinglePathnameFieldDialog(GuiUtils.getWindow(parent),
-																		 titleStr, key, labelStr,
-																		 pathname);
+		SinglePathnameFieldDialog dialog =
+				new SinglePathnameFieldDialog(GuiUtils.getWindow(parent), title, key, labelStr, pathname);
 		dialog.setVisible(true);
 		return dialog.getPathname();
 	}
 
 	//------------------------------------------------------------------
 
-	public static String showDialog(Component parent,
-									String    titleStr,
-									String    key,
-									String    labelStr,
-									String    pathname,
-									int       numColumns,
-									boolean   unixStyle)
+	public static String showDialog(
+		Component	parent,
+		String		title,
+		String		key,
+		String		labelStr,
+		String		pathname,
+		int			numColumns,
+		boolean		unixStyle)
 	{
-		SinglePathnameFieldDialog dialog = new SinglePathnameFieldDialog(GuiUtils.getWindow(parent),
-																		 titleStr, key, labelStr,
-																		 pathname, numColumns, unixStyle);
+		SinglePathnameFieldDialog dialog =
+				new SinglePathnameFieldDialog(GuiUtils.getWindow(parent), title, key, labelStr, pathname, numColumns,
+											  unixStyle);
 		dialog.setVisible(true);
 		return dialog.getPathname();
 	}
@@ -417,18 +388,49 @@ public class SinglePathnameFieldDialog
 	//------------------------------------------------------------------
 
 ////////////////////////////////////////////////////////////////////////
-//  Class variables
+//  Member classes : non-inner classes
 ////////////////////////////////////////////////////////////////////////
 
-	private static	Map<String, Point>	locations	= new Hashtable<>();
 
-////////////////////////////////////////////////////////////////////////
-//  Instance variables
-////////////////////////////////////////////////////////////////////////
+	// CLASS: FIELD
 
-	private	String			key;
-	private	boolean			accepted;
-	private	PathnameField	field;
+
+	private static class Field
+		extends PathnameField
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private Field(
+			String	pathname,
+			int		numColumns,
+			boolean	unixStyle)
+		{
+			super(pathname, numColumns);
+			FontUtils.setAppFont(FontKey.TEXT_FIELD, this);
+			GuiUtils.setTextComponentMargins(this);
+			setUnixStyle(unixStyle);
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : overriding methods
+	////////////////////////////////////////////////////////////////////
+
+		@Override
+		protected int getColumnWidth()
+		{
+			return FontUtils.getCharWidth('0', getFontMetrics(getFont()));
+		}
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
 
 }
 

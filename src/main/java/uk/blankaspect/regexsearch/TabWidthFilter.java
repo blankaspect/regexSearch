@@ -58,7 +58,7 @@ class TabWidthFilter
 			throw new IllegalArgumentException();
 
 		setFilters(strs.get(0));
-		tabWidth = Integer.parseInt(strs.get(1).trim());
+		tabWidth = Integer.parseInt(strs.get(1).strip());
 	}
 
 	//------------------------------------------------------------------

@@ -2,7 +2,7 @@
 
 FontEx.java
 
-Extended font class.
+Class: extended font.
 
 \*====================================================================*/
 
@@ -24,25 +24,27 @@ import java.awt.Font;
 import java.util.List;
 import java.util.Objects;
 
-import uk.blankaspect.common.exception.ValueOutOfBoundsException;
+import uk.blankaspect.common.exception2.UnexpectedRuntimeException;
+import uk.blankaspect.common.exception2.ValueOutOfBoundsException;
 
 import uk.blankaspect.common.misc.EscapedTextUtils;
 
 //----------------------------------------------------------------------
 
 
-// EXTENDED FONT CLASS
+// CLASS: EXTENDED FONT
 
 
 public class FontEx
+	implements Cloneable
 {
 
 ////////////////////////////////////////////////////////////////////////
 //  Constants
 ////////////////////////////////////////////////////////////////////////
 
-	public static final		int	MIN_FONT_SIZE	= 4;
-	public static final		int	MAX_FONT_SIZE	= 128;
+	public static final		int		MIN_FONT_SIZE	= 4;
+	public static final		int		MAX_FONT_SIZE	= 128;
 
 	public static final		char	SEPARATOR_CHAR	= ',';
 
@@ -53,9 +55,16 @@ public class FontEx
 	private static final	String	MALFORMED_STR			= "The font specifier is malformed.";
 	private static final	String	INVALID_STYLE_STR		= "The font style is invalid.";
 	private static final	String	INVALID_SIZE_STR		= "The font size is invalid.";
-	private static final	String	SIZE_OUT_OF_BOUNDS_STR	= "The font size must be between " +
-																MIN_FONT_SIZE + " and " +
-																MAX_FONT_SIZE + ".";
+	private static final	String	SIZE_OUT_OF_BOUNDS_STR	=
+			"The font size must be between " + MIN_FONT_SIZE + " and " + MAX_FONT_SIZE + ".";
+
+////////////////////////////////////////////////////////////////////////
+//  Instance variables
+////////////////////////////////////////////////////////////////////////
+
+	private	String		name;
+	private	FontStyle	style;
+	private	int			size;
 
 ////////////////////////////////////////////////////////////////////////
 //  Constructors
@@ -67,9 +76,10 @@ public class FontEx
 
 	//------------------------------------------------------------------
 
-	public FontEx(String    name,
-				  FontStyle style,
-				  int       size)
+	public FontEx(
+		String		name,
+		FontStyle	style,
+		int			size)
 	{
 		this.name = name;
 		this.style = style;
@@ -78,7 +88,8 @@ public class FontEx
 
 	//------------------------------------------------------------------
 
-	public FontEx(Font font)
+	public FontEx(
+		Font	font)
 	{
 		name = font.getFontName();
 		style = FontStyle.forAwtStyle(font.getStyle());
@@ -92,18 +103,19 @@ public class FontEx
 	 * @throws ValueOutOfBoundsException
 	 */
 
-	public FontEx(String str)
+	public FontEx(
+		String	str)
 	{
 		List<String> strs = EscapedTextUtils.split(str, SEPARATOR_CHAR);
 		if (strs.size() != 3)
 			throw new IllegalArgumentException(MALFORMED_STR);
 
 		int index = 0;
-		String value = strs.get(index++).trim();
+		String value = strs.get(index++).strip();
 		if (!value.isEmpty())
 			name = value;
 
-		value = strs.get(index++).trim();
+		value = strs.get(index++).strip();
 		if (!value.isEmpty())
 		{
 			style = FontStyle.forKey(value);
@@ -111,7 +123,7 @@ public class FontEx
 				throw new IllegalArgumentException(INVALID_STYLE_STR);
 		}
 
-		value = strs.get(index++).trim();
+		value = strs.get(index++).strip();
 		if (!value.isEmpty())
 		{
 			try
@@ -130,19 +142,37 @@ public class FontEx
 	//------------------------------------------------------------------
 
 ////////////////////////////////////////////////////////////////////////
+//  Instance methods : Cloneable interface
+////////////////////////////////////////////////////////////////////////
+
+	@Override
+	public FontEx clone()
+	{
+		try
+		{
+			return (FontEx)super.clone();
+		}
+		catch (CloneNotSupportedException e)
+		{
+			throw new UnexpectedRuntimeException(e);
+		}
+	}
+
+	//------------------------------------------------------------------
+
+////////////////////////////////////////////////////////////////////////
 //  Instance methods : overriding methods
 ////////////////////////////////////////////////////////////////////////
 
 	@Override
-	public boolean equals(Object obj)
+	public boolean equals(
+		Object	obj)
 	{
-		if (obj instanceof FontEx)
-		{
-			FontEx font = (FontEx)obj;
-			return (((name == null) ? (font.name == null) : name.equals(font.name)) &&
-					 (style == font.style) && (size == font.size));
-		}
-		return false;
+		if (this == obj)
+			return true;
+
+		return (obj instanceof FontEx other) && Objects.equals(name, other.name) && (style == other.style)
+				&& (size == other.size);
 	}
 
 	//------------------------------------------------------------------
@@ -151,8 +181,8 @@ public class FontEx
 	public int hashCode()
 	{
 		int code = Objects.hashCode(name);
-		code = code * 31 + style.ordinal();
-		code = code * 31 + size;
+		code = 31 * code + style.ordinal();
+		code = 31 * code + size;
 		return code;
 	}
 
@@ -205,21 +235,24 @@ public class FontEx
 
 	//------------------------------------------------------------------
 
-	public void setName(String name)
+	public void setName(
+		String	name)
 	{
 		this.name = name;
 	}
 
 	//------------------------------------------------------------------
 
-	public void setStyle(FontStyle style)
+	public void setStyle(
+		FontStyle	style)
 	{
 		this.style = style;
 	}
 
 	//------------------------------------------------------------------
 
-	public void setSize(int size)
+	public void setSize(
+		int	size)
 	{
 		this.size = size;
 	}
@@ -235,7 +268,8 @@ public class FontEx
 
 	//------------------------------------------------------------------
 
-	public void applyFont(Component component)
+	public void applyFont(
+		Component	component)
 	{
 		if (component != null)
 		{
@@ -272,14 +306,6 @@ public class FontEx
 	}
 
 	//------------------------------------------------------------------
-
-////////////////////////////////////////////////////////////////////////
-//  Instance variables
-////////////////////////////////////////////////////////////////////////
-
-	private	String		name;
-	private	FontStyle	style;
-	private	int			size;
 
 }
 

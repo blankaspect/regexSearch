@@ -27,6 +27,11 @@ import java.util.List;
 // CLASS: STRING-RELATED UTILITY METHODS
 
 
+/**
+ * This class contains utility methods that relate to {@linkplain String strings} and {@linkplain CharSequence character
+ * sequences}.
+ */
+
 public class StringUtils
 {
 
@@ -34,8 +39,13 @@ public class StringUtils
 //  Constants
 ////////////////////////////////////////////////////////////////////////
 
+	/** The prefix that is recognised by the {@link #escape(CharSequence, String)} method. */
 	public static final	char	ESCAPE_PREFIX_CHAR	= '\\';
 
+	/**
+	 * This is an enumeration of the ways in which an input string may be split by the <code>split*(&hellip;)</code>
+	 * methods.
+	 */
 	public enum SplitMode
 	{
 		/**
@@ -89,11 +99,13 @@ public class StringUtils
 	//------------------------------------------------------------------
 
 	/**
-	 * Returns {@code true} if the specified string is {@code null} or it contains only whitespace.
+	 * Returns {@code true} if the specified string is {@code null} or empty or it contains only {@linkplain
+	 * Character#isWhitespace(int) whitespace} characters.
 	 *
 	 * @param  str
 	 *           the string that will be tested.
-	 * @return {@code true} if {@code str} is {@code null} or it contains only whitespace.
+	 * @return {@code true} if {@code str} is {@code null} or empty or it contains only {@linkplain
+	 *         Character#isWhitespace(int) whitespace} characters.
 	 */
 
 	public static boolean isNullOrBlank(
@@ -353,8 +365,8 @@ public class StringUtils
 		String	suffix)
 	{
 		return (str.isEmpty() || suffix.isEmpty() || !str.endsWith(suffix))
-																? str
-																: str.substring(0, str.length() - suffix.length());
+						? str
+						: str.substring(0, str.length() - suffix.length());
 	}
 
 	//------------------------------------------------------------------
@@ -363,7 +375,7 @@ public class StringUtils
 		char		separator,
 		String...	strs)
 	{
-		return join(Character.toString(separator), false, List.of(strs));
+		return join(separator, false, List.of(strs));
 	}
 
 	//------------------------------------------------------------------
@@ -372,7 +384,7 @@ public class StringUtils
 		char								separator,
 		Iterable<? extends CharSequence>	seqs)
 	{
-		return join(Character.toString(separator), false, seqs);
+		return join(separator, false, seqs);
 	}
 
 	//------------------------------------------------------------------
@@ -400,7 +412,7 @@ public class StringUtils
 		boolean		trailingSeparator,
 		String...	strs)
 	{
-		return join(Character.toString(separator), trailingSeparator, List.of(strs));
+		return join(separator, trailingSeparator, List.of(strs));
 	}
 
 	//------------------------------------------------------------------
@@ -410,7 +422,26 @@ public class StringUtils
 		boolean								trailingSeparator,
 		Iterable<? extends CharSequence>	seqs)
 	{
-		return join(Character.toString(separator), trailingSeparator, seqs);
+		// Calculate length of buffer
+		int length = 0;
+		for (CharSequence seq : seqs)
+		{
+			length += seq.length();
+			++length;
+		}
+
+		// Concatenate character sequences
+		StringBuilder buffer = new StringBuilder(length);
+		for (CharSequence seq : seqs)
+		{
+			buffer.append(seq);
+			buffer.append(separator);
+		}
+		if (!trailingSeparator)
+			buffer.setLength(buffer.length() - 1);
+
+		// Return concatenated sequences
+		return buffer.toString();
 	}
 
 	//------------------------------------------------------------------
@@ -431,10 +462,21 @@ public class StringUtils
 		Iterable<? extends CharSequence>	seqs)
 	{
 		// Calculate length of buffer
-		int separatorLength = (separator == null) ? 0 : separator.length();
 		int length = 0;
-		for (CharSequence seq : seqs)
-			length += seq.length() + separatorLength;
+		if (separator == null)
+		{
+			for (CharSequence seq : seqs)
+				length += seq.length();
+		}
+		else
+		{
+			int separatorLength = separator.length();
+			for (CharSequence seq : seqs)
+			{
+				length += seq.length();
+				length += separatorLength;
+			}
+		}
 
 		// Concatenate character sequences
 		StringBuilder buffer = new StringBuilder(length);
@@ -445,15 +487,13 @@ public class StringUtils
 		}
 		else
 		{
-			int index = 0;
 			for (CharSequence seq : seqs)
 			{
-				if (index++ > 0)
-					buffer.append(separator);
 				buffer.append(seq);
-			}
-			if (trailingSeparator)
 				buffer.append(separator);
+			}
+			if (!trailingSeparator)
+				buffer.setLength(buffer.length() - separator.length());
 		}
 
 		// Return concatenated sequences

@@ -53,7 +53,7 @@ public class UrlException
 	 * @param url
 	 *          the URL with which the exception will be associated, which may be {@code null}.
 	 * @param replacements
-	 *          the objects whose string representations will replace placeholders in {@code message}.
+	 *          the items whose string representations will replace placeholders in {@code message}.
 	 */
 
 	public UrlException(
@@ -77,7 +77,7 @@ public class UrlException
 	 * @param url
 	 *          the URL with which the exception will be associated, which may be {@code null}.
 	 * @param replacements
-	 *          the objects whose string representations will replace placeholders in {@code message}.
+	 *          the items whose string representations will replace placeholders in {@code message}.
 	 */
 
 	public UrlException(
@@ -101,7 +101,7 @@ public class UrlException
 	 * @param url
 	 *          the URL with which the exception will be associated, which may be {@code null}.
 	 * @param replacements
-	 *          the objects whose string representations will replace placeholders in {@code message}.
+	 *          the items whose string representations will replace placeholders in {@code message}.
 	 */
 
 	public UrlException(

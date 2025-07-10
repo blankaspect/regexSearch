@@ -49,7 +49,8 @@ public class ErrorLogger
 
 	private static final	String	FILENAME	= "error.log";
 
-	private static final	DateTimeFormatter	TIMESTAMP_FORMATTER	= DateTimeFormatter.ofPattern("uuuu-MM-dd HH:mm:ss.SSS");
+	private static final	DateTimeFormatter	TIMESTAMP_FORMATTER	=
+			DateTimeFormatter.ofPattern("uuuu-MM-dd HH:mm:ss.SSS");
 
 ////////////////////////////////////////////////////////////////////////
 //  Constructors
@@ -65,7 +66,8 @@ public class ErrorLogger
 //  Instance methods
 ////////////////////////////////////////////////////////////////////////
 
-	public void write(Throwable exception)
+	public void write(
+		Throwable	exception)
 		throws IOException
 	{
 		// Initialise buffer
@@ -87,7 +89,8 @@ public class ErrorLogger
 
 	//------------------------------------------------------------------
 
-	public void write(String str)
+	public void write(
+		String	str)
 		throws IOException
 	{
 		Files.writeString(Path.of(FILENAME), str, StandardOpenOption.WRITE, StandardOpenOption.CREATE,
