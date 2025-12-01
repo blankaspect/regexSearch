@@ -222,7 +222,7 @@ public class ExceptionUtils
 		if (numElements == 0)
 		{
 			String str = elements.get(elements.size() - 1);
-			return (ELLIPSIS_STR + str.substring(Math.max(0, str.length() - maxLength + ELLIPSIS_STR.length())));
+			return ELLIPSIS_STR + str.substring(Math.max(0, str.length() - maxLength + ELLIPSIS_STR.length()));
 		}
 
 		// If the entire pathname fits, return it

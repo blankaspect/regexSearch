@@ -22,9 +22,8 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.Toolkit;
 
+import java.util.Arrays;
 import java.util.Map;
-
-import java.util.stream.Stream;
 
 import uk.blankaspect.common.misc.IStringKeyed;
 
@@ -109,7 +108,7 @@ public class TextRendering
 		Object	key)
 	{
 		Object hints = Toolkit.getDefaultToolkit().getDesktopProperty(HINTS_DESKTOP_PROPERTY_KEY);
-		return (hints instanceof Map) ? ((Map<?, ?>)hints).get(key) : null;
+		return (hints instanceof Map<?, ?> map) ? map.get(key) : null;
 	}
 
 	//------------------------------------------------------------------
@@ -239,10 +238,7 @@ public class TextRendering
 		public static Antialiasing forKey(
 			String	key)
 		{
-			return Stream.of(values())
-					.filter(value -> value.key.equals(key))
-					.findFirst()
-					.orElse(null);
+			return Arrays.stream(values()).filter(value -> value.key.equals(key)).findFirst().orElse(null);
 		}
 
 		//--------------------------------------------------------------
@@ -250,10 +246,7 @@ public class TextRendering
 		public static Antialiasing forHintValue(
 			Object	hintValue)
 		{
-			return Stream.of(values())
-					.filter(value -> value.hintValue.equals(hintValue))
-					.findFirst()
-					.orElse(null);
+			return Arrays.stream(values()).filter(value -> value.hintValue.equals(hintValue)).findFirst().orElse(null);
 		}
 
 		//--------------------------------------------------------------
@@ -374,10 +367,7 @@ public class TextRendering
 		public static FractionalMetrics forKey(
 			String	key)
 		{
-			return Stream.of(values())
-					.filter(value -> value.key.equals(key))
-					.findFirst()
-					.orElse(null);
+			return Arrays.stream(values()).filter(value -> value.key.equals(key)).findFirst().orElse(null);
 		}
 
 		//--------------------------------------------------------------
@@ -385,10 +375,7 @@ public class TextRendering
 		public static FractionalMetrics forHintValue(
 			Object	hintValue)
 		{
-			return Stream.of(values())
-					.filter(value -> value.hintValue.equals(hintValue))
-					.findFirst()
-					.orElse(null);
+			return Arrays.stream(values()).filter(value -> value.hintValue.equals(hintValue)).findFirst().orElse(null);
 		}
 
 		//--------------------------------------------------------------

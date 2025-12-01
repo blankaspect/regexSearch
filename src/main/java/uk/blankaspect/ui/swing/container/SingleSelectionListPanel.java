@@ -223,38 +223,26 @@ public class SingleSelectionListPanel<E>
 //  Instance methods : ActionListener interface
 ////////////////////////////////////////////////////////////////////////
 
+	@Override
 	public void actionPerformed(ActionEvent event)
 	{
-		String command = event.getActionCommand();
-
-		if (command.equals(Command.ADD))
-			onAdd();
-
-		else if (command.equals(Command.EDIT))
-			onEdit();
-
-		else if (command.equals(Command.DELETE))
+		switch (event.getActionCommand())
 		{
-			if ((event.getModifiers() & MODIFIERS_MASK) == ActionEvent.SHIFT_MASK)
-				onDelete();
-			else
-				onConfirmDelete();
+			case Command.ADD                                   -> onAdd();
+			case Command.EDIT                                  -> onEdit();
+			case Command.DELETE                                ->
+			{
+				if ((event.getModifiers() & MODIFIERS_MASK) == ActionEvent.SHIFT_MASK)
+					onDelete();
+				else
+					onConfirmDelete();
+			}
+			case SingleSelectionList.Command.DELETE_ELEMENT    -> onConfirmDelete();
+			case SingleSelectionList.Command.DELETE_EX_ELEMENT -> onDelete();
+			case SingleSelectionList.Command.MOVE_ELEMENT_UP   -> onMoveUp();
+			case SingleSelectionList.Command.MOVE_ELEMENT_DOWN -> onMoveDown();
+			case SingleSelectionList.Command.DRAG_ELEMENT      -> onMove();
 		}
-
-		else if (command.equals(SingleSelectionList.Command.DELETE_ELEMENT))
-			onConfirmDelete();
-
-		else if (command.equals(SingleSelectionList.Command.DELETE_EX_ELEMENT))
-			onDelete();
-
-		else if (command.equals(SingleSelectionList.Command.MOVE_ELEMENT_UP))
-			onMoveUp();
-
-		else if (command.equals(SingleSelectionList.Command.MOVE_ELEMENT_DOWN))
-			onMoveDown();
-
-		else if (command.equals(SingleSelectionList.Command.DRAG_ELEMENT))
-			onMove();
 	}
 
 	//------------------------------------------------------------------
@@ -263,6 +251,7 @@ public class SingleSelectionListPanel<E>
 //  Instance methods : ChangeListener interface
 ////////////////////////////////////////////////////////////////////////
 
+	@Override
 	public void stateChanged(ChangeEvent event)
 	{
 		if (!listScrollPane.getVerticalScrollBar().getValueIsAdjusting() && !list.isDragging())
@@ -275,6 +264,7 @@ public class SingleSelectionListPanel<E>
 //  Instance methods : ListSelectionListener interface
 ////////////////////////////////////////////////////////////////////////
 
+	@Override
 	public void valueChanged(ListSelectionEvent event)
 	{
 		if (!event.getValueIsAdjusting())
@@ -287,6 +277,7 @@ public class SingleSelectionListPanel<E>
 //  Instance methods : SingleSelectionList.IModelListener interface
 ////////////////////////////////////////////////////////////////////////
 
+	@Override
 	public void modelChanged(SingleSelectionList.ModelEvent event)
 	{
 		modelChanged();

@@ -66,10 +66,11 @@ public abstract class AbstractTextField
 	@Override
 	public Color getBackground()
 	{
-		return (invalid ? invalidBackgroundColour
-						: (isEnabled() || (disabledBackgroundColour == null))
-																			? super.getBackground()
-																			: disabledBackgroundColour);
+		return invalid
+				? invalidBackgroundColour
+				: (isEnabled() || (disabledBackgroundColour == null))
+						? super.getBackground()
+						: disabledBackgroundColour;
 	}
 
 	//------------------------------------------------------------------
@@ -90,7 +91,7 @@ public abstract class AbstractTextField
 	public boolean isEmpty()
 	{
 		Document document = getDocument();
-		return ((document == null) ? true : (document.getLength() == 0));
+		return (document == null) ? true : (document.getLength() == 0);
 	}
 
 	//------------------------------------------------------------------

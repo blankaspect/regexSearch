@@ -73,10 +73,10 @@ public class TextArea
 	private static final	int		EOL_IMAGE_HEIGHT2	= 2;
 	private static final	int[]	EOL_BITMAPS			= { 0, 0x38, 0x3F, 0x38, 0 };
 
-	private static final	int	DEFAULT_UNIT_INCREMENT_COLUMNS	= 1;
-	private static final	int	DEFAULT_UNIT_INCREMENT_ROWS		= 1;
-	private static final	int	DEFAULT_BLOCK_INCREMENT_COLUMNS	= 8;
-	private static final	int	DEFAULT_BLOCK_INCREMENT_ROWS	= 8;
+	private static final	int		DEFAULT_UNIT_INCREMENT_COLUMNS	= 1;
+	private static final	int		DEFAULT_UNIT_INCREMENT_ROWS		= 1;
+	private static final	int		DEFAULT_BLOCK_INCREMENT_COLUMNS	= 8;
+	private static final	int		DEFAULT_BLOCK_INCREMENT_ROWS	= 8;
 
 	private static final	Color	DEFAULT_HIGHLIGHT_TEXT_COLOUR		= Color.BLACK;
 	private static final	Color	DEFAULT_HIGHLIGHT_BACKGROUND_COLOUR	= Color.LIGHT_GRAY;
@@ -100,257 +100,53 @@ public class TextArea
 
 	private static final	KeyAction.KeyCommandPair[]	KEY_COMMANDS	=
 	{
-		new KeyAction.KeyCommandPair(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0),
-									 Command.SCROLL_LEFT_UNIT),
-		new KeyAction.KeyCommandPair(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0),
-									 Command.SCROLL_RIGHT_UNIT),
-		new KeyAction.KeyCommandPair(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, KeyEvent.CTRL_DOWN_MASK),
-									 Command.SCROLL_LEFT_BLOCK),
-		new KeyAction.KeyCommandPair(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, KeyEvent.CTRL_DOWN_MASK),
-									 Command.SCROLL_RIGHT_BLOCK),
-		new KeyAction.KeyCommandPair(KeyStroke.getKeyStroke(KeyEvent.VK_HOME, 0),
-									 Command.SCROLL_LEFT_MAX),
-		new KeyAction.KeyCommandPair(KeyStroke.getKeyStroke(KeyEvent.VK_END, 0),
-									 Command.SCROLL_RIGHT_MAX),
-		new KeyAction.KeyCommandPair(KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0),
-									 Command.SCROLL_UP_UNIT),
-		new KeyAction.KeyCommandPair(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0),
-									 Command.SCROLL_DOWN_UNIT),
-		new KeyAction.KeyCommandPair(KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_UP, 0),
-									 Command.SCROLL_UP_BLOCK),
-		new KeyAction.KeyCommandPair(KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_DOWN, 0),
-									 Command.SCROLL_DOWN_BLOCK),
-		new KeyAction.KeyCommandPair(KeyStroke.getKeyStroke(KeyEvent.VK_HOME, KeyEvent.CTRL_DOWN_MASK),
-									 Command.SCROLL_UP_MAX),
-		new KeyAction.KeyCommandPair(KeyStroke.getKeyStroke(KeyEvent.VK_END, KeyEvent.CTRL_DOWN_MASK),
-									 Command.SCROLL_DOWN_MAX)
+		KeyAction.command(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0),
+						  Command.SCROLL_LEFT_UNIT),
+		KeyAction.command(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0),
+						  Command.SCROLL_RIGHT_UNIT),
+		KeyAction.command(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, KeyEvent.CTRL_DOWN_MASK),
+						  Command.SCROLL_LEFT_BLOCK),
+		KeyAction.command(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, KeyEvent.CTRL_DOWN_MASK),
+						  Command.SCROLL_RIGHT_BLOCK),
+		KeyAction.command(KeyStroke.getKeyStroke(KeyEvent.VK_HOME, 0),
+						  Command.SCROLL_LEFT_MAX),
+		KeyAction.command(KeyStroke.getKeyStroke(KeyEvent.VK_END, 0),
+						  Command.SCROLL_RIGHT_MAX),
+		KeyAction.command(KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0),
+						  Command.SCROLL_UP_UNIT),
+		KeyAction.command(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0),
+						  Command.SCROLL_DOWN_UNIT),
+		KeyAction.command(KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_UP, 0),
+						  Command.SCROLL_UP_BLOCK),
+		KeyAction.command(KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_DOWN, 0),
+						  Command.SCROLL_DOWN_BLOCK),
+		KeyAction.command(KeyStroke.getKeyStroke(KeyEvent.VK_HOME, KeyEvent.CTRL_DOWN_MASK),
+						  Command.SCROLL_UP_MAX),
+		KeyAction.command(KeyStroke.getKeyStroke(KeyEvent.VK_END, KeyEvent.CTRL_DOWN_MASK),
+						  Command.SCROLL_DOWN_MAX)
 	};
 
 ////////////////////////////////////////////////////////////////////////
-//  Member interfaces
+//  Instance variables
 ////////////////////////////////////////////////////////////////////////
 
-
-	// TEXT MODEL INTERFACE
-
-
-	public interface IModel
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Methods
-	////////////////////////////////////////////////////////////////////
-
-		int getNumLines();
-
-		//--------------------------------------------------------------
-
-		Line[] getLines(int startIndex,
-						int endIndex);
-
-		//--------------------------------------------------------------
-
-		String getText();
-
-		//--------------------------------------------------------------
-
-		void setText(String text);
-
-		//--------------------------------------------------------------
-
-	}
-
-	//==================================================================
-
-////////////////////////////////////////////////////////////////////////
-//  Member classes : non-inner classes
-////////////////////////////////////////////////////////////////////////
-
-
-	// TEXT LINE CLASS
-
-
-	public static class Line
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		public Line()
-		{
-			text = "";
-		}
-
-		//--------------------------------------------------------------
-
-		public Line(String text)
-		{
-			this.text = text;
-		}
-
-		//--------------------------------------------------------------
-
-		public Line(String  text,
-					int     highlightStartOffset,
-					int     highlightEndOffset,
-					boolean highlightEol)
-		{
-			this.text = text;
-			this.highlightStartOffset = highlightStartOffset;
-			this.highlightEndOffset = highlightEndOffset;
-			this.highlightEol = highlightEol;
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance variables
-	////////////////////////////////////////////////////////////////////
-
-		public	String	text;
-		public	int		highlightStartOffset;
-		public	int		highlightEndOffset;
-		public	boolean	highlightEol;
-
-	}
-
-	//==================================================================
-
-
-	// DEFAULT TEXT MODEL CLASS
-
-
-	public static class DefaultModel
-		implements IModel
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		public DefaultModel()
-		{
-			textLines = new ArrayList<>();
-			changeListeners = new ArrayList<>();
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : IModel interface
-	////////////////////////////////////////////////////////////////////
-
-		public int getNumLines()
-		{
-			return textLines.size();
-		}
-
-		//--------------------------------------------------------------
-
-		public Line[] getLines(int startIndex,
-							   int endIndex)
-		{
-			if ((startIndex < 0) || (startIndex > textLines.size()))
-				startIndex = textLines.size();
-			if ((endIndex < 0) || (endIndex > textLines.size()))
-				endIndex = textLines.size();
-
-			Line[] lines = new Line[endIndex - startIndex];
-			int index = 0;
-			for (int i = startIndex; i < endIndex; i++)
-				lines[index++] = new Line(textLines.get(i));
-			return lines;
-		}
-
-		//--------------------------------------------------------------
-
-		public String getText()
-		{
-			StringBuilder buffer = new StringBuilder();
-			for (int i = 0; i < textLines.size(); i++)
-			{
-				if (i > 0)
-					buffer.append('\n');
-				buffer.append(textLines.get(i));
-			}
-			return buffer.toString();
-		}
-
-		//--------------------------------------------------------------
-
-		public void setText(String text)
-		{
-			textLines.clear();
-
-			if (text != null)
-			{
-				int index = 0;
-				int endIndex = text.length();
-				while (index < endIndex)
-				{
-					int startIndex = index;
-					index = text.indexOf('\n', startIndex);
-					if (index < 0)
-						index = endIndex;
-					textLines.add(text.substring(startIndex, index));
-					++index;
-				}
-			}
-
-			fireStateChanged();
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods
-	////////////////////////////////////////////////////////////////////
-
-		public List<String> getTextLines()
-		{
-			return textLines;
-		}
-
-		//--------------------------------------------------------------
-
-		public String getTextLine(int index)
-		{
-			return textLines.get(index);
-		}
-
-		//--------------------------------------------------------------
-
-		public void addChangeListener(ChangeListener listener)
-		{
-			changeListeners.add(listener);
-		}
-
-		//--------------------------------------------------------------
-
-		protected void fireStateChanged()
-		{
-			for (int i = changeListeners.size() - 1; i >= 0; i--)
-			{
-				if (changeEvent == null)
-					changeEvent = new ChangeEvent(this);
-				changeListeners.get(i).stateChanged(changeEvent);
-			}
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance variables
-	////////////////////////////////////////////////////////////////////
-
-		private	List<String>			textLines;
-		private	List<ChangeListener>	changeListeners;
-		private	ChangeEvent				changeEvent;
-
-	}
-
-	//==================================================================
+	private	int								columns;
+	private	int								rows;
+	private	int								maxNumColumns;
+	private	int								columnWidth;
+	private	int								rowHeight;
+	private	int								unitIncrementColumns;
+	private	int								unitIncrementRows;
+	private	int								blockIncrementColumns;
+	private	int								blockIncrementRows;
+	private	Color							highlightTextColour;
+	private	Color							highlightBackgroundColour;
+	private	TextRendering.Antialiasing		antialiasing;
+	private	TextRendering.FractionalMetrics	fractionalMetrics;
+	private	IModel							model;
+	private	JViewport						viewport;
+	private	int								eolRgb;
+	private	BufferedImage					eolImage;
 
 ////////////////////////////////////////////////////////////////////////
 //  Constructors
@@ -396,47 +192,26 @@ public class TextArea
 //  Instance methods : ActionListener interface
 ////////////////////////////////////////////////////////////////////////
 
+	@Override
 	public void actionPerformed(ActionEvent event)
 	{
 		if (viewport != null)
 		{
-			String command = event.getActionCommand();
-
-			if (command.equals(Command.SCROLL_LEFT_UNIT))
-				onScrollLeftUnit();
-
-			else if (command.equals(Command.SCROLL_RIGHT_UNIT))
-				onScrollRightUnit();
-
-			else if (command.equals(Command.SCROLL_LEFT_BLOCK))
-				onScrollLeftBlock();
-
-			else if (command.equals(Command.SCROLL_RIGHT_BLOCK))
-				onScrollRightBlock();
-
-			else if (command.equals(Command.SCROLL_LEFT_MAX))
-				onScrollLeftMax();
-
-			else if (command.equals(Command.SCROLL_RIGHT_MAX))
-				onScrollRightMax();
-
-			else if (command.equals(Command.SCROLL_UP_UNIT))
-				onScrollUpUnit();
-
-			else if (command.equals(Command.SCROLL_DOWN_UNIT))
-				onScrollDownUnit();
-
-			else if (command.equals(Command.SCROLL_UP_BLOCK))
-				onScrollUpBlock();
-
-			else if (command.equals(Command.SCROLL_DOWN_BLOCK))
-				onScrollDownBlock();
-
-			else if (command.equals(Command.SCROLL_UP_MAX))
-				onScrollUpMax();
-
-			else if (command.equals(Command.SCROLL_DOWN_MAX))
-				onScrollDownMax();
+			switch (event.getActionCommand())
+			{
+				case Command.SCROLL_LEFT_UNIT   -> onScrollLeftUnit();
+				case Command.SCROLL_RIGHT_UNIT  -> onScrollRightUnit();
+				case Command.SCROLL_LEFT_BLOCK  -> onScrollLeftBlock();
+				case Command.SCROLL_RIGHT_BLOCK -> onScrollRightBlock();
+				case Command.SCROLL_LEFT_MAX    -> onScrollLeftMax();
+				case Command.SCROLL_RIGHT_MAX   -> onScrollRightMax();
+				case Command.SCROLL_UP_UNIT     -> onScrollUpUnit();
+				case Command.SCROLL_DOWN_UNIT   -> onScrollDownUnit();
+				case Command.SCROLL_UP_BLOCK    -> onScrollUpBlock();
+				case Command.SCROLL_DOWN_BLOCK  -> onScrollDownBlock();
+				case Command.SCROLL_UP_MAX      -> onScrollUpMax();
+				case Command.SCROLL_DOWN_MAX    -> onScrollDownMax();
+			}
 		}
 	}
 
@@ -446,6 +221,7 @@ public class TextArea
 //  Instance methods : ChangeListener interface
 ////////////////////////////////////////////////////////////////////////
 
+	@Override
 	public void stateChanged(ChangeEvent event)
 	{
 		if (event.getSource() == model)
@@ -461,6 +237,7 @@ public class TextArea
 //  Instance methods : MouseListener interface
 ////////////////////////////////////////////////////////////////////////
 
+	@Override
 	public void mouseClicked(MouseEvent event)
 	{
 		// do nothing
@@ -468,6 +245,7 @@ public class TextArea
 
 	//------------------------------------------------------------------
 
+	@Override
 	public void mouseEntered(MouseEvent event)
 	{
 		// do nothing
@@ -475,6 +253,7 @@ public class TextArea
 
 	//------------------------------------------------------------------
 
+	@Override
 	public void mouseExited(MouseEvent event)
 	{
 		// do nothing
@@ -482,6 +261,7 @@ public class TextArea
 
 	//------------------------------------------------------------------
 
+	@Override
 	public void mousePressed(MouseEvent event)
 	{
 		requestFocusInWindow();
@@ -489,6 +269,7 @@ public class TextArea
 
 	//------------------------------------------------------------------
 
+	@Override
 	public void mouseReleased(MouseEvent event)
 	{
 		// do nothing
@@ -500,6 +281,7 @@ public class TextArea
 //  Instance methods : Scrollable interface
 ////////////////////////////////////////////////////////////////////////
 
+	@Override
 	public Dimension getPreferredScrollableViewportSize()
 	{
 		return new Dimension(columns * columnWidth, rows * rowHeight);
@@ -507,6 +289,7 @@ public class TextArea
 
 	//------------------------------------------------------------------
 
+	@Override
 	public boolean getScrollableTracksViewportWidth()
 	{
 		return false;
@@ -514,6 +297,7 @@ public class TextArea
 
 	//------------------------------------------------------------------
 
+	@Override
 	public boolean getScrollableTracksViewportHeight()
 	{
 		return false;
@@ -521,6 +305,7 @@ public class TextArea
 
 	//------------------------------------------------------------------
 
+	@Override
 	public int getScrollableUnitIncrement(Rectangle visibleRect,
 										  int       orientation,
 										  int       direction)
@@ -561,6 +346,7 @@ public class TextArea
 
 	//------------------------------------------------------------------
 
+	@Override
 	public int getScrollableBlockIncrement(Rectangle visibleRect,
 										   int       orientation,
 										   int       direction)
@@ -805,7 +591,7 @@ public class TextArea
 
 	public String getText()
 	{
-		return ((model == null) ? null : model.getText());
+		return (model == null) ? null : model.getText();
 	}
 
 	//------------------------------------------------------------------
@@ -1042,8 +828,7 @@ public class TextArea
 	private void setRenderingHints(Graphics2D gr)
 	{
 		gr.setRenderingHint(TextRendering.Antialiasing.getHintKey(), antialiasing.getHintValue());
-		gr.setRenderingHint(TextRendering.FractionalMetrics.getHintKey(),
-							fractionalMetrics.getHintValue());
+		gr.setRenderingHint(TextRendering.FractionalMetrics.getHintKey(), fractionalMetrics.getHintValue());
 	}
 
 	//------------------------------------------------------------------
@@ -1089,32 +874,28 @@ public class TextArea
 
 	private void onScrollLeftUnit()
 	{
-		incrementViewX(-getScrollableUnitIncrement(viewport.getViewRect(), SwingConstants.HORIZONTAL,
-												   -1));
+		incrementViewX(-getScrollableUnitIncrement(viewport.getViewRect(), SwingConstants.HORIZONTAL, -1));
 	}
 
 	//------------------------------------------------------------------
 
 	private void onScrollRightUnit()
 	{
-		incrementViewX(getScrollableUnitIncrement(viewport.getViewRect(), SwingConstants.HORIZONTAL,
-												  1));
+		incrementViewX(getScrollableUnitIncrement(viewport.getViewRect(), SwingConstants.HORIZONTAL, 1));
 	}
 
 	//------------------------------------------------------------------
 
 	private void onScrollLeftBlock()
 	{
-		incrementViewX(-getScrollableBlockIncrement(viewport.getViewRect(), SwingConstants.HORIZONTAL,
-													-1));
+		incrementViewX(-getScrollableBlockIncrement(viewport.getViewRect(), SwingConstants.HORIZONTAL, -1));
 	}
 
 	//------------------------------------------------------------------
 
 	private void onScrollRightBlock()
 	{
-		incrementViewX(getScrollableBlockIncrement(viewport.getViewRect(), SwingConstants.HORIZONTAL,
-												   1));
+		incrementViewX(getScrollableBlockIncrement(viewport.getViewRect(), SwingConstants.HORIZONTAL, 1));
 	}
 
 	//------------------------------------------------------------------
@@ -1135,8 +916,7 @@ public class TextArea
 
 	private void onScrollUpUnit()
 	{
-		incrementViewY(-getScrollableUnitIncrement(viewport.getViewRect(), SwingConstants.VERTICAL,
-												   -1));
+		incrementViewY(-getScrollableUnitIncrement(viewport.getViewRect(), SwingConstants.VERTICAL, -1));
 	}
 
 	//------------------------------------------------------------------
@@ -1150,16 +930,14 @@ public class TextArea
 
 	private void onScrollUpBlock()
 	{
-		incrementViewY(-getScrollableBlockIncrement(viewport.getViewRect(), SwingConstants.VERTICAL,
-													-1));
+		incrementViewY(-getScrollableBlockIncrement(viewport.getViewRect(), SwingConstants.VERTICAL, -1));
 	}
 
 	//------------------------------------------------------------------
 
 	private void onScrollDownBlock()
 	{
-		incrementViewY(getScrollableBlockIncrement(viewport.getViewRect(), SwingConstants.VERTICAL,
-												   1));
+		incrementViewY(getScrollableBlockIncrement(viewport.getViewRect(), SwingConstants.VERTICAL, 1));
 	}
 
 	//------------------------------------------------------------------
@@ -1179,26 +957,230 @@ public class TextArea
 	//------------------------------------------------------------------
 
 ////////////////////////////////////////////////////////////////////////
-//  Instance variables
+//  Member interfaces
 ////////////////////////////////////////////////////////////////////////
 
-	private	int								columns;
-	private	int								rows;
-	private	int								maxNumColumns;
-	private	int								columnWidth;
-	private	int								rowHeight;
-	private	int								unitIncrementColumns;
-	private	int								unitIncrementRows;
-	private	int								blockIncrementColumns;
-	private	int								blockIncrementRows;
-	private	Color							highlightTextColour;
-	private	Color							highlightBackgroundColour;
-	private	TextRendering.Antialiasing		antialiasing;
-	private	TextRendering.FractionalMetrics	fractionalMetrics;
-	private	IModel							model;
-	private	JViewport						viewport;
-	private	int								eolRgb;
-	private	BufferedImage					eolImage;
+
+	// TEXT MODEL INTERFACE
+
+
+	public interface IModel
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Methods
+	////////////////////////////////////////////////////////////////////
+
+		int getNumLines();
+
+		//--------------------------------------------------------------
+
+		Line[] getLines(int startIndex,
+						int endIndex);
+
+		//--------------------------------------------------------------
+
+		String getText();
+
+		//--------------------------------------------------------------
+
+		void setText(String text);
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
+
+////////////////////////////////////////////////////////////////////////
+//  Member classes : non-inner classes
+////////////////////////////////////////////////////////////////////////
+
+
+	// TEXT LINE CLASS
+
+
+	public static class Line
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance variables
+	////////////////////////////////////////////////////////////////////
+
+		public	String	text;
+		public	int		highlightStartOffset;
+		public	int		highlightEndOffset;
+		public	boolean	highlightEol;
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		public Line()
+		{
+			text = "";
+		}
+
+		//--------------------------------------------------------------
+
+		public Line(String text)
+		{
+			this.text = text;
+		}
+
+		//--------------------------------------------------------------
+
+		public Line(String  text,
+					int     highlightStartOffset,
+					int     highlightEndOffset,
+					boolean highlightEol)
+		{
+			this.text = text;
+			this.highlightStartOffset = highlightStartOffset;
+			this.highlightEndOffset = highlightEndOffset;
+			this.highlightEol = highlightEol;
+		}
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
+
+
+	// DEFAULT TEXT MODEL CLASS
+
+
+	public static class DefaultModel
+		implements IModel
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance variables
+	////////////////////////////////////////////////////////////////////
+
+		private	List<String>			textLines;
+		private	List<ChangeListener>	changeListeners;
+		private	ChangeEvent				changeEvent;
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		public DefaultModel()
+		{
+			textLines = new ArrayList<>();
+			changeListeners = new ArrayList<>();
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : IModel interface
+	////////////////////////////////////////////////////////////////////
+
+		public int getNumLines()
+		{
+			return textLines.size();
+		}
+
+		//--------------------------------------------------------------
+
+		public Line[] getLines(int startIndex,
+							   int endIndex)
+		{
+			if ((startIndex < 0) || (startIndex > textLines.size()))
+				startIndex = textLines.size();
+			if ((endIndex < 0) || (endIndex > textLines.size()))
+				endIndex = textLines.size();
+
+			Line[] lines = new Line[endIndex - startIndex];
+			int index = 0;
+			for (int i = startIndex; i < endIndex; i++)
+				lines[index++] = new Line(textLines.get(i));
+			return lines;
+		}
+
+		//--------------------------------------------------------------
+
+		public String getText()
+		{
+			StringBuilder buffer = new StringBuilder();
+			for (int i = 0; i < textLines.size(); i++)
+			{
+				if (i > 0)
+					buffer.append('\n');
+				buffer.append(textLines.get(i));
+			}
+			return buffer.toString();
+		}
+
+		//--------------------------------------------------------------
+
+		public void setText(String text)
+		{
+			textLines.clear();
+
+			if (text != null)
+			{
+				int index = 0;
+				int endIndex = text.length();
+				while (index < endIndex)
+				{
+					int startIndex = index;
+					index = text.indexOf('\n', startIndex);
+					if (index < 0)
+						index = endIndex;
+					textLines.add(text.substring(startIndex, index));
+					++index;
+				}
+			}
+
+			fireStateChanged();
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods
+	////////////////////////////////////////////////////////////////////
+
+		public List<String> getTextLines()
+		{
+			return textLines;
+		}
+
+		//--------------------------------------------------------------
+
+		public String getTextLine(int index)
+		{
+			return textLines.get(index);
+		}
+
+		//--------------------------------------------------------------
+
+		public void addChangeListener(ChangeListener listener)
+		{
+			changeListeners.add(listener);
+		}
+
+		//--------------------------------------------------------------
+
+		protected void fireStateChanged()
+		{
+			for (int i = changeListeners.size() - 1; i >= 0; i--)
+			{
+				if (changeEvent == null)
+					changeEvent = new ChangeEvent(this);
+				changeListeners.get(i).stateChanged(changeEvent);
+			}
+		}
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
 
 }
 

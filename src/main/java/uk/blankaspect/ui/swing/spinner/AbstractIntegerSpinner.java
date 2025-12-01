@@ -91,7 +91,7 @@ public abstract class AbstractIntegerSpinner
 	@Override
 	public boolean requestFocusInWindow()
 	{
-		return ((editor == null) ? super.requestFocusInWindow() : editor.requestFocusInWindow());
+		return (editor == null) ? super.requestFocusInWindow() : editor.requestFocusInWindow();
 	}
 
 	//------------------------------------------------------------------

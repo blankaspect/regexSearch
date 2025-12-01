@@ -2,7 +2,7 @@
 
 FixedWidthLabel.java
 
-Fixed-width label class.
+Class: fixed-width label.
 
 \*====================================================================*/
 
@@ -27,7 +27,7 @@ import uk.blankaspect.common.misc.MaxValueMap;
 //----------------------------------------------------------------------
 
 
-// FIXED-WIDTH LABEL CLASS
+// CLASS: FIXED-WIDTH LABEL
 
 
 public abstract class FixedWidthLabel

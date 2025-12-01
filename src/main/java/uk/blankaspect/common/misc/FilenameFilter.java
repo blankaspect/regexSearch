@@ -2,7 +2,7 @@
 
 FilenameFilter.java
 
-Filename filter class.
+Class: filename filter.
 
 \*====================================================================*/
 
@@ -27,7 +27,7 @@ import java.util.List;
 //----------------------------------------------------------------------
 
 
-// FILENAME FILTER CLASS
+// CLASS: FILENAME FILTER
 
 
 public class FilenameFilter
@@ -42,159 +42,28 @@ public class FilenameFilter
 	public static final	char	MULTIPLE_WILDCARD_CHAR	= '*';
 
 ////////////////////////////////////////////////////////////////////////
-//  Member classes : non-inner classes
+//  Instance variables
 ////////////////////////////////////////////////////////////////////////
 
-
-	// MULTIPLE FILTER CLASS
-
-
-	public static class MultipleFilter
-		extends FilenameFilter
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		public MultipleFilter(String... patterns)
-		{
-			this(patterns, false);
-		}
-
-		//--------------------------------------------------------------
-
-		public MultipleFilter(String[] patterns,
-							  boolean  ignoreCase)
-		{
-			filters = new FilenameFilter[patterns.length];
-			for (int i = 0; i < filters.length; i++)
-				filters[i] = new FilenameFilter(patterns[i], ignoreCase);
-		}
-
-		//--------------------------------------------------------------
-
-		public MultipleFilter(List<String> patterns,
-							  boolean      ignoreCase)
-		{
-			filters = new FilenameFilter[patterns.size()];
-			for (int i = 0; i < filters.length; i++)
-				filters[i] = new FilenameFilter(patterns.get(i), ignoreCase);
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : FileFilter interface
-	////////////////////////////////////////////////////////////////////
-
-		@Override
-		public boolean accept(File file)
-		{
-			for (FilenameFilter filter : filters)
-			{
-				if (filter.accept(file))
-					return true;
-			}
-			return false;
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods
-	////////////////////////////////////////////////////////////////////
-
-		public int getNumFilters()
-		{
-			return filters.length;
-		}
-
-		//--------------------------------------------------------------
-
-		public FilenameFilter getFilter(int index)
-		{
-			return filters[index];
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance variables
-	////////////////////////////////////////////////////////////////////
-
-		private	FilenameFilter[]	filters;
-
-	}
-
-	//==================================================================
-
-
-	// PATTERN TOKEN CLASS
-
-
-	private static class PatternToken
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constants
-	////////////////////////////////////////////////////////////////////
-
-		private enum Kind
-		{
-			LITERAL,
-			SINGLE_WILDCARD,
-			MULTIPLE_WILDCARD
-		}
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private PatternToken(Kind kind)
-		{
-			this.kind = kind;
-		}
-
-		//--------------------------------------------------------------
-
-		private PatternToken(String  str,
-							 int     startIndex,
-							 int     endIndex,
-							 boolean ignoreCase)
-		{
-			kind = Kind.LITERAL;
-			value = str.substring(startIndex, endIndex);
-			if (ignoreCase)
-				value = value.toLowerCase();
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance variables
-	////////////////////////////////////////////////////////////////////
-
-		private	Kind	kind;
-		private	String	value;
-
-	}
-
-	//==================================================================
+	private	String				pattern;
+	private	List<PatternToken>	patternTokens;
+	private	boolean				ignoreCase;
 
 ////////////////////////////////////////////////////////////////////////
 //  Constructors
 ////////////////////////////////////////////////////////////////////////
 
-	public FilenameFilter(String pattern)
+	public FilenameFilter(
+		String	pattern)
 	{
 		this(pattern, false);
 	}
 
 	//------------------------------------------------------------------
 
-	public FilenameFilter(String  pattern,
-						  boolean ignoreCase)
+	public FilenameFilter(
+		String	pattern,
+		boolean	ignoreCase)
 	{
 		this.pattern = pattern;
 		this.ignoreCase = ignoreCase;
@@ -242,7 +111,8 @@ public class FilenameFilter
 ////////////////////////////////////////////////////////////////////////
 
 	@Override
-	public int compareTo(FilenameFilter filter)
+	public int compareTo(
+		FilenameFilter	filter)
 	{
 		return toString().compareTo(filter.toString());
 	}
@@ -254,7 +124,8 @@ public class FilenameFilter
 ////////////////////////////////////////////////////////////////////////
 
 	@Override
-	public boolean accept(File file)
+	public boolean accept(
+		File	file)
 	{
 		// Don't accept an existing entity that is not a normal file
 		if (file.exists() && !file.isFile())
@@ -277,7 +148,7 @@ public class FilenameFilter
 	@Override
 	public String toString()
 	{
-		return ((pattern == null) ? "" : pattern);
+		return (pattern == null) ? "" : pattern;
 	}
 
 	//------------------------------------------------------------------
@@ -293,9 +164,10 @@ public class FilenameFilter
 
 	//------------------------------------------------------------------
 
-	private boolean match(String filename,
-						  int    filenameIndex,
-						  int    tokenIndex)
+	private boolean match(
+		String	filename,
+		int		filenameIndex,
+		int		tokenIndex)
 	{
 		while (tokenIndex < patternTokens.size())
 		{
@@ -337,12 +209,152 @@ public class FilenameFilter
 	//------------------------------------------------------------------
 
 ////////////////////////////////////////////////////////////////////////
-//  Instance variables
+//  Member classes : non-inner classes
 ////////////////////////////////////////////////////////////////////////
 
-	private	String				pattern;
-	private	List<PatternToken>	patternTokens;
-	private	boolean				ignoreCase;
+
+	// CLASS: MULTIPLE FILTER
+
+
+	public static class MultipleFilter
+		extends FilenameFilter
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance variables
+	////////////////////////////////////////////////////////////////////
+
+		private	FilenameFilter[]	filters;
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		public MultipleFilter(
+			String...	patterns)
+		{
+			this(false, patterns);
+		}
+
+		//--------------------------------------------------------------
+
+		public MultipleFilter(
+			boolean  	ignoreCase,
+			String...	patterns)
+		{
+			filters = new FilenameFilter[patterns.length];
+			for (int i = 0; i < filters.length; i++)
+				filters[i] = new FilenameFilter(patterns[i], ignoreCase);
+		}
+
+		//--------------------------------------------------------------
+
+		public MultipleFilter(
+			List<String>	patterns,
+			boolean			ignoreCase)
+		{
+			filters = new FilenameFilter[patterns.size()];
+			for (int i = 0; i < filters.length; i++)
+				filters[i] = new FilenameFilter(patterns.get(i), ignoreCase);
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : FileFilter interface
+	////////////////////////////////////////////////////////////////////
+
+		@Override
+		public boolean accept(
+			File	file)
+		{
+			for (FilenameFilter filter : filters)
+			{
+				if (filter.accept(file))
+					return true;
+			}
+			return false;
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods
+	////////////////////////////////////////////////////////////////////
+
+		public int getNumFilters()
+		{
+			return filters.length;
+		}
+
+		//--------------------------------------------------------------
+
+		public FilenameFilter getFilter(
+			int	index)
+		{
+			return filters[index];
+		}
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
+
+
+	// CLASS: PATTERN TOKEN
+
+
+	private static class PatternToken
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Constants
+	////////////////////////////////////////////////////////////////////
+
+		private enum Kind
+		{
+			LITERAL,
+			SINGLE_WILDCARD,
+			MULTIPLE_WILDCARD
+		}
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance variables
+	////////////////////////////////////////////////////////////////////
+
+		private	Kind	kind;
+		private	String	value;
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private PatternToken(
+			Kind	kind)
+		{
+			this.kind = kind;
+		}
+
+		//--------------------------------------------------------------
+
+		private PatternToken(
+			String	str,
+			int		startIndex,
+			int		endIndex,
+			boolean	ignoreCase)
+		{
+			kind = Kind.LITERAL;
+			value = str.substring(startIndex, endIndex);
+			if (ignoreCase)
+				value = value.toLowerCase();
+		}
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
 
 }
 

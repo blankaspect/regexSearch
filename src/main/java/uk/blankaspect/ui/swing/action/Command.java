@@ -76,7 +76,7 @@ public class Command
 
 	public Object getValue(String key)
 	{
-		return (key.equals(ENABLED_KEY) ? enabled : properties.get(key));
+		return key.equals(ENABLED_KEY) ? enabled : properties.get(key);
 	}
 
 	//------------------------------------------------------------------

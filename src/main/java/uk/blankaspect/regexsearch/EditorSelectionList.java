@@ -28,6 +28,8 @@ import uk.blankaspect.ui.swing.font.FontUtils;
 
 import uk.blankaspect.ui.swing.list.SingleSelectionList;
 
+import uk.blankaspect.ui.swing.misc.GuiUtils;
+
 import uk.blankaspect.ui.swing.text.TextRendering;
 import uk.blankaspect.ui.swing.text.TextUtils;
 
@@ -82,29 +84,28 @@ class EditorSelectionList
 							   int      index)
 	{
 		// Create copy of graphics context
-		gr = gr.create();
+		Graphics2D gr2d = GuiUtils.copyGraphicsContext(gr);
 
 		// Set rendering hints for text antialiasing and fractional metrics
-		TextRendering.setHints((Graphics2D)gr);
+		TextRendering.setHints(gr2d);
 
 		// Get text and truncate it if it is too wide
 		String text = getElement(index).toString();
-		FontMetrics fontMetrics = gr.getFontMetrics();
+		FontMetrics fontMetrics = gr2d.getFontMetrics();
 		int maxTextWidth = getWidth() - 2 * getHorizontalMargin();
 		if (isPathname)
 		{
 			if (fontMetrics.stringWidth(text) > maxTextWidth)
-				text = TextUtils.getLimitedWidthPathname(text, fontMetrics, maxTextWidth,
-														 Utils.getFileSeparatorChar());
+				text = TextUtils.getLimitedWidthPathname(text, fontMetrics, maxTextWidth, Utils.getFileSeparatorChar());
 		}
 		else
 			text = truncateText(text, fontMetrics, maxTextWidth);
 
 		// Draw text
 		int rowHeight = getRowHeight();
-		gr.setColor(getForegroundColour(index));
-		gr.drawString(text, getHorizontalMargin(),
-					  index * rowHeight + FontUtils.getBaselineOffset(rowHeight, fontMetrics));
+		gr2d.setColor(getForegroundColour(index));
+		gr2d.drawString(text, getHorizontalMargin(),
+						index * rowHeight + FontUtils.getBaselineOffset(rowHeight, fontMetrics));
 	}
 
 	//------------------------------------------------------------------

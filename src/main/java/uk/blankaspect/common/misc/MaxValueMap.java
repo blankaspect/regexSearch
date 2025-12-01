@@ -73,15 +73,7 @@ public class MaxValueMap
 		IEntry	entry)
 	{
 		if (key != null)
-		{
-			List<IEntry> entries = map.get(key);
-			if (entries == null)
-			{
-				entries = new ArrayList<>();
-				map.put(key, entries);
-			}
-			entries.add(entry);
-		}
+			map.computeIfAbsent(key, k -> new ArrayList<>()).add(entry);
 	}
 
 	//------------------------------------------------------------------

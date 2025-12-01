@@ -108,7 +108,7 @@ public class IntegerSpinner
 										  int  index)
 		{
 			int i = VALID_CHARS.indexOf(ch);
-			return ((i > 0) || (signed && (i == 0)));
+			return (i > 0) || (signed && (i == 0));
 		}
 
 		//--------------------------------------------------------------
@@ -116,7 +116,7 @@ public class IntegerSpinner
 		@Override
 		protected int getColumnWidth()
 		{
-			return (FontUtils.getCharWidth('0', getFontMetrics(getFont())) + 1);
+			return FontUtils.getCharWidth('0', getFontMetrics(getFont())) + 1;
 		}
 
 		//--------------------------------------------------------------

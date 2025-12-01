@@ -108,7 +108,7 @@ public class FileException
 	@Override
 	protected String getPrefix()
 	{
-		return ((file == null) ? null : LOCATION_STR + getPathname() + "\n");
+		return (file == null) ? null : LOCATION_STR + getPathname() + "\n";
 	}
 
 	//------------------------------------------------------------------

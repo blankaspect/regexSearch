@@ -111,21 +111,12 @@ class PathnameEditor
 
 	private static final	KeyAction.KeyCommandPair[]	KEY_COMMANDS	=
 	{
-		new KeyAction.KeyCommandPair
-		(
-			KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, KeyEvent.ALT_DOWN_MASK),
-			Command.EDIT
-		),
-		new KeyAction.KeyCommandPair
-		(
-			KeyStroke.getKeyStroke(KeyEvent.VK_C, KeyEvent.CTRL_DOWN_MASK | KeyEvent.SHIFT_DOWN_MASK),
-			Command.COPY
-		),
-		new KeyAction.KeyCommandPair
-		(
-			KeyStroke.getKeyStroke(KeyEvent.VK_CONTEXT_MENU, 0),
-			Command.SHOW_CONTEXT_MENU
-		)
+		KeyAction.command(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, KeyEvent.ALT_DOWN_MASK),
+						  Command.EDIT),
+		KeyAction.command(KeyStroke.getKeyStroke(KeyEvent.VK_C, KeyEvent.CTRL_DOWN_MASK | KeyEvent.SHIFT_DOWN_MASK),
+						  Command.COPY),
+		KeyAction.command(KeyStroke.getKeyStroke(KeyEvent.VK_CONTEXT_MENU, 0),
+						  Command.SHOW_CONTEXT_MENU)
 	};
 
 ////////////////////////////////////////////////////////////////////////
@@ -271,9 +262,8 @@ class PathnameEditor
 		{
 			String[] optionStrs = Utils.getOptionStrings(DELETE_STR);
 			return (JOptionPane.showOptionDialog(this, DELETE_MESSAGE_STR, getTitleString(DELETE_STR),
-												 JOptionPane.OK_CANCEL_OPTION,
-												 JOptionPane.QUESTION_MESSAGE, null, optionStrs,
-												 optionStrs[1]) == JOptionPane.OK_OPTION);
+												 JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null,
+												 optionStrs, optionStrs[1]) == JOptionPane.OK_OPTION);
 		}
 
 		//--------------------------------------------------------------
@@ -284,7 +274,7 @@ class PathnameEditor
 
 		private String getTitleString(String actionStr)
 		{
-			return (actionStr + " " + PATHNAME_STR.toLowerCase());
+			return actionStr + " " + PATHNAME_STR.toLowerCase();
 		}
 
 		//--------------------------------------------------------------
@@ -453,21 +443,16 @@ class PathnameEditor
 	//  Instance methods : ActionListener interface
 	////////////////////////////////////////////////////////////////////
 
+		@Override
 		public void actionPerformed(ActionEvent event)
 		{
-			String command = event.getActionCommand();
-
-			if (command.equals(Command.CHOOSE_PATHNAME))
-				onChoosePathname();
-
-			else if (command.equals(Command.EDIT))
-				onEdit();
-
-			else if (command.equals(Command.COPY))
-				onCopy();
-
-			else if (command.equals(Command.SHOW_CONTEXT_MENU))
-				onShowContextMenu();
+			switch (event.getActionCommand())
+			{
+				case Command.CHOOSE_PATHNAME   -> onChoosePathname();
+				case Command.EDIT              -> onEdit();
+				case Command.COPY              -> onCopy();
+				case Command.SHOW_CONTEXT_MENU -> onShowContextMenu();
+			}
 		}
 
 		//--------------------------------------------------------------
@@ -610,9 +595,9 @@ class PathnameEditor
 				fileChooser.setCurrentDirectory(file);
 		}
 		fileChooser.rescanCurrentDirectory();
-		return ((fileChooser.showDialog(parent, SELECT_STR) == JFileChooser.APPROVE_OPTION)
-																			? fileChooser.getSelectedFile()
-																			: null);
+		return (fileChooser.showDialog(parent, SELECT_STR) == JFileChooser.APPROVE_OPTION)
+				? fileChooser.getSelectedFile()
+				: null;
 	}
 
 	//------------------------------------------------------------------
@@ -625,7 +610,7 @@ class PathnameEditor
 	public String getText()
 	{
 		String str = pathnameField.getText();
-		return (str.isEmpty() ? null : str);
+		return str.isEmpty() ? null : str;
 	}
 
 	//------------------------------------------------------------------
@@ -639,12 +624,10 @@ class PathnameEditor
 
 	public String toActionText(String str)
 	{
-		return ((itemsSubmenu == null)
+		return (itemsSubmenu == null)
 					? str
-					: TextUtils.getLimitedWidthPathname(str, itemsSubmenu.getFontMetrics(
-																				itemsSubmenu.getFont()),
-														MAX_MENU_ITEM_WIDTH,
-														Utils.getFileSeparatorChar()));
+					: TextUtils.getLimitedWidthPathname(str, itemsSubmenu.getFontMetrics(itemsSubmenu.getFont()),
+														MAX_MENU_ITEM_WIDTH, Utils.getFileSeparatorChar());
 	}
 
 	//------------------------------------------------------------------

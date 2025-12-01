@@ -34,8 +34,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
-import java.util.stream.Stream;
-
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
@@ -189,10 +187,7 @@ class TextSearcher
 		public static Case forKey(
 			char	key)
 		{
-			return Stream.of(values())
-					.filter(value -> value.key == key)
-					.findFirst()
-					.orElse(null);
+			return Arrays.stream(values()).filter(value -> value.key == key).findFirst().orElse(null);
 		}
 
 		//--------------------------------------------------------------
@@ -462,8 +457,9 @@ class TextSearcher
 
 		public File getNextDirectory()
 		{
-			return ((directories == null) || (directoryIndex >= directories.length)) ? null
-																					 : directories[directoryIndex++];
+			return ((directories == null) || (directoryIndex >= directories.length))
+					? null
+					: directories[directoryIndex++];
 		}
 
 		//--------------------------------------------------------------
@@ -717,8 +713,9 @@ class TextSearcher
 
 	public List<File> getTargetNotFoundFiles()
 	{
-		return (targetNotFoundFiles == null) ? Collections.emptyList()
-											 : Collections.unmodifiableList(targetNotFoundFiles);
+		return (targetNotFoundFiles == null)
+				? Collections.emptyList()
+				: Collections.unmodifiableList(targetNotFoundFiles);
 	}
 
 	//------------------------------------------------------------------

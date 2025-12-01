@@ -20,7 +20,6 @@ package uk.blankaspect.ui.swing.list;
 
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Dialog;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
@@ -89,8 +88,8 @@ public abstract class SingleSelectionListEditor<E>
 	protected static final	String	EDIT_STR	= "Edit";
 	protected static final	String	DELETE_STR	= "Delete";
 
-	private static final	int		MODIFIERS_MASK	= ActionEvent.ALT_MASK | ActionEvent.META_MASK |
-															ActionEvent.CTRL_MASK | ActionEvent.SHIFT_MASK;
+	private static final	int		MODIFIERS_MASK	=
+			ActionEvent.ALT_MASK | ActionEvent.META_MASK | ActionEvent.CTRL_MASK | ActionEvent.SHIFT_MASK;
 
 	private static final	Insets	BUTTON_MARGINS		= new Insets(1, 4, 1, 4);
 	private static final	Insets	ICON_BUTTON_MARGINS	= new Insets(1, 1, 1, 1);
@@ -110,95 +109,27 @@ public abstract class SingleSelectionListEditor<E>
 
 	private static final	KeyAction.KeyCommandPair[]	KEY_COMMANDS	=
 	{
-		new KeyAction.KeyCommandPair(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0),
-									 Command.ACCEPT),
-		new KeyAction.KeyCommandPair(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, KeyEvent.CTRL_DOWN_MASK),
-									 Command.ACCEPT),
-		new KeyAction.KeyCommandPair(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
-									 Command.CLOSE)
+		KeyAction.command(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0),
+						  Command.ACCEPT),
+		KeyAction.command(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, KeyEvent.CTRL_DOWN_MASK),
+						  Command.ACCEPT),
+		KeyAction.command(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
+						  Command.CLOSE)
 	};
 
 ////////////////////////////////////////////////////////////////////////
-//  Member classes : inner classes
+//  Instance variables
 ////////////////////////////////////////////////////////////////////////
 
-
-	// WINDOW EVENT HANDLER CLASS
-
-
-	private class WindowEventHandler
-		extends WindowAdapter
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private WindowEventHandler()
-		{
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : overriding methods
-	////////////////////////////////////////////////////////////////////
-
-		@Override
-		public void windowOpened(WindowEvent event)
-		{
-			SingleSelectionListEditor.this.windowOpened();
-		}
-
-		//--------------------------------------------------------------
-
-		@Override
-		public void windowClosing(WindowEvent event)
-		{
-			onClose();
-		}
-
-		//--------------------------------------------------------------
-
-	}
-
-	//==================================================================
-
-
-	// COMMAND ACTION CLASS
-
-
-	private class CommandAction
-		extends AbstractAction
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private CommandAction(String command,
-							  String text)
-		{
-			super(text);
-			putValue(Action.ACTION_COMMAND_KEY, command);
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : ActionListener interface
-	////////////////////////////////////////////////////////////////////
-
-		public void actionPerformed(ActionEvent event)
-		{
-			SingleSelectionListEditor.this.actionPerformed(event);
-		}
-
-		//--------------------------------------------------------------
-
-	}
-
-	//==================================================================
+	private	boolean					accepted;
+	private	int						maxNumElements;
+	private	ActionMap				actionMap;
+	private	SingleSelectionList<E>	list;
+	private	JScrollPane				listScrollPane;
+	private	JButton					addButton;
+	private	JButton					editButton;
+	private	JButton					deleteButton;
+	private	JPopupMenu				contextMenu;
 
 ////////////////////////////////////////////////////////////////////////
 //  Constructors
@@ -211,7 +142,7 @@ public abstract class SingleSelectionListEditor<E>
 	{
 
 		// Call superclass constructor
-		super(GuiUtils.getWindow(parent), Dialog.ModalityType.APPLICATION_MODAL);
+		super(GuiUtils.getWindow(parent), ModalityType.APPLICATION_MODAL);
 
 		// Initialise instance variables
 		this.list = list;
@@ -394,44 +325,28 @@ public abstract class SingleSelectionListEditor<E>
 //  Instance methods : ActionListener interface
 ////////////////////////////////////////////////////////////////////////
 
+	@Override
 	public void actionPerformed(ActionEvent event)
 	{
-		String command = event.getActionCommand();
-
-		if (command.equals(Command.ADD))
-			onAdd();
-
-		else if (command.equals(Command.EDIT))
-			onEdit();
-
-		else if (command.equals(Command.DELETE))
+		switch (event.getActionCommand())
 		{
-			if ((event.getModifiers() & MODIFIERS_MASK) == ActionEvent.SHIFT_MASK)
-				onDelete();
-			else
-				onConfirmDelete();
+			case Command.ADD                                   -> onAdd();
+			case Command.EDIT                                  -> onEdit();
+			case Command.DELETE                                ->
+			{
+				if ((event.getModifiers() & MODIFIERS_MASK) == ActionEvent.SHIFT_MASK)
+					onDelete();
+				else
+					onConfirmDelete();
+			}
+			case SingleSelectionList.Command.DELETE_ELEMENT    -> onConfirmDelete();
+			case SingleSelectionList.Command.DELETE_EX_ELEMENT -> onDelete();
+			case SingleSelectionList.Command.MOVE_ELEMENT_UP   -> onMoveUp();
+			case SingleSelectionList.Command.MOVE_ELEMENT_DOWN -> onMoveDown();
+			case SingleSelectionList.Command.DRAG_ELEMENT      -> onMove();
+			case Command.ACCEPT                                -> onAccept();
+			case Command.CLOSE                                 -> onClose();
 		}
-
-		else if (command.equals(SingleSelectionList.Command.DELETE_ELEMENT))
-			onConfirmDelete();
-
-		else if (command.equals(SingleSelectionList.Command.DELETE_EX_ELEMENT))
-			onDelete();
-
-		else if (command.equals(SingleSelectionList.Command.MOVE_ELEMENT_UP))
-			onMoveUp();
-
-		else if (command.equals(SingleSelectionList.Command.MOVE_ELEMENT_DOWN))
-			onMoveDown();
-
-		else if (command.equals(SingleSelectionList.Command.DRAG_ELEMENT))
-			onMove();
-
-		else if (command.equals(Command.ACCEPT))
-			onAccept();
-
-		else if (command.equals(Command.CLOSE))
-			onClose();
 	}
 
 	//------------------------------------------------------------------
@@ -440,6 +355,7 @@ public abstract class SingleSelectionListEditor<E>
 //  Instance methods : ChangeListener interface
 ////////////////////////////////////////////////////////////////////////
 
+	@Override
 	public void stateChanged(ChangeEvent event)
 	{
 		if (!listScrollPane.getVerticalScrollBar().getValueIsAdjusting() && !list.isDragging())
@@ -452,6 +368,7 @@ public abstract class SingleSelectionListEditor<E>
 //  Instance methods : ListSelectionListener interface
 ////////////////////////////////////////////////////////////////////////
 
+	@Override
 	public void valueChanged(ListSelectionEvent event)
 	{
 		if (!event.getValueIsAdjusting())
@@ -464,6 +381,7 @@ public abstract class SingleSelectionListEditor<E>
 //  Instance methods : MouseListener interface
 ////////////////////////////////////////////////////////////////////////
 
+	@Override
 	public void mouseClicked(MouseEvent event)
 	{
 		// do nothing
@@ -471,6 +389,7 @@ public abstract class SingleSelectionListEditor<E>
 
 	//------------------------------------------------------------------
 
+	@Override
 	public void mouseEntered(MouseEvent event)
 	{
 		// do nothing
@@ -478,6 +397,7 @@ public abstract class SingleSelectionListEditor<E>
 
 	//------------------------------------------------------------------
 
+	@Override
 	public void mouseExited(MouseEvent event)
 	{
 		// do nothing
@@ -485,6 +405,7 @@ public abstract class SingleSelectionListEditor<E>
 
 	//------------------------------------------------------------------
 
+	@Override
 	public void mousePressed(MouseEvent event)
 	{
 		showContextMenu(event);
@@ -492,6 +413,7 @@ public abstract class SingleSelectionListEditor<E>
 
 	//------------------------------------------------------------------
 
+	@Override
 	public void mouseReleased(MouseEvent event)
 	{
 		showContextMenu(event);
@@ -505,7 +427,7 @@ public abstract class SingleSelectionListEditor<E>
 
 	public List<E> getElements()
 	{
-		return (accepted ? list.getElements() : null);
+		return accepted ? list.getElements() : null;
 	}
 
 	//------------------------------------------------------------------
@@ -660,18 +582,87 @@ public abstract class SingleSelectionListEditor<E>
 	//------------------------------------------------------------------
 
 ////////////////////////////////////////////////////////////////////////
-//  Instance variables
+//  Member classes : inner classes
 ////////////////////////////////////////////////////////////////////////
 
-	private	boolean					accepted;
-	private	int						maxNumElements;
-	private	ActionMap				actionMap;
-	private	SingleSelectionList<E>	list;
-	private	JScrollPane				listScrollPane;
-	private	JButton					addButton;
-	private	JButton					editButton;
-	private	JButton					deleteButton;
-	private	JPopupMenu				contextMenu;
+
+	// WINDOW EVENT HANDLER CLASS
+
+
+	private class WindowEventHandler
+		extends WindowAdapter
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private WindowEventHandler()
+		{
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : overriding methods
+	////////////////////////////////////////////////////////////////////
+
+		@Override
+		public void windowOpened(WindowEvent event)
+		{
+			SingleSelectionListEditor.this.windowOpened();
+		}
+
+		//--------------------------------------------------------------
+
+		@Override
+		public void windowClosing(WindowEvent event)
+		{
+			onClose();
+		}
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
+
+
+	// COMMAND ACTION CLASS
+
+
+	private class CommandAction
+		extends AbstractAction
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private CommandAction(String command,
+							  String text)
+		{
+			super(text);
+			putValue(Action.ACTION_COMMAND_KEY, command);
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : ActionListener interface
+	////////////////////////////////////////////////////////////////////
+
+		@Override
+		public void actionPerformed(ActionEvent event)
+		{
+			SingleSelectionListEditor.this.actionPerformed(event);
+		}
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
 
 }
 

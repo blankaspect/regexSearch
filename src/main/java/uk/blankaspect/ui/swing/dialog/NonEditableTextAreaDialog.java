@@ -27,7 +27,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -74,116 +73,22 @@ public class NonEditableTextAreaDialog
 
 	private static final	KeyAction.KeyCommandPair[]	KEY_COMMANDS	=
 	{
-		new KeyAction.KeyCommandPair(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), Command.CLOSE)
+		KeyAction.command(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), Command.CLOSE)
 	};
 
-	private static final	Map<String, CommandAction>	COMMANDS;
+	private static final	Map<String, CommandAction>	COMMANDS	= Map.of
+	(
+		Command.CLEAR, new CommandAction(Command.CLEAR, CLEAR_STR, KeyEvent.VK_X, CLEAR_TOOLTIP_STR),
+		Command.COPY,  new CommandAction(Command.COPY, COPY_STR, KeyEvent.VK_C, COPY_TOOLTIP_STR),
+		Command.CLOSE, new CommandAction(Command.CLOSE, GuiConstants.CLOSE_STR, 0, null)
+	);
 
 ////////////////////////////////////////////////////////////////////////
-//  Enumerated types
+//  Instance variables
 ////////////////////////////////////////////////////////////////////////
 
-
-	// ERROR IDENTIFIERS
-
-
-	private enum ErrorId
-		implements AppException.IId
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constants
-	////////////////////////////////////////////////////////////////////
-
-		CLIPBOARD_IS_UNAVAILABLE
-		("The clipboard is currently unavailable.");
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private ErrorId(String message)
-		{
-			this.message = message;
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : AppException.IId interface
-	////////////////////////////////////////////////////////////////////
-
-		public String getMessage()
-		{
-			return message;
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance variables
-	////////////////////////////////////////////////////////////////////
-
-		private	String	message;
-
-	}
-
-	//==================================================================
-
-////////////////////////////////////////////////////////////////////////
-//  Member classes : non-inner classes
-////////////////////////////////////////////////////////////////////////
-
-
-	// COMMAND ACTION CLASS
-
-
-	private static class CommandAction
-		extends AbstractAction
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private CommandAction(String command,
-							  String text,
-							  int    mnemonicKey,
-							  String tooltipStr)
-		{
-			// Call superclass constructor
-			super(text);
-
-			// Set action properties
-			putValue(Action.ACTION_COMMAND_KEY, command);
-			if (mnemonicKey != 0)
-				putValue(Action.MNEMONIC_KEY, mnemonicKey);
-			if (tooltipStr != null)
-				putValue(Action.SHORT_DESCRIPTION, tooltipStr);
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : ActionListener interface
-	////////////////////////////////////////////////////////////////////
-
-		public void actionPerformed(ActionEvent event)
-		{
-			listener.actionPerformed(event);
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance variables
-	////////////////////////////////////////////////////////////////////
-
-		private	ActionListener	listener;
-
-	}
-
-	//==================================================================
+	private	boolean	canClear;
+	private	boolean	cleared;
 
 ////////////////////////////////////////////////////////////////////////
 //  Constructors
@@ -249,18 +154,15 @@ public class NonEditableTextAreaDialog
 //  Instance methods : ActionListener interface
 ////////////////////////////////////////////////////////////////////////
 
+	@Override
 	public void actionPerformed(ActionEvent event)
 	{
-		String command = event.getActionCommand();
-
-		if (command.equals(Command.CLEAR))
-			onClear();
-
-		else if (command.equals(Command.COPY))
-			onCopy();
-
-		else if (command.equals(Command.CLOSE))
-			onClose();
+		switch (event.getActionCommand())
+		{
+			case Command.CLEAR -> onClear();
+			case Command.COPY  -> onCopy();
+			case Command.CLOSE -> onClose();
+		}
 	}
 
 	//------------------------------------------------------------------
@@ -330,26 +232,112 @@ public class NonEditableTextAreaDialog
 	//------------------------------------------------------------------
 
 ////////////////////////////////////////////////////////////////////////
-//  Static initialiser
+//  Enumerated types
 ////////////////////////////////////////////////////////////////////////
 
-	static
+
+	// ERROR IDENTIFIERS
+
+
+	private enum ErrorId
+		implements AppException.IId
 	{
-		COMMANDS = new HashMap<>();
-		COMMANDS.put(Command.CLEAR,
-					 new CommandAction(Command.CLEAR, CLEAR_STR, KeyEvent.VK_X, CLEAR_TOOLTIP_STR));
-		COMMANDS.put(Command.COPY,
-					 new CommandAction(Command.COPY, COPY_STR, KeyEvent.VK_C, COPY_TOOLTIP_STR));
-		COMMANDS.put(Command.CLOSE,
-					 new CommandAction(Command.CLOSE, GuiConstants.CLOSE_STR, 0, null));
+
+	////////////////////////////////////////////////////////////////////
+	//  Constants
+	////////////////////////////////////////////////////////////////////
+
+		CLIPBOARD_IS_UNAVAILABLE
+		("The clipboard is currently unavailable.");
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance variables
+	////////////////////////////////////////////////////////////////////
+
+		private	String	message;
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private ErrorId(String message)
+		{
+			this.message = message;
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : AppException.IId interface
+	////////////////////////////////////////////////////////////////////
+
+		@Override
+		public String getMessage()
+		{
+			return message;
+		}
+
+		//--------------------------------------------------------------
+
 	}
 
+	//==================================================================
+
 ////////////////////////////////////////////////////////////////////////
-//  Instance variables
+//  Member classes : non-inner classes
 ////////////////////////////////////////////////////////////////////////
 
-	private	boolean	canClear;
-	private	boolean	cleared;
+
+	// COMMAND ACTION CLASS
+
+
+	private static class CommandAction
+		extends AbstractAction
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance variables
+	////////////////////////////////////////////////////////////////////
+
+		private	ActionListener	listener;
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private CommandAction(String command,
+							  String text,
+							  int    mnemonicKey,
+							  String tooltipStr)
+		{
+			// Call superclass constructor
+			super(text);
+
+			// Set action properties
+			putValue(Action.ACTION_COMMAND_KEY, command);
+			if (mnemonicKey != 0)
+				putValue(Action.MNEMONIC_KEY, mnemonicKey);
+			if (tooltipStr != null)
+				putValue(Action.SHORT_DESCRIPTION, tooltipStr);
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : ActionListener interface
+	////////////////////////////////////////////////////////////////////
+
+		@Override
+		public void actionPerformed(ActionEvent event)
+		{
+			listener.actionPerformed(event);
+		}
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
 
 }
 

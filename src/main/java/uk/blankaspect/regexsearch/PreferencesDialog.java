@@ -41,7 +41,6 @@ import java.io.File;
 
 import java.nio.charset.Charset;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -67,7 +66,6 @@ import javax.swing.event.ListSelectionListener;
 import uk.blankaspect.common.exception.AppException;
 import uk.blankaspect.common.exception.FileException;
 
-import uk.blankaspect.common.misc.FilenameSuffixFilter;
 import uk.blankaspect.common.misc.FileWritingMode;
 import uk.blankaspect.common.misc.MaxValueMap;
 
@@ -86,6 +84,8 @@ import uk.blankaspect.ui.swing.combobox.FComboBox;
 
 import uk.blankaspect.ui.swing.container.DimensionsSpinnerPanel;
 import uk.blankaspect.ui.swing.container.PathnamePanel;
+
+import uk.blankaspect.ui.swing.filechooser.FileChooserUtils;
 
 import uk.blankaspect.ui.swing.font.FontEx;
 import uk.blankaspect.ui.swing.font.FontStyle;
@@ -111,6 +111,10 @@ import uk.blankaspect.ui.swing.textfield.ConstrainedTextField;
 import uk.blankaspect.ui.swing.textfield.FTextField;
 import uk.blankaspect.ui.swing.textfield.IntegerValueField;
 
+import uk.blankaspect.ui.swing.window.WindowUtils;
+
+import uk.blankaspect.ui.swing.workaround.LinuxWorkarounds;
+
 //----------------------------------------------------------------------
 
 
@@ -129,8 +133,8 @@ class PreferencesDialog
 	private static final	String	KEY	= PreferencesDialog.class.getCanonicalName();
 
 	// Main panel
-	private static final	int		MODIFIERS_MASK	= ActionEvent.ALT_MASK | ActionEvent.META_MASK |
-															ActionEvent.CTRL_MASK | ActionEvent.SHIFT_MASK;
+	private static final	int		MODIFIERS_MASK	=
+			ActionEvent.ALT_MASK | ActionEvent.META_MASK | ActionEvent.CTRL_MASK | ActionEvent.SHIFT_MASK;
 
 	private static final	String	TITLE_STR				= "Preferences";
 	private static final	String	SAVE_CONFIGURATION_STR	= "Save configuration";
@@ -232,775 +236,76 @@ class PreferencesDialog
 		String	CLOSE								= "close";
 	}
 
-	private static final	Map<String, String>	COMMAND_MAP;
+	private static final	Map<String, String>	COMMAND_MAP	= Map.of
+	(
+		SingleSelectionList.Command.EDIT_ELEMENT,      Command.EDIT_TAB_WIDTH_FILTER,
+		SingleSelectionList.Command.DELETE_ELEMENT,    Command.CONFIRM_DELETE_TAB_WIDTH_FILTER,
+		SingleSelectionList.Command.DELETE_EX_ELEMENT, Command.DELETE_TAB_WIDTH_FILTER,
+		SingleSelectionList.Command.MOVE_ELEMENT_UP,   Command.MOVE_TAB_WIDTH_FILTER_UP,
+		SingleSelectionList.Command.MOVE_ELEMENT_DOWN, Command.MOVE_TAB_WIDTH_FILTER_DOWN,
+		SingleSelectionList.Command.DRAG_ELEMENT,      Command.MOVE_TAB_WIDTH_FILTER
+	);
 
 ////////////////////////////////////////////////////////////////////////
-//  Enumerated types
+//  Class variables
 ////////////////////////////////////////////////////////////////////////
 
-
-	// TABS
-
-
-	private enum Tab
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constants
-	////////////////////////////////////////////////////////////////////
-
-		GENERAL
-		(
-			"General"
-		)
-		{
-			@Override
-			protected JPanel createPanel(PreferencesDialog dialog)
-			{
-				return dialog.createPanelGeneral();
-			}
-
-			//----------------------------------------------------------
-
-			@Override
-			protected void validatePreferences(PreferencesDialog dialog)
-				throws AppException
-			{
-				dialog.validatePreferencesGeneral();
-			}
-
-			//----------------------------------------------------------
-
-			@Override
-			protected void setPreferences(PreferencesDialog dialog)
-			{
-				dialog.setPreferencesGeneral();
-			}
-
-			//----------------------------------------------------------
-		},
-
-		APPEARANCE
-		(
-			"Appearance"
-		)
-		{
-			@Override
-			protected JPanel createPanel(PreferencesDialog dialog)
-			{
-				return dialog.createPanelAppearance();
-			}
-
-			//----------------------------------------------------------
-
-			@Override
-			protected void validatePreferences(PreferencesDialog dialog)
-				throws AppException
-			{
-				dialog.validatePreferencesAppearance();
-			}
-
-			//----------------------------------------------------------
-
-			@Override
-			protected void setPreferences(PreferencesDialog dialog)
-			{
-				dialog.setPreferencesAppearance();
-			}
-
-			//----------------------------------------------------------
-		},
-
-		TAB_WIDTH
-		(
-			"Tab width"
-		)
-		{
-			@Override
-			protected JPanel createPanel(PreferencesDialog dialog)
-			{
-				return dialog.createPanelTabWidth();
-			}
-
-			//----------------------------------------------------------
-
-			@Override
-			protected void validatePreferences(PreferencesDialog dialog)
-				throws AppException
-			{
-				dialog.validatePreferencesTabWidth();
-			}
-
-			//----------------------------------------------------------
-
-			@Override
-			protected void setPreferences(PreferencesDialog dialog)
-			{
-				dialog.setPreferencesTabWidth();
-			}
-
-			//----------------------------------------------------------
-		},
-
-		EDITOR
-		(
-			"Editor"
-		)
-		{
-			@Override
-			protected JPanel createPanel(PreferencesDialog dialog)
-			{
-				return dialog.createPanelEditor();
-			}
-
-			//----------------------------------------------------------
-
-			@Override
-			protected void validatePreferences(PreferencesDialog dialog)
-				throws AppException
-			{
-				dialog.validatePreferencesEditor();
-			}
-
-			//----------------------------------------------------------
-
-			@Override
-			protected void setPreferences(PreferencesDialog dialog)
-			{
-				dialog.setPreferencesEditor();
-			}
-
-			//----------------------------------------------------------
-		},
-
-		FILE_LOCATIONS
-		(
-			"File locations"
-		)
-		{
-			@Override
-			protected JPanel createPanel(PreferencesDialog dialog)
-			{
-				return dialog.createPanelFileLocations();
-			}
-
-			//----------------------------------------------------------
-
-			@Override
-			protected void validatePreferences(PreferencesDialog dialog)
-				throws AppException
-			{
-				dialog.validatePreferencesFileLocations();
-			}
-
-			//----------------------------------------------------------
-
-			@Override
-			protected void setPreferences(PreferencesDialog dialog)
-			{
-				dialog.setPreferencesFileLocations();
-			}
-
-			//----------------------------------------------------------
-		},
-
-		FONTS
-		(
-			"Fonts"
-		)
-		{
-			@Override
-			protected JPanel createPanel(PreferencesDialog dialog)
-			{
-				return dialog.createPanelFonts();
-			}
-
-			//----------------------------------------------------------
-
-			@Override
-			protected void validatePreferences(PreferencesDialog dialog)
-				throws AppException
-			{
-				dialog.validatePreferencesFonts();
-			}
-
-			//----------------------------------------------------------
-
-			@Override
-			protected void setPreferences(PreferencesDialog dialog)
-			{
-				dialog.setPreferencesFonts();
-			}
-
-			//----------------------------------------------------------
-		};
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private Tab(String text)
-		{
-			this.text = text;
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Abstract methods
-	////////////////////////////////////////////////////////////////////
-
-		protected abstract JPanel createPanel(PreferencesDialog dialog);
-
-		//--------------------------------------------------------------
-
-		protected abstract void validatePreferences(PreferencesDialog dialog)
-			throws AppException;
-
-		//--------------------------------------------------------------
-
-		protected abstract void setPreferences(PreferencesDialog dialog);
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance variables
-	////////////////////////////////////////////////////////////////////
-
-		private	String	text;
-
-	}
-
-	//==================================================================
-
-
-	// ERROR IDENTIFIERS
-
-
-	private enum ErrorId
-		implements AppException.IId
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constants
-	////////////////////////////////////////////////////////////////////
-
-		FILE_DOES_NOT_EXIST
-		("The file does not exist."),
-
-		NOT_A_FILE
-		("The pathname does not denote a normal file."),
-
-		FILE_ACCESS_NOT_PERMITTED
-		("Access to the file was not permitted."),
-
-		INVALID_TAB_SURROGATE
-		("The tab surrogate is invalid.");
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private ErrorId(String message)
-		{
-			this.message = message;
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : AppException.IId interface
-	////////////////////////////////////////////////////////////////////
-
-		public String getMessage()
-		{
-			return message;
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance variables
-	////////////////////////////////////////////////////////////////////
-
-		private	String	message;
-
-	}
-
-	//==================================================================
+	private static	Point	location;
+	private static	int		tabIndex;
 
 ////////////////////////////////////////////////////////////////////////
-//  Member classes : non-inner classes
+//  Instance variables
 ////////////////////////////////////////////////////////////////////////
 
-
-	// ESCAPED METACHARACTERS FIELD CLASS
-
-
-	private static class EscapedMetacharsField
-		extends ConstrainedTextField
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constants
-	////////////////////////////////////////////////////////////////////
-
-		private static final	int	NUM_COLUMNS	= 16;
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private EscapedMetacharsField(String text)
-		{
-			super(AppConfig.PUNCTUATION_CHARS.length(), NUM_COLUMNS, text);
-			AppFont.TEXT_FIELD.apply(this);
-			GuiUtils.setTextComponentMargins(this);
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : overriding methods
-	////////////////////////////////////////////////////////////////////
-
-		@Override
-		protected boolean acceptCharacter(char ch,
-										  int  index)
-		{
-			return (AppConfig.PUNCTUATION_CHARS.indexOf(ch) >= 0);
-		}
-
-		//--------------------------------------------------------------
-
-	}
-
-	//==================================================================
-
-
-	// TAB SURROGATE FIELD CLASS
-
-
-	private static class TabSurrogateField
-		extends ConstrainedTextField
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constants
-	////////////////////////////////////////////////////////////////////
-
-		private static final	int	LENGTH	= 4;
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private TabSurrogateField(char ch)
-		{
-			super(LENGTH);
-			AppFont.TEXT_FIELD.apply(this);
-			GuiUtils.setTextComponentMargins(this);
-			setText((Character.isISOControl(ch) || !getFont().canDisplay(ch))
-															? NumberUtils.uIntToHexString(ch, 4, '0')
-															: Character.toString(ch));
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods
-	////////////////////////////////////////////////////////////////////
-
-		public char getChar()
-		{
-			char ch = '\0';
-			String str = getText();
-			switch (str.length())
-			{
-				case 1:
-					ch = str.charAt(0);
-					break;
-
-				case LENGTH:
-					try
-					{
-						ch = (char)Integer.parseInt(str, 16);
-					}
-					catch (NumberFormatException e)
-					{
-						// ignore
-					}
-					break;
-			}
-			return ch;
-		}
-
-		//--------------------------------------------------------------
-
-	}
-
-	//==================================================================
-
-
-	// TAB-WIDTH SELECTION LIST CLASS
-
-
-	private static class TabWidthList
-		extends SingleSelectionList<TabWidthFilter>
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constants
-	////////////////////////////////////////////////////////////////////
-
-		private static final	int	FILTER_FIELD_NUM_COLUMNS	= 40;
-		private static final	int	WIDTH_FIELD_NUM_COLUMNS		= 3;
-		private static final	int	NUM_ROWS					= 16;
-
-		private static final	int	SEPARATOR_WIDTH	= 1;
-
-		private static final	Color	SEPARATOR_COLOUR	= new Color(192, 200, 192);
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private TabWidthList(List<TabWidthFilter> filters)
-		{
-			super(FILTER_FIELD_NUM_COLUMNS + WIDTH_FIELD_NUM_COLUMNS, NUM_ROWS, AppFont.MAIN.getFont(),
-				  filters);
-			setExtraWidth(2 * getHorizontalMargin() + SEPARATOR_WIDTH);
-			setRowHeight(getRowHeight() + 1);
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : overriding methods
-	////////////////////////////////////////////////////////////////////
-
-		@Override
-		public String getElementText(int index)
-		{
-			return getElement(index).getFilterString();
-		}
-
-		//--------------------------------------------------------------
-
-		@Override
-		protected void drawElement(Graphics gr,
-								   int      index)
-		{
-			// Create copy of graphics context
-			gr = gr.create();
-
-			// Set rendering hints for text antialiasing and fractional metrics
-			TextRendering.setHints((Graphics2D)gr);
-
-			// Get filter text and truncate it if it is too wide
-			FontMetrics fontMetrics = gr.getFontMetrics();
-			int filterFieldWidth = getMaxTextWidth() - WIDTH_FIELD_NUM_COLUMNS * getColumnWidth();
-			String text = truncateText(getElementText(index), fontMetrics, filterFieldWidth);
-
-			// Draw filter text
-			int rowHeight = getRowHeight();
-			int x = getHorizontalMargin();
-			int y = index * rowHeight;
-			int textY = y + FontUtils.getBaselineOffset(rowHeight, fontMetrics);
-			gr.setColor(getForegroundColour(index));
-			gr.drawString(text, x, textY);
-
-			// Draw tab-width text
-			text = Integer.toString(getElement(index).getTabWidth());
-			x = getWidth() - getHorizontalMargin() - fontMetrics.stringWidth(text);
-			gr.drawString(text, x, textY);
-
-			// Draw separator
-			x = getHorizontalMargin() + filterFieldWidth + getExtraWidth() / 2;
-			gr.setColor(SEPARATOR_COLOUR);
-			gr.drawLine(x, y, x, y + rowHeight - 1);
-
-			// Draw bottom border
-			y += rowHeight - 1;
-			gr.drawLine(0, y, getWidth() - 1, y);
-		}
-
-		//--------------------------------------------------------------
-
-	}
-
-	//==================================================================
-
-
-	// APPEARANCE PANEL LABEL CLASS
-
-
-	private static class AppearancePanelLabel
-		extends FixedWidthLabel
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constants
-	////////////////////////////////////////////////////////////////////
-
-		private static final	String	KEY	= AppearancePanelLabel.class.getCanonicalName();
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private AppearancePanelLabel(String text)
-		{
-			super(text);
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Class methods
-	////////////////////////////////////////////////////////////////////
-
-		private static void reset()
-		{
-			MaxValueMap.removeAll(KEY);
-		}
-
-		//--------------------------------------------------------------
-
-		private static void update()
-		{
-			MaxValueMap.update(KEY);
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : overriding methods
-	////////////////////////////////////////////////////////////////////
-
-		@Override
-		protected String getKey()
-		{
-			return KEY;
-		}
-
-		//--------------------------------------------------------------
-
-	}
-
-	//==================================================================
-
-
-	// TAB-WIDTH PANEL LABEL CLASS
-
-
-	private static class TabWidthPanelLabel
-		extends FixedWidthLabel
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constants
-	////////////////////////////////////////////////////////////////////
-
-		private static final	String	KEY	= TabWidthPanelLabel.class.getCanonicalName();
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private TabWidthPanelLabel(String text)
-		{
-			super(text);
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Class methods
-	////////////////////////////////////////////////////////////////////
-
-		private static void reset()
-		{
-			MaxValueMap.removeAll(KEY);
-		}
-
-		//--------------------------------------------------------------
-
-		private static void update()
-		{
-			MaxValueMap.update(KEY);
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : overriding methods
-	////////////////////////////////////////////////////////////////////
-
-		@Override
-		protected String getKey()
-		{
-			return KEY;
-		}
-
-		//--------------------------------------------------------------
-
-	}
-
-	//==================================================================
-
-
-	// COLOUR BUTTON CLASS
-
-
-	private static class ColourButton
-		extends JButton
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constants
-	////////////////////////////////////////////////////////////////////
-
-		private static final	int		ICON_WIDTH	= 40;
-		private static final	int		ICON_HEIGHT	= 16;
-		private static final	Insets	MARGINS		= new Insets(2, 2, 2, 2);
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private ColourButton(Color colour)
-		{
-			super(new ColourSampleIcon(ICON_WIDTH, ICON_HEIGHT));
-			setMargin(MARGINS);
-			setForeground(colour);
-		}
-
-		//--------------------------------------------------------------
-
-	}
-
-	//==================================================================
-
-
-	// FONT PANEL CLASS
-
-
-	private static class FontPanel
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constants
-	////////////////////////////////////////////////////////////////////
-
-		private static final	int	MIN_SIZE	= 0;
-		private static final	int	MAX_SIZE	= 99;
-
-		private static final	int	SIZE_FIELD_LENGTH	= 2;
-
-		private static final	String	DEFAULT_FONT_STR	= "<default font>";
-
-	////////////////////////////////////////////////////////////////////
-	//  Member classes : non-inner classes
-	////////////////////////////////////////////////////////////////////
-
-
-		// SIZE SPINNER CLASS
-
-
-		private static class SizeSpinner
-			extends IntegerSpinner
-		{
-
-		////////////////////////////////////////////////////////////////
-		//  Constructors
-		////////////////////////////////////////////////////////////////
-
-			private SizeSpinner(int value)
-			{
-				super(value, MIN_SIZE, MAX_SIZE, SIZE_FIELD_LENGTH);
-				AppFont.TEXT_FIELD.apply(this);
-			}
-
-			//----------------------------------------------------------
-
-		////////////////////////////////////////////////////////////////
-		//  Instance methods : overriding methods
-		////////////////////////////////////////////////////////////////
-
-			/**
-			 * @throws NumberFormatException
-			 */
-
-			@Override
-			protected int getEditorValue()
-			{
-				IntegerValueField field = (IntegerValueField)getEditor();
-				return (field.isEmpty() ? 0 : field.getValue());
-			}
-
-			//----------------------------------------------------------
-
-			@Override
-			protected void setEditorValue(int value)
-			{
-				IntegerValueField field = (IntegerValueField)getEditor();
-				if (value == 0)
-					field.setText(null);
-				else
-					field.setValue(value);
-			}
-
-			//----------------------------------------------------------
-
-		}
-
-		//==============================================================
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private FontPanel(FontEx   font,
-						  String[] fontNames)
-		{
-			nameComboBox = new FComboBox<>();
-			nameComboBox.addItem(DEFAULT_FONT_STR);
-			for (String fontName : fontNames)
-				nameComboBox.addItem(fontName);
-			nameComboBox.setSelectedIndex(Utils.indexOf(font.getName(), fontNames) + 1);
-
-			styleComboBox = new FComboBox<>(FontStyle.values());
-			styleComboBox.setSelectedValue(font.getStyle());
-
-			sizeSpinner = new SizeSpinner(font.getSize());
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods
-	////////////////////////////////////////////////////////////////////
-
-		public FontEx getFont()
-		{
-			String name = (nameComboBox.getSelectedIndex() <= 0) ? null : nameComboBox.getSelectedValue();
-			return new FontEx(name, styleComboBox.getSelectedValue(), sizeSpinner.getIntValue());
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance variables
-	////////////////////////////////////////////////////////////////////
-
-		private	FComboBox<String>		nameComboBox;
-		private	FComboBox<FontStyle>	styleComboBox;
-		private	SizeSpinner				sizeSpinner;
-
-	}
-
-	//==================================================================
+	// Main panel
+	private	boolean									accepted;
+	private	JTabbedPane								tabbedPanel;
+
+	// General panel
+	private	FComboBox<String>						characterEncodingComboBox;
+	private	EscapedMetacharsField					escapedMetacharsField;
+	private	FComboBox<Character>					replacementEscapeCharComboBox;
+	private	BooleanComboBox							ignoreFilenameCaseComboBox;
+	private	FComboBox<FileWritingMode>				fileWritingModeComboBox;
+	private	BooleanComboBox							preserveLineSeparatorComboBox;
+	private	BooleanComboBox							showUnixPathnamesComboBox;
+	private	BooleanComboBox							selectTextOnFocusGainedComboBox;
+	private	BooleanComboBox							saveMainWindowLocationComboBox;
+	private	BooleanComboBox							hideControlDialogComboBox;
+	private	BooleanComboBox							copyResultsAsListFileComboBox;
+
+	// Appearance panel
+	private	FComboBox<String>						lookAndFeelComboBox;
+	private	FComboBox<TextRendering.Antialiasing>	textAntialiasingComboBox;
+	private	DimensionsSpinnerPanel					paramEditorSizePanel;
+	private	FIntegerSpinner							resultAreaNumRowsSpinner;
+	private	TabSurrogateField						tabSurrogateField;
+	private	DimensionsSpinnerPanel					textViewSizePanel;
+	private	FIntegerSpinner							textViewMaxNumColumnsSpinner;
+	private	FComboBox<TextRendering.Antialiasing>	textViewTextAntialiasingComboBox;
+	private	JButton									textColourButton;
+	private	JButton									backgroundColourButton;
+	private	JButton									highlightTextColourButton;
+	private	JButton									highlightBackgroundColourButton;
+
+	// Tab width panel
+	private	TabWidthList							tabWidthFilterList;
+	private	JScrollPane								tabWidthFilterListScrollPane;
+	private	FIntegerSpinner							defaultTabWidthSpinner;
+	private	FIntegerSpinner							targetAndReplacementTabWidthSpinner;
+	private	JButton									tabWidthAddButton;
+	private	JButton									tabWidthEditButton;
+	private	JButton									tabWidthDeleteButton;
+
+	// Editor panel
+	private	FTextField								editorCommandField;
+
+	// File locations panel
+	private	FPathnameField							defaultSearchParamsField;
+	private	JFileChooser							defaultSearchParamsFileChooser;
+
+	// Fonts panel
+	private	FontPanel[]								fontPanels;
 
 ////////////////////////////////////////////////////////////////////////
 //  Constructors
@@ -1130,11 +435,22 @@ class PreferencesDialog
 		// Dispose of window explicitly
 		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 
-		// Handle window closing
+		// Handle window events
 		addWindowListener(new WindowAdapter()
 		{
 			@Override
-			public void windowClosing(WindowEvent event)
+			public void windowOpened(
+				WindowEvent	event)
+			{
+				// WORKAROUND for a bug that has been observed on Linux/GNOME whereby a window is displaced downwards
+				// when its location is set.  The error in the y coordinate is the height of the title bar of the
+				// window.  The workaround is to set the location of the window again with an adjustment for the error.
+				LinuxWorkarounds.fixWindowYCoord(event.getWindow(), location);
+			}
+
+			@Override
+			public void windowClosing(
+				WindowEvent	event)
 			{
 				onClose();
 			}
@@ -1175,59 +491,35 @@ class PreferencesDialog
 //  Instance methods : ActionListener interface
 ////////////////////////////////////////////////////////////////////////
 
+	@Override
 	public void actionPerformed(ActionEvent event)
 	{
 		String command = event.getActionCommand();
-		if (command.equals(Command.CONFIRM_DELETE_TAB_WIDTH_FILTER) &&
-			 ((event.getModifiers() & MODIFIERS_MASK) == ActionEvent.SHIFT_MASK))
+
+		if (command.equals(Command.CONFIRM_DELETE_TAB_WIDTH_FILTER)
+				&& ((event.getModifiers() & MODIFIERS_MASK) == ActionEvent.SHIFT_MASK))
 			command = Command.DELETE_TAB_WIDTH_FILTER;
 		else if (COMMAND_MAP.containsKey(command))
 			command = COMMAND_MAP.get(command);
 
-		if (command.equals(Command.CHOOSE_TEXT_COLOUR))
-			onChooseTextColour();
-
-		else if (command.equals(Command.CHOOSE_BACKGROUND_COLOUR))
-			onChooseBackgroundColour();
-
-		else if (command.equals(Command.CHOOSE_HIGHLIGHT_TEXT_COLOUR))
-			onChooseHighlightTextColour();
-
-		else if (command.equals(Command.CHOOSE_HIGHLIGHT_BACKGROUND_COLOUR))
-			onChooseHighlightBackgroundColour();
-
-		else if (command.equals(Command.CHOOSE_DEFAULT_SEARCH_PARAMS_FILE))
-			onChooseDefaultSearchParamsFile();
-
-		else if (command.equals(Command.ADD_TAB_WIDTH_FILTER))
-			onAddTabWidthFilter();
-
-		else if (command.equals(Command.EDIT_TAB_WIDTH_FILTER))
-			onEditTabWidthFilter();
-
-		else if (command.equals(Command.DELETE_TAB_WIDTH_FILTER))
-			onDeleteTabWidthFilter();
-
-		else if (command.equals(Command.CONFIRM_DELETE_TAB_WIDTH_FILTER))
-			onConfirmDeleteTabWidthFilter();
-
-		else if (command.equals(Command.MOVE_TAB_WIDTH_FILTER_UP))
-			onMoveTabWidthFilterUp();
-
-		else if (command.equals(Command.MOVE_TAB_WIDTH_FILTER_DOWN))
-			onMoveTabWidthFilterDown();
-
-		else if (command.equals(Command.MOVE_TAB_WIDTH_FILTER))
-			onMoveTabWidthFilter();
-
-		else if (command.equals(Command.SAVE_CONFIGURATION))
-			onSaveConfiguration();
-
-		else if (command.equals(Command.ACCEPT))
-			onAccept();
-
-		else if (command.equals(Command.CLOSE))
-			onClose();
+		switch (command)
+		{
+			case Command.CHOOSE_TEXT_COLOUR                 -> onChooseTextColour();
+			case Command.CHOOSE_BACKGROUND_COLOUR           -> onChooseBackgroundColour();
+			case Command.CHOOSE_HIGHLIGHT_TEXT_COLOUR       -> onChooseHighlightTextColour();
+			case Command.CHOOSE_HIGHLIGHT_BACKGROUND_COLOUR -> onChooseHighlightBackgroundColour();
+			case Command.CHOOSE_DEFAULT_SEARCH_PARAMS_FILE  -> onChooseDefaultSearchParamsFile();
+			case Command.ADD_TAB_WIDTH_FILTER               -> onAddTabWidthFilter();
+			case Command.EDIT_TAB_WIDTH_FILTER              -> onEditTabWidthFilter();
+			case Command.DELETE_TAB_WIDTH_FILTER            -> onDeleteTabWidthFilter();
+			case Command.CONFIRM_DELETE_TAB_WIDTH_FILTER    -> onConfirmDeleteTabWidthFilter();
+			case Command.MOVE_TAB_WIDTH_FILTER_UP           -> onMoveTabWidthFilterUp();
+			case Command.MOVE_TAB_WIDTH_FILTER_DOWN         -> onMoveTabWidthFilterDown();
+			case Command.MOVE_TAB_WIDTH_FILTER              -> onMoveTabWidthFilter();
+			case Command.SAVE_CONFIGURATION                 -> onSaveConfiguration();
+			case Command.ACCEPT                             -> onAccept();
+			case Command.CLOSE                              -> onClose();
+		}
 	}
 
 	//------------------------------------------------------------------
@@ -1236,6 +528,7 @@ class PreferencesDialog
 //  Instance methods : ChangeListener interface
 ////////////////////////////////////////////////////////////////////////
 
+	@Override
 	public void stateChanged(ChangeEvent event)
 	{
 		if (!tabWidthFilterListScrollPane.getVerticalScrollBar().getValueIsAdjusting() &&
@@ -1249,6 +542,7 @@ class PreferencesDialog
 //  Instance methods : ListSelectionListener interface
 ////////////////////////////////////////////////////////////////////////
 
+	@Override
 	public void valueChanged(ListSelectionEvent event)
 	{
 		if (!event.getValueIsAdjusting())
@@ -1285,8 +579,7 @@ class PreferencesDialog
 
 	private void updateTabWidthFilterButtons()
 	{
-		tabWidthAddButton.
-				setEnabled(tabWidthFilterList.getNumElements() < AppConfig.MAX_NUM_TAB_WIDTH_FILTERS);
+		tabWidthAddButton.setEnabled(tabWidthFilterList.getNumElements() < AppConfig.MAX_NUM_TAB_WIDTH_FILTERS);
 		tabWidthEditButton.setEnabled(tabWidthFilterList.isSelection());
 		tabWidthDeleteButton.setEnabled(tabWidthFilterList.isSelection());
 	}
@@ -1295,8 +588,7 @@ class PreferencesDialog
 
 	private void onChooseTextColour()
 	{
-		Color colour = JColorChooser.showDialog(this, TAC_STR + TEXT_TITLE_STR,
-												textColourButton.getForeground());
+		Color colour = JColorChooser.showDialog(this, TAC_STR + TEXT_TITLE_STR, textColourButton.getForeground());
 		if (colour != null)
 			textColourButton.setForeground(colour);
 	}
@@ -1342,9 +634,7 @@ class PreferencesDialog
 			defaultSearchParamsFileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 			defaultSearchParamsFileChooser.setApproveButtonMnemonic(KeyEvent.VK_S);
 			defaultSearchParamsFileChooser.setApproveButtonToolTipText(SELECT_FILE_STR);
-			defaultSearchParamsFileChooser.
-								setFileFilter(new FilenameSuffixFilter(AppConstants.XML_FILES_STR,
-																	   AppConstants.XML_FILENAME_EXTENSION));
+			FileChooserUtils.setFilter(defaultSearchParamsFileChooser, AppConstants.XML_FILE_FILTER);
 		}
 		defaultSearchParamsFileChooser.setSelectedFile(defaultSearchParamsField.getCanonicalFile());
 		defaultSearchParamsFileChooser.rescanCurrentDirectory();
@@ -1442,8 +732,7 @@ class PreferencesDialog
 				{
 					setPreferences();
 					accepted = true;
-					TaskProgressDialog.showDialog(this, WRITE_CONFIG_FILE_STR,
-												  new Task.WriteConfig(file));
+					TaskProgressDialog.showDialog(this, WRITE_CONFIG_FILE_STR, new Task.WriteConfig(file));
 				}
 			}
 		}
@@ -1488,7 +777,6 @@ class PreferencesDialog
 
 	private JPanel createPanelGeneral()
 	{
-
 		//----  Control panel
 
 		GridBagLayout gridBag = new GridBagLayout();
@@ -1587,10 +875,8 @@ class PreferencesDialog
 		// Combo box: replacement escape character
 		replacementEscapeCharComboBox = new FComboBox<>();
 		for (int i = 0; i < AppConfig.PUNCTUATION_CHARS.length(); i++)
-			replacementEscapeCharComboBox.
-									addItem(Character.valueOf(AppConfig.PUNCTUATION_CHARS.charAt(i)));
-		replacementEscapeCharComboBox.
-								setSelectedValue(Character.valueOf(config.getReplacementEscapeChar()));
+			replacementEscapeCharComboBox.addItem(Character.valueOf(AppConfig.PUNCTUATION_CHARS.charAt(i)));
+		replacementEscapeCharComboBox.setSelectedValue(Character.valueOf(config.getReplacementEscapeChar()));
 
 		gbc.gridx = 1;
 		gbc.gridy = gridY++;
@@ -1864,14 +1150,12 @@ class PreferencesDialog
 		outerPanel.add(controlPanel);
 
 		return outerPanel;
-
 	}
 
 	//------------------------------------------------------------------
 
 	private JPanel createPanelAppearance()
 	{
-
 		// Reset fixed-width labels
 		AppearancePanelLabel.reset();
 
@@ -2172,9 +1456,6 @@ class PreferencesDialog
 		gridBag.setConstraints(textViewTextAntialiasingComboBox, gbc);
 		textViewPanel.add(textViewTextAntialiasingComboBox);
 
-		// Update widths of labels
-		AppearancePanelLabel.update();
-
 
 		//----  Text area colours panel
 
@@ -2384,15 +1665,16 @@ class PreferencesDialog
 		gridBag.setConstraints(textAreaColoursPanel, gbc);
 		outerPanel.add(textAreaColoursPanel);
 
-		return outerPanel;
+		// Update widths of labels when outer panel is added to a window
+		WindowUtils.addRunOnAddedToWindow(outerPanel, AppearancePanelLabel::update);
 
+		return outerPanel;
 	}
 
 	//------------------------------------------------------------------
 
 	private JPanel createPanelTabWidth()
 	{
-
 		// Reset fixed-width labels
 		TabWidthPanelLabel.reset();
 
@@ -2582,9 +1864,6 @@ class PreferencesDialog
 		gridBag.setConstraints(targetAndReplacementTabWidthSpinner, gbc);
 		targetAndReplacementPanel.add(targetAndReplacementTabWidthSpinner);
 
-		// Update widths of labels
-		TabWidthPanelLabel.update();
-
 
 		//----  Outer panel
 
@@ -2617,15 +1896,16 @@ class PreferencesDialog
 		gridBag.setConstraints(targetAndReplacementPanel, gbc);
 		outerPanel.add(targetAndReplacementPanel);
 
-		return outerPanel;
+		// Update widths of labels when outer panel is added to a window
+		WindowUtils.addRunOnAddedToWindow(outerPanel, TabWidthPanelLabel::update);
 
+		return outerPanel;
 	}
 
 	//------------------------------------------------------------------
 
 	private JPanel createPanelEditor()
 	{
-
 		//----  Control panel
 
 		GridBagLayout gridBag = new GridBagLayout();
@@ -2687,14 +1967,12 @@ class PreferencesDialog
 		outerPanel.add(controlPanel);
 
 		return outerPanel;
-
 	}
 
 	//------------------------------------------------------------------
 
 	private JPanel createPanelFileLocations()
 	{
-
 		//----  Control panel
 
 		GridBagLayout gridBag = new GridBagLayout();
@@ -2760,14 +2038,12 @@ class PreferencesDialog
 		outerPanel.add(controlPanel);
 
 		return outerPanel;
-
 	}
 
 	//------------------------------------------------------------------
 
 	private JPanel createPanelFonts()
 	{
-
 		//----  Control panel
 
 		GridBagLayout gridBag = new GridBagLayout();
@@ -2889,7 +2165,6 @@ class PreferencesDialog
 		outerPanel.add(controlPanel);
 
 		return outerPanel;
-
 	}
 
 	//------------------------------------------------------------------
@@ -3062,86 +2337,772 @@ class PreferencesDialog
 	//------------------------------------------------------------------
 
 ////////////////////////////////////////////////////////////////////////
-//  Class variables
+//  Enumerated types
 ////////////////////////////////////////////////////////////////////////
 
-	private static	Point	location;
-	private static	int		tabIndex;
 
-////////////////////////////////////////////////////////////////////////
-//  Static initialiser
-////////////////////////////////////////////////////////////////////////
+	// TABS
 
-	static
+
+	private enum Tab
 	{
-		COMMAND_MAP = new HashMap<>();
-		COMMAND_MAP.put(SingleSelectionList.Command.EDIT_ELEMENT,
-						Command.EDIT_TAB_WIDTH_FILTER);
-		COMMAND_MAP.put(SingleSelectionList.Command.DELETE_ELEMENT,
-						Command.CONFIRM_DELETE_TAB_WIDTH_FILTER);
-		COMMAND_MAP.put(SingleSelectionList.Command.DELETE_EX_ELEMENT,
-						Command.DELETE_TAB_WIDTH_FILTER);
-		COMMAND_MAP.put(SingleSelectionList.Command.MOVE_ELEMENT_UP,
-						Command.MOVE_TAB_WIDTH_FILTER_UP);
-		COMMAND_MAP.put(SingleSelectionList.Command.MOVE_ELEMENT_DOWN,
-						Command.MOVE_TAB_WIDTH_FILTER_DOWN);
-		COMMAND_MAP.put(SingleSelectionList.Command.DRAG_ELEMENT,
-						Command.MOVE_TAB_WIDTH_FILTER);
+
+	////////////////////////////////////////////////////////////////////
+	//  Constants
+	////////////////////////////////////////////////////////////////////
+
+		GENERAL
+		(
+			"General"
+		)
+		{
+			@Override
+			protected JPanel createPanel(PreferencesDialog dialog)
+			{
+				return dialog.createPanelGeneral();
+			}
+
+			//----------------------------------------------------------
+
+			@Override
+			protected void validatePreferences(PreferencesDialog dialog)
+				throws AppException
+			{
+				dialog.validatePreferencesGeneral();
+			}
+
+			//----------------------------------------------------------
+
+			@Override
+			protected void setPreferences(PreferencesDialog dialog)
+			{
+				dialog.setPreferencesGeneral();
+			}
+
+			//----------------------------------------------------------
+		},
+
+		APPEARANCE
+		(
+			"Appearance"
+		)
+		{
+			@Override
+			protected JPanel createPanel(PreferencesDialog dialog)
+			{
+				return dialog.createPanelAppearance();
+			}
+
+			//----------------------------------------------------------
+
+			@Override
+			protected void validatePreferences(PreferencesDialog dialog)
+				throws AppException
+			{
+				dialog.validatePreferencesAppearance();
+			}
+
+			//----------------------------------------------------------
+
+			@Override
+			protected void setPreferences(PreferencesDialog dialog)
+			{
+				dialog.setPreferencesAppearance();
+			}
+
+			//----------------------------------------------------------
+		},
+
+		TAB_WIDTH
+		(
+			"Tab width"
+		)
+		{
+			@Override
+			protected JPanel createPanel(PreferencesDialog dialog)
+			{
+				return dialog.createPanelTabWidth();
+			}
+
+			//----------------------------------------------------------
+
+			@Override
+			protected void validatePreferences(PreferencesDialog dialog)
+				throws AppException
+			{
+				dialog.validatePreferencesTabWidth();
+			}
+
+			//----------------------------------------------------------
+
+			@Override
+			protected void setPreferences(PreferencesDialog dialog)
+			{
+				dialog.setPreferencesTabWidth();
+			}
+
+			//----------------------------------------------------------
+		},
+
+		EDITOR
+		(
+			"Editor"
+		)
+		{
+			@Override
+			protected JPanel createPanel(PreferencesDialog dialog)
+			{
+				return dialog.createPanelEditor();
+			}
+
+			//----------------------------------------------------------
+
+			@Override
+			protected void validatePreferences(PreferencesDialog dialog)
+				throws AppException
+			{
+				dialog.validatePreferencesEditor();
+			}
+
+			//----------------------------------------------------------
+
+			@Override
+			protected void setPreferences(PreferencesDialog dialog)
+			{
+				dialog.setPreferencesEditor();
+			}
+
+			//----------------------------------------------------------
+		},
+
+		FILE_LOCATIONS
+		(
+			"File locations"
+		)
+		{
+			@Override
+			protected JPanel createPanel(PreferencesDialog dialog)
+			{
+				return dialog.createPanelFileLocations();
+			}
+
+			//----------------------------------------------------------
+
+			@Override
+			protected void validatePreferences(PreferencesDialog dialog)
+				throws AppException
+			{
+				dialog.validatePreferencesFileLocations();
+			}
+
+			//----------------------------------------------------------
+
+			@Override
+			protected void setPreferences(PreferencesDialog dialog)
+			{
+				dialog.setPreferencesFileLocations();
+			}
+
+			//----------------------------------------------------------
+		},
+
+		FONTS
+		(
+			"Fonts"
+		)
+		{
+			@Override
+			protected JPanel createPanel(PreferencesDialog dialog)
+			{
+				return dialog.createPanelFonts();
+			}
+
+			//----------------------------------------------------------
+
+			@Override
+			protected void validatePreferences(PreferencesDialog dialog)
+				throws AppException
+			{
+				dialog.validatePreferencesFonts();
+			}
+
+			//----------------------------------------------------------
+
+			@Override
+			protected void setPreferences(PreferencesDialog dialog)
+			{
+				dialog.setPreferencesFonts();
+			}
+
+			//----------------------------------------------------------
+		};
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance variables
+	////////////////////////////////////////////////////////////////////
+
+		private	String	text;
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private Tab(String text)
+		{
+			this.text = text;
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Abstract methods
+	////////////////////////////////////////////////////////////////////
+
+		protected abstract JPanel createPanel(PreferencesDialog dialog);
+
+		//--------------------------------------------------------------
+
+		protected abstract void validatePreferences(PreferencesDialog dialog)
+			throws AppException;
+
+		//--------------------------------------------------------------
+
+		protected abstract void setPreferences(PreferencesDialog dialog);
+
+		//--------------------------------------------------------------
+
 	}
 
+	//==================================================================
+
+
+	// ERROR IDENTIFIERS
+
+
+	private enum ErrorId
+		implements AppException.IId
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Constants
+	////////////////////////////////////////////////////////////////////
+
+		FILE_DOES_NOT_EXIST
+		("The file does not exist."),
+
+		NOT_A_FILE
+		("The pathname does not denote a normal file."),
+
+		FILE_ACCESS_NOT_PERMITTED
+		("Access to the file was not permitted."),
+
+		INVALID_TAB_SURROGATE
+		("The tab surrogate is invalid.");
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance variables
+	////////////////////////////////////////////////////////////////////
+
+		private	String	message;
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private ErrorId(String message)
+		{
+			this.message = message;
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : AppException.IId interface
+	////////////////////////////////////////////////////////////////////
+
+		public String getMessage()
+		{
+			return message;
+		}
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
+
 ////////////////////////////////////////////////////////////////////////
-//  Instance variables
+//  Member classes : non-inner classes
 ////////////////////////////////////////////////////////////////////////
 
-	// Main panel
-	private	boolean									accepted;
-	private	JTabbedPane								tabbedPanel;
 
-	// General panel
-	private	FComboBox<String>						characterEncodingComboBox;
-	private	EscapedMetacharsField					escapedMetacharsField;
-	private	FComboBox<Character>					replacementEscapeCharComboBox;
-	private	BooleanComboBox							ignoreFilenameCaseComboBox;
-	private	FComboBox<FileWritingMode>				fileWritingModeComboBox;
-	private	BooleanComboBox							preserveLineSeparatorComboBox;
-	private	BooleanComboBox							showUnixPathnamesComboBox;
-	private	BooleanComboBox							selectTextOnFocusGainedComboBox;
-	private	BooleanComboBox							saveMainWindowLocationComboBox;
-	private	BooleanComboBox							hideControlDialogComboBox;
-	private	BooleanComboBox							copyResultsAsListFileComboBox;
+	// ESCAPED METACHARACTERS FIELD CLASS
 
-	// Appearance panel
-	private	FComboBox<String>						lookAndFeelComboBox;
-	private	FComboBox<TextRendering.Antialiasing>	textAntialiasingComboBox;
-	private	DimensionsSpinnerPanel					paramEditorSizePanel;
-	private	FIntegerSpinner							resultAreaNumRowsSpinner;
-	private	TabSurrogateField						tabSurrogateField;
-	private	DimensionsSpinnerPanel					textViewSizePanel;
-	private	FIntegerSpinner							textViewMaxNumColumnsSpinner;
-	private	FComboBox<TextRendering.Antialiasing>	textViewTextAntialiasingComboBox;
-	private	JButton									textColourButton;
-	private	JButton									backgroundColourButton;
-	private	JButton									highlightTextColourButton;
-	private	JButton									highlightBackgroundColourButton;
 
-	// Tab width panel
-	private	TabWidthList							tabWidthFilterList;
-	private	JScrollPane								tabWidthFilterListScrollPane;
-	private	FIntegerSpinner							defaultTabWidthSpinner;
-	private	FIntegerSpinner							targetAndReplacementTabWidthSpinner;
-	private	JButton									tabWidthAddButton;
-	private	JButton									tabWidthEditButton;
-	private	JButton									tabWidthDeleteButton;
+	private static class EscapedMetacharsField
+		extends ConstrainedTextField
+	{
 
-	// Editor panel
-	private	FTextField								editorCommandField;
+	////////////////////////////////////////////////////////////////////
+	//  Constants
+	////////////////////////////////////////////////////////////////////
 
-	// File locations panel
-	private	FPathnameField							defaultSearchParamsField;
-	private	JFileChooser							defaultSearchParamsFileChooser;
+		private static final	int	NUM_COLUMNS	= 16;
 
-	// Fonts panel
-	private	FontPanel[]								fontPanels;
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private EscapedMetacharsField(String text)
+		{
+			super(AppConfig.PUNCTUATION_CHARS.length(), NUM_COLUMNS, text);
+			AppFont.TEXT_FIELD.apply(this);
+			GuiUtils.setTextComponentMargins(this);
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : overriding methods
+	////////////////////////////////////////////////////////////////////
+
+		@Override
+		protected boolean acceptCharacter(char ch,
+										  int  index)
+		{
+			return (AppConfig.PUNCTUATION_CHARS.indexOf(ch) >= 0);
+		}
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
+
+
+	// TAB SURROGATE FIELD CLASS
+
+
+	private static class TabSurrogateField
+		extends ConstrainedTextField
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Constants
+	////////////////////////////////////////////////////////////////////
+
+		private static final	int	LENGTH	= 4;
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private TabSurrogateField(char ch)
+		{
+			super(LENGTH);
+			AppFont.TEXT_FIELD.apply(this);
+			GuiUtils.setTextComponentMargins(this);
+			setText((Character.isISOControl(ch) || !getFont().canDisplay(ch))
+															? NumberUtils.uIntToHexString(ch, 4, '0')
+															: Character.toString(ch));
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods
+	////////////////////////////////////////////////////////////////////
+
+		public char getChar()
+		{
+			char ch = '\0';
+			String str = getText();
+			switch (str.length())
+			{
+				case 1:
+					ch = str.charAt(0);
+					break;
+
+				case LENGTH:
+					try
+					{
+						ch = (char)Integer.parseInt(str, 16);
+					}
+					catch (NumberFormatException e)
+					{
+						// ignore
+					}
+					break;
+			}
+			return ch;
+		}
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
+
+
+	// TAB-WIDTH SELECTION LIST CLASS
+
+
+	private static class TabWidthList
+		extends SingleSelectionList<TabWidthFilter>
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Constants
+	////////////////////////////////////////////////////////////////////
+
+		private static final	int	FILTER_FIELD_NUM_COLUMNS	= 40;
+		private static final	int	WIDTH_FIELD_NUM_COLUMNS		= 3;
+		private static final	int	NUM_ROWS					= 16;
+
+		private static final	int	SEPARATOR_WIDTH	= 1;
+
+		private static final	Color	SEPARATOR_COLOUR	= new Color(192, 200, 192);
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private TabWidthList(List<TabWidthFilter> filters)
+		{
+			super(FILTER_FIELD_NUM_COLUMNS + WIDTH_FIELD_NUM_COLUMNS, NUM_ROWS, AppFont.MAIN.getFont(),
+				  filters);
+			setExtraWidth(2 * getHorizontalMargin() + SEPARATOR_WIDTH);
+			setRowHeight(getRowHeight() + 1);
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : overriding methods
+	////////////////////////////////////////////////////////////////////
+
+		@Override
+		public String getElementText(int index)
+		{
+			return getElement(index).getFilterString();
+		}
+
+		//--------------------------------------------------------------
+
+		@Override
+		protected void drawElement(Graphics gr,
+								   int      index)
+		{
+			// Create copy of graphics context
+			Graphics2D gr2d = GuiUtils.copyGraphicsContext(gr);
+
+			// Set rendering hints for text antialiasing and fractional metrics
+			TextRendering.setHints(gr2d);
+
+			// Get filter text and truncate it if it is too wide
+			FontMetrics fontMetrics = gr2d.getFontMetrics();
+			int filterFieldWidth = getMaxTextWidth() - WIDTH_FIELD_NUM_COLUMNS * getColumnWidth();
+			String text = truncateText(getElementText(index), fontMetrics, filterFieldWidth);
+
+			// Draw filter text
+			int rowHeight = getRowHeight();
+			int x = getHorizontalMargin();
+			int y = index * rowHeight;
+			int textY = y + FontUtils.getBaselineOffset(rowHeight, fontMetrics);
+			gr2d.setColor(getForegroundColour(index));
+			gr2d.drawString(text, x, textY);
+
+			// Draw tab-width text
+			text = Integer.toString(getElement(index).getTabWidth());
+			x = getWidth() - getHorizontalMargin() - fontMetrics.stringWidth(text);
+			gr2d.drawString(text, x, textY);
+
+			// Draw separator
+			x = getHorizontalMargin() + filterFieldWidth + getExtraWidth() / 2;
+			gr2d.setColor(SEPARATOR_COLOUR);
+			gr2d.drawLine(x, y, x, y + rowHeight - 1);
+
+			// Draw bottom border
+			y += rowHeight - 1;
+			gr2d.drawLine(0, y, getWidth() - 1, y);
+		}
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
+
+
+	// APPEARANCE PANEL LABEL CLASS
+
+
+	private static class AppearancePanelLabel
+		extends FixedWidthLabel
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Constants
+	////////////////////////////////////////////////////////////////////
+
+		private static final	String	KEY	= AppearancePanelLabel.class.getCanonicalName();
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private AppearancePanelLabel(String text)
+		{
+			super(text);
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Class methods
+	////////////////////////////////////////////////////////////////////
+
+		private static void reset()
+		{
+			MaxValueMap.removeAll(KEY);
+		}
+
+		//--------------------------------------------------------------
+
+		private static void update()
+		{
+			MaxValueMap.update(KEY);
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : overriding methods
+	////////////////////////////////////////////////////////////////////
+
+		@Override
+		protected String getKey()
+		{
+			return KEY;
+		}
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
+
+
+	// TAB-WIDTH PANEL LABEL CLASS
+
+
+	private static class TabWidthPanelLabel
+		extends FixedWidthLabel
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Constants
+	////////////////////////////////////////////////////////////////////
+
+		private static final	String	KEY	= TabWidthPanelLabel.class.getCanonicalName();
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private TabWidthPanelLabel(String text)
+		{
+			super(text);
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Class methods
+	////////////////////////////////////////////////////////////////////
+
+		private static void reset()
+		{
+			MaxValueMap.removeAll(KEY);
+		}
+
+		//--------------------------------------------------------------
+
+		private static void update()
+		{
+			MaxValueMap.update(KEY);
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : overriding methods
+	////////////////////////////////////////////////////////////////////
+
+		@Override
+		protected String getKey()
+		{
+			return KEY;
+		}
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
+
+
+	// COLOUR BUTTON CLASS
+
+
+	private static class ColourButton
+		extends JButton
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Constants
+	////////////////////////////////////////////////////////////////////
+
+		private static final	int		ICON_WIDTH	= 40;
+		private static final	int		ICON_HEIGHT	= 16;
+		private static final	Insets	MARGINS		= new Insets(2, 2, 2, 2);
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private ColourButton(Color colour)
+		{
+			super(new ColourSampleIcon(ICON_WIDTH, ICON_HEIGHT));
+			setMargin(MARGINS);
+			setForeground(colour);
+		}
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
+
+
+	// FONT PANEL CLASS
+
+
+	private static class FontPanel
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Constants
+	////////////////////////////////////////////////////////////////////
+
+		private static final	int		MIN_SIZE	= 0;
+		private static final	int		MAX_SIZE	= 99;
+
+		private static final	int		SIZE_FIELD_LENGTH	= 2;
+
+		private static final	String	DEFAULT_FONT_STR	= "<default font>";
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance variables
+	////////////////////////////////////////////////////////////////////
+
+		private	FComboBox<String>		nameComboBox;
+		private	FComboBox<FontStyle>	styleComboBox;
+		private	SizeSpinner				sizeSpinner;
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private FontPanel(FontEx   font,
+						  String[] fontNames)
+		{
+			nameComboBox = new FComboBox<>();
+			nameComboBox.addItem(DEFAULT_FONT_STR);
+			for (String fontName : fontNames)
+				nameComboBox.addItem(fontName);
+			nameComboBox.setSelectedIndex(Utils.indexOf(font.getName(), fontNames) + 1);
+
+			styleComboBox = new FComboBox<>(FontStyle.values());
+			styleComboBox.setSelectedValue(font.getStyle());
+
+			sizeSpinner = new SizeSpinner(font.getSize());
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods
+	////////////////////////////////////////////////////////////////////
+
+		public FontEx getFont()
+		{
+			String name = (nameComboBox.getSelectedIndex() <= 0) ? null : nameComboBox.getSelectedValue();
+			return new FontEx(name, styleComboBox.getSelectedValue(), sizeSpinner.getIntValue());
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Member classes : non-inner classes
+	////////////////////////////////////////////////////////////////////
+
+
+		// SIZE SPINNER CLASS
+
+
+		private static class SizeSpinner
+			extends IntegerSpinner
+		{
+
+		////////////////////////////////////////////////////////////////
+		//  Constructors
+		////////////////////////////////////////////////////////////////
+
+			private SizeSpinner(int value)
+			{
+				super(value, MIN_SIZE, MAX_SIZE, SIZE_FIELD_LENGTH);
+				AppFont.TEXT_FIELD.apply(this);
+			}
+
+			//----------------------------------------------------------
+
+		////////////////////////////////////////////////////////////////
+		//  Instance methods : overriding methods
+		////////////////////////////////////////////////////////////////
+
+			/**
+			 * @throws NumberFormatException
+			 */
+
+			@Override
+			protected int getEditorValue()
+			{
+				IntegerValueField field = (IntegerValueField)getEditor();
+				return field.isEmpty() ? 0 : field.getValue();
+			}
+
+			//----------------------------------------------------------
+
+			@Override
+			protected void setEditorValue(int value)
+			{
+				IntegerValueField field = (IntegerValueField)getEditor();
+				if (value == 0)
+					field.setText(null);
+				else
+					field.setValue(value);
+			}
+
+			//----------------------------------------------------------
+
+		}
+
+		//==============================================================
+
+	}
+
+	//==================================================================
 
 }
 

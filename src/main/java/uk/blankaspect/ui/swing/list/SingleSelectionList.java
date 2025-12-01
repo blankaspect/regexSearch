@@ -120,61 +120,28 @@ public class SingleSelectionList<E>
 
 	private static final	KeyAction.KeyCommandPair[]	KEY_COMMANDS	=
 	{
-		new KeyAction.KeyCommandPair
-		(
-			KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0),
-			Command.EDIT_ELEMENT
-		),
-		new KeyAction.KeyCommandPair
-		(
-			KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0),
-			Command.DELETE_ELEMENT
-		),
-		new KeyAction.KeyCommandPair
-		(
-			KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, KeyEvent.SHIFT_DOWN_MASK),
-			Command.DELETE_EX_ELEMENT
-		),
-		new KeyAction.KeyCommandPair
-		(
-			KeyStroke.getKeyStroke(KeyEvent.VK_UP, KeyEvent.CTRL_DOWN_MASK | KeyEvent.SHIFT_DOWN_MASK),
-			Command.MOVE_ELEMENT_UP
-		),
-		new KeyAction.KeyCommandPair
-		(
-			KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, KeyEvent.CTRL_DOWN_MASK | KeyEvent.SHIFT_DOWN_MASK),
-			Command.MOVE_ELEMENT_DOWN
-		),
-		new KeyAction.KeyCommandPair
-		(
-			KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0),
-			ListCommand.SELECT_UP_UNIT
-		),
-		new KeyAction.KeyCommandPair
-		(
-			KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0),
-			ListCommand.SELECT_DOWN_UNIT
-		),
-		new KeyAction.KeyCommandPair
-		(
-			KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_UP, 0),
-			ListCommand.SELECT_UP_BLOCK
-		),
-		new KeyAction.KeyCommandPair
-		(
-			KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_DOWN, 0),
-			ListCommand.SELECT_DOWN_BLOCK
-		),
-		new KeyAction.KeyCommandPair
-		(
-			KeyStroke.getKeyStroke(KeyEvent.VK_HOME, 0),
-			ListCommand.SELECT_UP_MAX
-		),
-		new KeyAction.KeyCommandPair
-		(
-			KeyStroke.getKeyStroke(KeyEvent.VK_END, 0),
-			ListCommand.SELECT_DOWN_MAX
-		)
+		KeyAction.command(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0),
+						  Command.EDIT_ELEMENT),
+		KeyAction.command(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0),
+						  Command.DELETE_ELEMENT),
+		KeyAction.command(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, KeyEvent.SHIFT_DOWN_MASK),
+						  Command.DELETE_EX_ELEMENT),
+		KeyAction.command(KeyStroke.getKeyStroke(KeyEvent.VK_UP, KeyEvent.CTRL_DOWN_MASK | KeyEvent.SHIFT_DOWN_MASK),
+						  Command.MOVE_ELEMENT_UP),
+		KeyAction.command(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, KeyEvent.CTRL_DOWN_MASK | KeyEvent.SHIFT_DOWN_MASK),
+						  Command.MOVE_ELEMENT_DOWN),
+		KeyAction.command(KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0),
+						  ListCommand.SELECT_UP_UNIT),
+		KeyAction.command(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0),
+						  ListCommand.SELECT_DOWN_UNIT),
+		KeyAction.command(KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_UP, 0),
+						  ListCommand.SELECT_UP_BLOCK),
+		KeyAction.command(KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_DOWN, 0),
+						  ListCommand.SELECT_DOWN_BLOCK),
+		KeyAction.command(KeyStroke.getKeyStroke(KeyEvent.VK_HOME, 0),
+						  ListCommand.SELECT_UP_MAX),
+		KeyAction.command(KeyStroke.getKeyStroke(KeyEvent.VK_END, 0),
+						  ListCommand.SELECT_DOWN_MAX)
 	};
 
 ////////////////////////////////////////////////////////////////////////
@@ -371,46 +338,22 @@ public class SingleSelectionList<E>
 	{
 		if (isEnabled())
 		{
-			String command = event.getActionCommand();
-
-			if (command.equals(Command.EDIT_ELEMENT))
-				onEditElement();
-
-			else if (command.equals(Command.DELETE_ELEMENT))
-				onDeleteElement();
-
-			else if (command.equals(Command.DELETE_EX_ELEMENT))
-				onDeleteExElement();
-
-			else if (command.equals(Command.MOVE_ELEMENT_UP))
-				onMoveElementUp();
-
-			else if (command.equals(Command.MOVE_ELEMENT_DOWN))
-				onMoveElementDown();
-
-			else if (command.equals(ListCommand.SELECT_UP_UNIT))
-				onSelectUpUnit();
-
-			else if (command.equals(ListCommand.SELECT_DOWN_UNIT))
-				onSelectDownUnit();
-
-			else if (command.equals(ListCommand.SELECT_UP_BLOCK))
-				onSelectUpBlock();
-
-			else if (command.equals(ListCommand.SELECT_DOWN_BLOCK))
-				onSelectDownBlock();
-
-			else if (command.equals(ListCommand.SELECT_UP_MAX))
-				onSelectUpMax();
-
-			else if (command.equals(ListCommand.SELECT_DOWN_MAX))
-				onSelectDownMax();
-
-			else if (command.equals(ListCommand.SCROLL_UP_UNIT))
-				onScrollUpUnit();
-
-			else if (command.equals(ListCommand.SCROLL_DOWN_UNIT))
-				onScrollDownUnit();
+			switch (event.getActionCommand())
+			{
+				case Command.EDIT_ELEMENT          -> onEditElement();
+				case Command.DELETE_ELEMENT        -> onDeleteElement();
+				case Command.DELETE_EX_ELEMENT     -> onDeleteExElement();
+				case Command.MOVE_ELEMENT_UP       -> onMoveElementUp();
+				case Command.MOVE_ELEMENT_DOWN     -> onMoveElementDown();
+				case ListCommand.SELECT_UP_UNIT    -> onSelectUpUnit();
+				case ListCommand.SELECT_DOWN_UNIT  -> onSelectDownUnit();
+				case ListCommand.SELECT_UP_BLOCK   -> onSelectUpBlock();
+				case ListCommand.SELECT_DOWN_BLOCK -> onSelectDownBlock();
+				case ListCommand.SELECT_UP_MAX     -> onSelectUpMax();
+				case ListCommand.SELECT_DOWN_MAX   -> onSelectDownMax();
+				case ListCommand.SCROLL_UP_UNIT    -> onScrollUpUnit();
+				case ListCommand.SCROLL_DOWN_UNIT  -> onScrollDownUnit();
+			}
 		}
 	}
 
@@ -889,7 +832,7 @@ public class SingleSelectionList<E>
 
 	public E getSelectedElement()
 	{
-		return ((selectedIndex < 0) ? null : getElement(selectedIndex));
+		return (selectedIndex < 0) ? null : getElement(selectedIndex);
 	}
 
 	//------------------------------------------------------------------
@@ -1236,19 +1179,20 @@ public class SingleSelectionList<E>
 	protected Color getForegroundColour(
 		int	index)
 	{
-		return (isEnabled() ? (index == selectedIndex)
-											? isFocusOwner()
-													? Colours.List.FOCUSED_SELECTION_FOREGROUND.getColour()
-													: Colours.List.SELECTION_FOREGROUND.getColour()
-											: getForeground()
-							: disabledTextColour);
+		return isEnabled()
+				? (index == selectedIndex)
+						? isFocusOwner()
+								? Colours.List.FOCUSED_SELECTION_FOREGROUND.getColour()
+								: Colours.List.SELECTION_FOREGROUND.getColour()
+						: getForeground()
+				: disabledTextColour;
 	}
 
 	//------------------------------------------------------------------
 
 	protected int getMaxTextWidth()
 	{
-		return (getWidth() - 2 * horizontalMargin - extraWidth);
+		return getWidth() - 2 * horizontalMargin - extraWidth;
 	}
 
 	//------------------------------------------------------------------

@@ -2,7 +2,7 @@
 
 ControlDialog.java
 
-Control dialog class.
+Class: control dialog.
 
 \*====================================================================*/
 
@@ -43,7 +43,6 @@ import java.awt.event.WindowEvent;
 import java.io.File;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import java.util.regex.Pattern;
@@ -101,10 +100,12 @@ import uk.blankaspect.ui.swing.text.TextRendering;
 
 import uk.blankaspect.ui.swing.textfield.PathnameField;
 
+import uk.blankaspect.ui.swing.workaround.LinuxWorkarounds;
+
 //----------------------------------------------------------------------
 
 
-// CONTROL DIALOG CLASS
+// CLASS: CONTROL DIALOG
 
 
 class ControlDialog
@@ -118,38 +119,37 @@ class ControlDialog
 
 	public static final		char	COMMENT_PREFIX_CHAR	= ';';
 
-	private static final	int	SCROLL_INTERVAL	= 400;
+	private static final	int		SCROLL_INTERVAL	= 400;
 
-	private static final	int	ARROW_BUTTON_WIDTH	= 24;
-	private static final	int	ARROW_BUTTON_HEIGHT	= 21;
-	private static final	int	ARROW_SIZE			= 7;
+	private static final	int		ARROW_BUTTON_WIDTH	= 24;
+	private static final	int		ARROW_BUTTON_HEIGHT	= 21;
+	private static final	int		ARROW_SIZE			= 7;
 
-	private static final	Insets	ICON_BUTTON_MARGINS		= new Insets(1, 1, 1, 1);
+	private static final	Insets	ICON_BUTTON_MARGINS	= new Insets(1, 1, 1, 1);
 
-	private static final	String	TITLE_STR				= RegexSearchApp.SHORT_NAME + " : Control";
-	private static final	String	FILE_SET_KIND_STR		= "File-set kind";
-	private static final	String	PATHNAME_STR			= "Pathname";
-	private static final	String	INCLUDE_STR				= "Include";
-	private static final	String	EXCLUDE_STR				= "Exclude";
-	private static final	String	TARGET_STR				= "Target";
-	private static final	String	REPLACEMENT_STR			= "Replacement";
-	private static final	String	REPLACE_STR				= "Replace";
-	private static final	String	REGULAR_EXPRESSION_STR	= "Regular expression";
-	private static final	String	IGNORE_CASE_STR			= "Ignore case";
-	private static final	String	SHOW_NOT_FOUND_STR		= "Show not found";
-	private static final	String	DELETE_STR				= "Delete";
-	private static final	String	DELETE_FILE_SET_STR		= "Delete file set";
-	private static final	String	DELETE_MESSAGE_STR		= "Do you want to delete the current file set?";
-
+	private static final	String	TITLE_STR					= RegexSearchApp.SHORT_NAME + " : Control";
+	private static final	String	FILE_SET_KIND_STR			= "File-set kind";
+	private static final	String	PATHNAME_STR				= "Pathname";
+	private static final	String	INCLUDE_STR					= "Include";
+	private static final	String	EXCLUDE_STR					= "Exclude";
+	private static final	String	TARGET_STR					= "Target";
+	private static final	String	REPLACEMENT_STR				= "Replacement";
+	private static final	String	REPLACE_STR					= "Replace";
+	private static final	String	REGULAR_EXPRESSION_STR		= "Regular expression";
+	private static final	String	IGNORE_CASE_STR				= "Ignore case";
+	private static final	String	SHOW_NOT_FOUND_STR			= "Show not found";
+	private static final	String	DELETE_STR					= "Delete";
+	private static final	String	DELETE_FILE_SET_STR			= "Delete file set";
+	private static final	String	DELETE_MESSAGE_STR			= "Do you want to delete the current file set?";
 	private static final	String	INSERT_FILE_SET_STR			= "Insert a new file set (F2)";
 	private static final	String	DUPLICATE_FILE_SET_STR		= "Duplicate the current file set (F3)";
 	private static final	String	DELETE_CURRENT_FILE_SET_STR	= "Delete the current file set (F4)";
 	private static final	String	GO_TO_FILE_SET_START_STR	= "Go to the start of the file-set list (F5)";
 	private static final	String	GO_TO_FILE_SET_END_STR		= "Go to the end of the file-set list (F8)";
-	private static final	String	GO_TO_FILE_SET_PREVIOUS_STR	= "Go to the previous file set (F6), or move the file "
-																	+ "set up (Ctrl+F6)";
-	private static final	String	GO_TO_FILE_SET_NEXT_STR		= "Go to the next file set (F7), or move the file set "
-																	+ "down (Ctrl+F7)";
+	private static final	String	GO_TO_FILE_SET_PREVIOUS_STR	=
+			"Go to the previous file set (F6), or move the file set up (Ctrl+F6)";
+	private static final	String	GO_TO_FILE_SET_NEXT_STR		=
+			"Go to the next file set (F7), or move the file set down (Ctrl+F7)";
 	private static final	String	ESCAPE_TARGET_STR			= "Escape the target text";
 	private static final	String	ESCAPE_REPLACEMENT_STR		= "Escape the replacement text";
 
@@ -182,509 +182,65 @@ class ControlDialog
 
 	private static final	KeyAction.KeyCommandPair[]	KEY_COMMANDS	=
 	{
-		new KeyAction.KeyCommandPair(KeyStroke.getKeyStroke(KeyEvent.VK_F2, 0),
-									 Command.INSERT_FILE_SET),
-		new KeyAction.KeyCommandPair(KeyStroke.getKeyStroke(KeyEvent.VK_F3, 0),
-									 Command.DUPLICATE_FILE_SET),
-		new KeyAction.KeyCommandPair(KeyStroke.getKeyStroke(KeyEvent.VK_F4, 0),
-									 Command.DELETE_FILE_SET),
-		new KeyAction.KeyCommandPair(KeyStroke.getKeyStroke(KeyEvent.VK_F6, 0),
-									 Command.GO_TO_FILE_SET_PREVIOUS),
-		new KeyAction.KeyCommandPair(KeyStroke.getKeyStroke(KeyEvent.VK_F7, 0),
-									 Command.GO_TO_FILE_SET_NEXT),
-		new KeyAction.KeyCommandPair(KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0),
-									 Command.GO_TO_FILE_SET_START),
-		new KeyAction.KeyCommandPair(KeyStroke.getKeyStroke(KeyEvent.VK_F8, 0),
-									 Command.GO_TO_FILE_SET_END),
-		new KeyAction.KeyCommandPair(KeyStroke.getKeyStroke(KeyEvent.VK_F6, KeyEvent.CTRL_DOWN_MASK),
-									 Command.MOVE_FILE_SET_UP),
-		new KeyAction.KeyCommandPair(KeyStroke.getKeyStroke(KeyEvent.VK_F7, KeyEvent.CTRL_DOWN_MASK),
-									 Command.MOVE_FILE_SET_DOWN),
-		new KeyAction.KeyCommandPair(KeyStroke.getKeyStroke(KeyEvent.VK_CONTEXT_MENU, 0),
-									 Command.SHOW_CONTEXT_MENU)
+		KeyAction.command(KeyStroke.getKeyStroke(KeyEvent.VK_F2, 0),
+						  Command.INSERT_FILE_SET),
+		KeyAction.command(KeyStroke.getKeyStroke(KeyEvent.VK_F3, 0),
+						  Command.DUPLICATE_FILE_SET),
+		KeyAction.command(KeyStroke.getKeyStroke(KeyEvent.VK_F4, 0),
+						  Command.DELETE_FILE_SET),
+		KeyAction.command(KeyStroke.getKeyStroke(KeyEvent.VK_F6, 0),
+						  Command.GO_TO_FILE_SET_PREVIOUS),
+		KeyAction.command(KeyStroke.getKeyStroke(KeyEvent.VK_F7, 0),
+						  Command.GO_TO_FILE_SET_NEXT),
+		KeyAction.command(KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0),
+						  Command.GO_TO_FILE_SET_START),
+		KeyAction.command(KeyStroke.getKeyStroke(KeyEvent.VK_F8, 0),
+						  Command.GO_TO_FILE_SET_END),
+		KeyAction.command(KeyStroke.getKeyStroke(KeyEvent.VK_F6, KeyEvent.CTRL_DOWN_MASK),
+						  Command.MOVE_FILE_SET_UP),
+		KeyAction.command(KeyStroke.getKeyStroke(KeyEvent.VK_F7, KeyEvent.CTRL_DOWN_MASK),
+						  Command.MOVE_FILE_SET_DOWN),
+		KeyAction.command(KeyStroke.getKeyStroke(KeyEvent.VK_CONTEXT_MENU, 0),
+						  Command.SHOW_CONTEXT_MENU)
 	};
 
 ////////////////////////////////////////////////////////////////////////
-//  Enumerated types
+//  Instance variables
 ////////////////////////////////////////////////////////////////////////
 
-
-	// ERROR IDENTIFIERS
-
-
-	private enum ErrorId
-		implements AppException.IId
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constants
-	////////////////////////////////////////////////////////////////////
-
-		NO_PATHNAME
-		("No pathname was specified."),
-
-		FILE_DOES_NOT_EXIST
-		("The file does not exist."),
-
-		DIRECTORY_DOES_NOT_EXIST
-		("The directory does not exist."),
-
-		FILE_OR_DIRECTORY_DOES_NOT_EXIST
-		("The file or directory denoted by this pathname in the list file does not exist."),
-
-		FILE_ACCESS_NOT_PERMITTED
-		("Access to the file was not permitted."),
-
-		DIRECTORY_ACCESS_NOT_PERMITTED
-		("Access to the directory was not permitted."),
-
-		FILE_OR_DIRECTORY_ACCESS_NOT_PERMITTED
-		("Access to the file or directory specified in the list file was not permitted."),
-
-		NO_RESULTS
-		("No search results have been saved."),
-
-		NO_TARGET
-		("No target was specified."),
-
-		MALFORMED_REGULAR_EXPRESSION
-		("The target is not a well-formed regular expression.");
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private ErrorId(String message)
-		{
-			this.message = message;
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : AppException.IId interface
-	////////////////////////////////////////////////////////////////////
-
-		public String getMessage()
-		{
-			return message;
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance variables
-	////////////////////////////////////////////////////////////////////
-
-		private	String	message;
-
-	}
-
-	//==================================================================
-
-////////////////////////////////////////////////////////////////////////
-//  Member classes : non-inner classes
-////////////////////////////////////////////////////////////////////////
-
-
-	// FILE-SET INDEX FIELD CLASS
-
-
-	private static class FileSetIndexField
-		extends JComponent
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constants
-	////////////////////////////////////////////////////////////////////
-
-		private static final	int	VERTICAL_MARGIN		= 2;
-		private static final	int	HORIZONTAL_MARGIN	= 5;
-
-		private static final	Color	BORDER_COLOUR		= ArrowButton.BORDER_COLOUR;
-		private static final	Color	BACKGROUND_COLOUR	= SingleSelectionListEditor.BACKGROUND_COLOUR;
-		private static final	Color	TEXT_COLOUR			= Colours.FOREGROUND;
-
-		private static final	String	PROTOTYPE_STR	= "000 / 000";
-		private static final	String	END_STR			= "End";
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private FileSetIndexField()
-		{
-			AppFont.MAIN.apply(this);
-			FontMetrics fontMetrics = getFontMetrics(getFont());
-			preferredWidth = 2 * HORIZONTAL_MARGIN + fontMetrics.stringWidth(PROTOTYPE_STR);
-			preferredHeight = 2 * VERTICAL_MARGIN + fontMetrics.getAscent() + fontMetrics.getDescent();
-			index = -1;
-			setOpaque(true);
-			setFocusable(false);
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : overriding methods
-	////////////////////////////////////////////////////////////////////
-
-		@Override
-		public Dimension getPreferredSize()
-		{
-			return new Dimension(preferredWidth, preferredHeight);
-		}
-
-		//--------------------------------------------------------------
-
-		@Override
-		protected void paintComponent(Graphics gr)
-		{
-			// Create copy of graphics context
-			gr = gr.create();
-
-			// Fill background
-			Rectangle rect = gr.getClipBounds();
-			gr.setColor(BACKGROUND_COLOUR);
-			gr.fillRect(rect.x, rect.y, rect.width, rect.height);
-
-			// Get dimensions
-			int width = getWidth();
-			int height = getHeight();
-
-			// Set rendering hints for text antialiasing and fractional metrics
-			TextRendering.setHints((Graphics2D)gr);
-
-			// Draw text
-			String str = getText();
-			FontMetrics fontMetrics = gr.getFontMetrics();
-			gr.setColor(TEXT_COLOUR);
-			gr.drawString(str, (width - fontMetrics.stringWidth(str)) / 2,
-						  FontUtils.getBaselineOffset(height, fontMetrics));
-
-			// Draw border
-			gr.setColor(BORDER_COLOUR);
-			gr.drawRect(0, 0, width - 1, height - 1);
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods
-	////////////////////////////////////////////////////////////////////
-
-		public void setValues(int index,
-							  int maxIndex)
-		{
-			if ((this.index != index) || (this.maxIndex != maxIndex))
-			{
-				this.index = index;
-				this.maxIndex = maxIndex;
-				repaint();
-			}
-		}
-
-		//--------------------------------------------------------------
-
-		private String getText()
-		{
-			return ((index > maxIndex) ? END_STR
-									   : Integer.toString(index + 1) + " / " + Integer.toString(maxIndex + 1));
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance variables
-	////////////////////////////////////////////////////////////////////
-
-		private	int	preferredWidth;
-		private	int	preferredHeight;
-		private	int	index;
-		private	int	maxIndex;
-
-	}
-
-	//==================================================================
-
-
-	// ESCAPE STATUS INDICATOR CLASS
-
-
-	private static class EscapeIndicator
-		extends JComponent
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constants
-	////////////////////////////////////////////////////////////////////
-
-		private static final	int	VERTICAL_MARGIN		= 1;
-		private static final	int	HORIZONTAL_MARGIN	= 4;
-
-		private static final	Color	BORDER_COLOUR		= SingleSelectionListEditor.BORDER_COLOUR;
-		private static final	Color	BACKGROUND_COLOUR	= SingleSelectionListEditor.BACKGROUND_COLOUR;
-		private static final	Color	TEXT_COLOUR			= Colours.FOREGROUND;
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private EscapeIndicator(String text)
-		{
-			this.text = text;
-			AppFont.MAIN.apply(this);
-			FontMetrics fontMetrics = getFontMetrics(getFont());
-			preferredWidth = Math.max(preferredWidth, 2 * HORIZONTAL_MARGIN + fontMetrics.stringWidth(text));
-			preferredHeight = Math.max(preferredHeight,
-									   2 * VERTICAL_MARGIN + fontMetrics.getAscent() + fontMetrics.getDescent());
-			setOpaque(true);
-			setFocusable(false);
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : overriding methods
-	////////////////////////////////////////////////////////////////////
-
-		@Override
-		public Dimension getPreferredSize()
-		{
-			return new Dimension(preferredWidth, preferredHeight);
-		}
-
-		//--------------------------------------------------------------
-
-		@Override
-		protected void paintComponent(Graphics gr)
-		{
-			// Create copy of graphics context
-			gr = gr.create();
-
-			// Fill background
-			Rectangle rect = gr.getClipBounds();
-			gr.setColor(BACKGROUND_COLOUR);
-			gr.fillRect(rect.x, rect.y, rect.width, rect.height);
-
-			// Get dimensions
-			int width = getWidth();
-			int height = getHeight();
-
-			// Set rendering hints for text antialiasing and fractional metrics
-			TextRendering.setHints((Graphics2D)gr);
-
-			// Draw text
-			FontMetrics fontMetrics = gr.getFontMetrics();
-			gr.setColor(TEXT_COLOUR);
-			gr.drawString(text, (width - fontMetrics.stringWidth(text)) / 2,
-						  FontUtils.getBaselineOffset(height, fontMetrics));
-
-			// Draw border
-			gr.setColor(BORDER_COLOUR);
-			gr.drawRect(0, 0, width - 1, height - 1);
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Class variables
-	////////////////////////////////////////////////////////////////////
-
-		private static	int	preferredWidth;
-		private static	int	preferredHeight;
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance variables
-	////////////////////////////////////////////////////////////////////
-
-		private	String	text;
-
-	}
-
-	//==================================================================
-
-
-	// ESCAPE STATUS PANEL CLASS
-
-
-	private static class EscapeStatusPanel
-		extends JPanel
-		implements ParameterEditor.EscapeListener
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private EscapeStatusPanel()
-		{
-			super(new GridLayout(1, 0, -1, 0));
-
-			tabIndicator = new EscapeIndicator("t");
-			add(tabIndicator);
-
-			lineFeedIndicator = new EscapeIndicator("n");
-			add(lineFeedIndicator);
-
-			setTabsEscaped(false);
-			setLineFeedsEscaped(false);
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : ParameterEditor.EscapeListener interface
-	////////////////////////////////////////////////////////////////////
-
-		public void setTabsEscaped(boolean escaped)
-		{
-			tabIndicator.setVisible(escaped);
-		}
-
-		//--------------------------------------------------------------
-
-		public void setLineFeedsEscaped(boolean escaped)
-		{
-			lineFeedIndicator.setVisible(escaped);
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance variables
-	////////////////////////////////////////////////////////////////////
-
-		private	EscapeIndicator	tabIndicator;
-		private	EscapeIndicator	lineFeedIndicator;
-
-	}
-
-	//==================================================================
-
-////////////////////////////////////////////////////////////////////////
-//  Member classes : inner classes
-////////////////////////////////////////////////////////////////////////
-
-
-	// FILE-SET BUTTON CLASS
-
-
-	private class FileSetButton
-		extends ArrowButton
-		implements MouseListener, Runnable
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private FileSetButton(ScrollDirection scrollDirection)
-		{
-			this(scrollDirection, false);
-		}
-
-		//--------------------------------------------------------------
-
-		private FileSetButton(ScrollDirection scrollDirection,
-							  boolean         bar)
-
-		{
-			super(ARROW_BUTTON_WIDTH, ARROW_BUTTON_HEIGHT, ARROW_SIZE, bar);
-			this.scrollDirection = scrollDirection;
-			setDirection((scrollDirection == ScrollDirection.BACKWARD) ? Direction.LEFT : Direction.RIGHT);
-			if (!bar)
-				setActive(Active.PRESSED);
-			addMouseListener(this);
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : MouseListener interface
-	////////////////////////////////////////////////////////////////////
-
-		public void mouseClicked(MouseEvent event)
-		{
-			// do nothing
-		}
-
-		//--------------------------------------------------------------
-
-		public void mouseEntered(MouseEvent event)
-		{
-			// do nothing
-		}
-
-		//--------------------------------------------------------------
-
-		public void mouseExited(MouseEvent event)
-		{
-			// do nothing
-		}
-
-		//--------------------------------------------------------------
-
-		public void mousePressed(MouseEvent event)
-		{
-			if (!isBar() && isEnabled())
-			{
-				moveFileSet = InputModifiers.forEvent(event).isControl();
-				SwingUtilities.invokeLater(this);
-			}
-		}
-
-		//--------------------------------------------------------------
-
-		public void mouseReleased(MouseEvent event)
-		{
-			if (!isBar() && (ControlDialog.this.scrollDirection == scrollDirection))
-				stopScrolling();
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : Runnable interface
-	////////////////////////////////////////////////////////////////////
-
-		public void run()
-		{
-			ControlDialog.this.scrollDirection = scrollDirection;
-			scrollTimer.start();
-			onScrollFileSet();
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : overriding methods
-	////////////////////////////////////////////////////////////////////
-
-		@Override
-		protected void fireActionPerformed(ActionEvent event)
-		{
-			if (!isScrolling() || (event.getID() != ActionEvent.ACTION_PERFORMED))
-				super.fireActionPerformed(event);
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance variables
-	////////////////////////////////////////////////////////////////////
-
-		private	ScrollDirection	scrollDirection;
-
-	}
-
-	//==================================================================
+	private	Dimension				initialParameterEditorSize;
+	private	ScrollDirection			scrollDirection;
+	private	boolean					moveFileSet;
+	private	int						fileSetIndex;
+	private	Point					location;
+	private	Point					locationOnShow;
+	private	Timer					scrollTimer;
+	private	MainWindow				mainWindow;
+	private	FComboBox<FileSet.Kind>	fileSetKindComboBox;
+	private	JButton					insertFileSetButton;
+	private	JButton					duplicateFileSetButton;
+	private	JButton					deleteFileSetButton;
+	private	FileSetButton			fileSetStartButton;
+	private	FileSetButton			fileSetEndButton;
+	private	FileSetButton			fileSetPreviousButton;
+	private	FileSetButton			fileSetNextButton;
+	private	FileSetIndexField		fileSetIndexField;
+	private	PathnameEditor			pathnameEditor;
+	private	FilterEditor			inclusionFilterEditor;
+	private	FilterEditor			exclusionFilterEditor;
+	private	ParameterEditor			targetEditor;
+	private	ParameterEditor			replacementEditor;
+	private	JCheckBox				replaceCheckBox;
+	private	JCheckBox				regexCheckBox;
+	private	JCheckBox				ignoreCaseCheckBox;
+	private	JCheckBox				showNotFoundCheckBox;
 
 ////////////////////////////////////////////////////////////////////////
 //  Constructors
 ////////////////////////////////////////////////////////////////////////
 
-	private ControlDialog(MainWindow mainWindow)
+	private ControlDialog(
+		MainWindow	mainWindow)
 	{
 		// Call superclass constructor
 		super(mainWindow, TITLE_STR);
@@ -1307,11 +863,30 @@ class ControlDialog
 		// Dispose of window explicitly
 		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 
-		// Handle window closing
+		// Handle window events
 		addWindowListener(new WindowAdapter()
 		{
 			@Override
-			public void windowClosing(WindowEvent event)
+			public void windowActivated(
+				WindowEvent	event)
+			{
+				if (locationOnShow != null)
+				{
+					if (!locationOnShow.equals(getLocationOnScreen()))
+						setLocation(locationOnShow);
+					locationOnShow = null;
+
+					// WORKAROUND for a bug that has been observed on Linux/GNOME whereby a window is displaced
+					// downwards when its location is set.  The error in the y coordinate is the height of the title bar
+					// of the window.  The workaround is to set the location of the window again with an adjustment for
+					// the error.
+					LinuxWorkarounds.fixWindowYCoord(event.getWindow(), location);
+				}
+			}
+
+			@Override
+			public void windowClosing(
+				WindowEvent	event)
 			{
 				AppCommand.EXIT.execute();
 			}
@@ -1324,12 +899,11 @@ class ControlDialog
 		initialParameterEditorSize = targetEditor.getTextAreaViewportSize();
 
 		// Set location of window
-		Point location = null;
 		if (config.isMainWindowLocation())
 			location = config.getControlDialogLocation();
 		if (location == null)
 			location = GuiUtils.getComponentLocation(this, mainWindow, VHPos.BOTTOM_CENTRE);
-		setLocation(GuiUtils.getLocationWithinScreen(this, location));
+		location = GuiUtils.getLocationWithinScreen(this, location);
 
 		// Set focus
 		targetEditor.requestFocusInWindow();
@@ -1344,7 +918,8 @@ class ControlDialog
 //  Class methods
 ////////////////////////////////////////////////////////////////////////
 
-	public static ControlDialog showDialog(MainWindow mainWindow)
+	public static ControlDialog showDialog(
+		MainWindow	mainWindow)
 	{
 		return new ControlDialog(mainWindow);
 	}
@@ -1358,7 +933,8 @@ class ControlDialog
 
 	//------------------------------------------------------------------
 
-	private static List<File> readListFile(File listFile)
+	private static List<File> readListFile(
+		File	listFile)
 		throws AppException
 	{
 		// Parse file
@@ -1406,57 +982,28 @@ class ControlDialog
 ////////////////////////////////////////////////////////////////////////
 
 	@Override
-	public void actionPerformed(ActionEvent event)
+	public void actionPerformed(
+		ActionEvent	event)
 	{
-		String command = event.getActionCommand();
-
-		if (command.equals(Command.SELECT_FILE_SET_KIND))
-			onSelectFileSetKind();
-
-		else if (command.equals(Command.INSERT_FILE_SET))
-			onInsertFileSet();
-
-		else if (command.equals(Command.DUPLICATE_FILE_SET))
-			onDuplicateFileSet();
-
-		else if (command.equals(Command.DELETE_FILE_SET))
-			onDeleteFileSet();
-
-		else if (command.equals(Command.SCROLL_FILE_SET))
-			onScrollFileSet();
-
-		else if (command.equals(Command.GO_TO_FILE_SET_PREVIOUS))
-			onGoToFileSetPrevious();
-
-		else if (command.equals(Command.GO_TO_FILE_SET_NEXT))
-			onGoToFileSetNext();
-
-		else if (command.equals(Command.GO_TO_FILE_SET_START))
-			onGoToFileSetStart();
-
-		else if (command.equals(Command.GO_TO_FILE_SET_END))
-			onGoToFileSetEnd();
-
-		else if (command.equals(Command.MOVE_FILE_SET_UP))
-			onMoveFileSetUp();
-
-		else if (command.equals(Command.MOVE_FILE_SET_DOWN))
-			onMoveFileSetDown();
-
-		else if (command.equals(Command.ESCAPE_TARGET))
-			onEscapeTarget();
-
-		else if (command.equals(Command.ESCAPE_REPLACEMENT))
-			onEscapeReplacement();
-
-		else if (command.equals(Command.TOGGLE_REPLACE))
-			onToggleReplace();
-
-		else if (command.equals(Command.TOGGLE_REGEX))
-			onToggleRegex();
-
-		else if (command.equals(Command.SHOW_CONTEXT_MENU))
-			onShowContextMenu();
+		switch (event.getActionCommand())
+		{
+			case Command.SELECT_FILE_SET_KIND    -> onSelectFileSetKind();
+			case Command.INSERT_FILE_SET         -> onInsertFileSet();
+			case Command.DUPLICATE_FILE_SET      -> onDuplicateFileSet();
+			case Command.DELETE_FILE_SET         -> onDeleteFileSet();
+			case Command.SCROLL_FILE_SET         -> onScrollFileSet();
+			case Command.GO_TO_FILE_SET_PREVIOUS -> onGoToFileSetPrevious();
+			case Command.GO_TO_FILE_SET_NEXT     -> onGoToFileSetNext();
+			case Command.GO_TO_FILE_SET_START    -> onGoToFileSetStart();
+			case Command.GO_TO_FILE_SET_END      -> onGoToFileSetEnd();
+			case Command.MOVE_FILE_SET_UP        -> onMoveFileSetUp();
+			case Command.MOVE_FILE_SET_DOWN      -> onMoveFileSetDown();
+			case Command.ESCAPE_TARGET           -> onEscapeTarget();
+			case Command.ESCAPE_REPLACEMENT      -> onEscapeReplacement();
+			case Command.TOGGLE_REPLACE          -> onToggleReplace();
+			case Command.TOGGLE_REGEX            -> onToggleRegex();
+			case Command.SHOW_CONTEXT_MENU       -> onShowContextMenu();
+		}
 
 		updateCommands();
 	}
@@ -1468,7 +1015,8 @@ class ControlDialog
 ////////////////////////////////////////////////////////////////////////
 
 	@Override
-	public void mouseClicked(MouseEvent event)
+	public void mouseClicked(
+		MouseEvent	event)
 	{
 		// do nothing
 	}
@@ -1476,7 +1024,8 @@ class ControlDialog
 	//------------------------------------------------------------------
 
 	@Override
-	public void mouseEntered(MouseEvent event)
+	public void mouseEntered(
+		MouseEvent	event)
 	{
 		// do nothing
 	}
@@ -1484,7 +1033,8 @@ class ControlDialog
 	//------------------------------------------------------------------
 
 	@Override
-	public void mouseExited(MouseEvent event)
+	public void mouseExited(
+		MouseEvent	event)
 	{
 		// do nothing
 	}
@@ -1492,7 +1042,8 @@ class ControlDialog
 	//------------------------------------------------------------------
 
 	@Override
-	public void mousePressed(MouseEvent event)
+	public void mousePressed(
+		MouseEvent	event)
 	{
 		showContextMenu(event);
 	}
@@ -1500,7 +1051,8 @@ class ControlDialog
 	//------------------------------------------------------------------
 
 	@Override
-	public void mouseReleased(MouseEvent event)
+	public void mouseReleased(
+		MouseEvent	event)
 	{
 		showContextMenu(event);
 	}
@@ -1512,10 +1064,43 @@ class ControlDialog
 ////////////////////////////////////////////////////////////////////////
 
 	@Override
-	public void dataImported(PathnameField.ImportEvent event)
+	public void dataImported(
+		PathnameField.ImportEvent	event)
 	{
 		toFront();
 		setPathname(pathnameEditor.getFile());
+	}
+
+	//------------------------------------------------------------------
+
+////////////////////////////////////////////////////////////////////////
+//  Instance methods : overriding methods
+////////////////////////////////////////////////////////////////////////
+
+	@Override
+	public void setVisible(
+		boolean	visible)
+	{
+		// Case: show window
+		if (visible)
+		{
+			if (location != null)
+			{
+				locationOnShow = location;
+				setLocation(location);
+			}
+		}
+
+		// Case: hide window
+		else
+		{
+			if (isVisible())
+				location = getLocationOnScreen();
+			locationOnShow = null;
+		}
+
+		// Call superclass method
+		super.setVisible(visible);
 	}
 
 	//------------------------------------------------------------------
@@ -1538,7 +1123,8 @@ class ControlDialog
 
 	//------------------------------------------------------------------
 
-	public String getTargetString(boolean escape)
+	public String getTargetString(
+		boolean	escape)
 	{
 		return targetEditor.getText(escape);
 	}
@@ -1639,7 +1225,7 @@ class ControlDialog
 		{
 			case FILE:
 			case DIRECTORY:
-				params.files = Collections.singletonList(pathnameEditor.getFile());
+				params.files = List.of(pathnameEditor.getFile());
 				break;
 
 			case LIST:
@@ -1681,7 +1267,8 @@ class ControlDialog
 
 	//------------------------------------------------------------------
 
-	private void setPathname(File file)
+	private void setPathname(
+		File	file)
 	{
 		pathnameEditor.setFile(file);
 		switch (getFileSetKind())
@@ -1715,7 +1302,7 @@ class ControlDialog
 
 	private int getMaxFileSetIndex()
 	{
-		return (getSearchParams().getNumFileSets() - 1);
+		return getSearchParams().getNumFileSets() - 1;
 	}
 
 	//------------------------------------------------------------------
@@ -1969,7 +1556,8 @@ class ControlDialog
 
 	//------------------------------------------------------------------
 
-	private void showContextMenu(MouseEvent event)
+	private void showContextMenu(
+		MouseEvent	event)
 	{
 		mainWindow.showContextMenu(event, getContentPane());
 	}
@@ -2144,8 +1732,10 @@ class ControlDialog
 	private void onEscapeTarget()
 	{
 		if (isRegex())
+		{
 			targetEditor.setText(StringUtils.escape(targetEditor.getText(),
 													AppConfig.INSTANCE.getEscapedMetacharacters()));
+		}
 	}
 
 	//------------------------------------------------------------------
@@ -2181,33 +1771,503 @@ class ControlDialog
 	//------------------------------------------------------------------
 
 ////////////////////////////////////////////////////////////////////////
-//  Instance variables
+//  Enumerated types
 ////////////////////////////////////////////////////////////////////////
 
-	private	Dimension				initialParameterEditorSize;
-	private	ScrollDirection			scrollDirection;
-	private	boolean					moveFileSet;
-	private	int						fileSetIndex;
-	private	Timer					scrollTimer;
-	private	MainWindow				mainWindow;
-	private	FComboBox<FileSet.Kind>	fileSetKindComboBox;
-	private	JButton					insertFileSetButton;
-	private	JButton					duplicateFileSetButton;
-	private	JButton					deleteFileSetButton;
-	private	FileSetButton			fileSetStartButton;
-	private	FileSetButton			fileSetEndButton;
-	private	FileSetButton			fileSetPreviousButton;
-	private	FileSetButton			fileSetNextButton;
-	private	FileSetIndexField		fileSetIndexField;
-	private	PathnameEditor			pathnameEditor;
-	private	FilterEditor			inclusionFilterEditor;
-	private	FilterEditor			exclusionFilterEditor;
-	private	ParameterEditor			targetEditor;
-	private	ParameterEditor			replacementEditor;
-	private	JCheckBox				replaceCheckBox;
-	private	JCheckBox				regexCheckBox;
-	private	JCheckBox				ignoreCaseCheckBox;
-	private	JCheckBox				showNotFoundCheckBox;
+
+	// ENUMERATION: ERROR IDENTIFIERS
+
+
+	private enum ErrorId
+		implements AppException.IId
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Constants
+	////////////////////////////////////////////////////////////////////
+
+		NO_PATHNAME
+		("No pathname was specified."),
+
+		FILE_DOES_NOT_EXIST
+		("The file does not exist."),
+
+		DIRECTORY_DOES_NOT_EXIST
+		("The directory does not exist."),
+
+		FILE_OR_DIRECTORY_DOES_NOT_EXIST
+		("The file or directory denoted by this pathname in the list file does not exist."),
+
+		FILE_ACCESS_NOT_PERMITTED
+		("Access to the file was not permitted."),
+
+		DIRECTORY_ACCESS_NOT_PERMITTED
+		("Access to the directory was not permitted."),
+
+		FILE_OR_DIRECTORY_ACCESS_NOT_PERMITTED
+		("Access to the file or directory specified in the list file was not permitted."),
+
+		NO_RESULTS
+		("No search results have been saved."),
+
+		NO_TARGET
+		("No target was specified."),
+
+		MALFORMED_REGULAR_EXPRESSION
+		("The target is not a well-formed regular expression.");
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance variables
+	////////////////////////////////////////////////////////////////////
+
+		private	String	message;
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private ErrorId(
+			String	message)
+		{
+			this.message = message;
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : AppException.IId interface
+	////////////////////////////////////////////////////////////////////
+
+		@Override
+		public String getMessage()
+		{
+			return message;
+		}
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
+
+////////////////////////////////////////////////////////////////////////
+//  Member classes : non-inner classes
+////////////////////////////////////////////////////////////////////////
+
+
+	// CLASS: FILE-SET INDEX FIELD
+
+
+	private static class FileSetIndexField
+		extends JComponent
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Constants
+	////////////////////////////////////////////////////////////////////
+
+		private static final	int		VERTICAL_MARGIN		= 2;
+		private static final	int		HORIZONTAL_MARGIN	= 5;
+
+		private static final	Color	BORDER_COLOUR		= ArrowButton.BORDER_COLOUR;
+		private static final	Color	BACKGROUND_COLOUR	= SingleSelectionListEditor.BACKGROUND_COLOUR;
+		private static final	Color	TEXT_COLOUR			= Colours.FOREGROUND;
+
+		private static final	String	PROTOTYPE_STR	= "000 / 000";
+		private static final	String	END_STR			= "End";
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance variables
+	////////////////////////////////////////////////////////////////////
+
+		private	int	preferredWidth;
+		private	int	preferredHeight;
+		private	int	index;
+		private	int	maxIndex;
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private FileSetIndexField()
+		{
+			AppFont.MAIN.apply(this);
+			FontMetrics fontMetrics = getFontMetrics(getFont());
+			preferredWidth = 2 * HORIZONTAL_MARGIN + fontMetrics.stringWidth(PROTOTYPE_STR);
+			preferredHeight = 2 * VERTICAL_MARGIN + fontMetrics.getAscent() + fontMetrics.getDescent();
+			index = -1;
+			setOpaque(true);
+			setFocusable(false);
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : overriding methods
+	////////////////////////////////////////////////////////////////////
+
+		@Override
+		public Dimension getPreferredSize()
+		{
+			return new Dimension(preferredWidth, preferredHeight);
+		}
+
+		//--------------------------------------------------------------
+
+		@Override
+		protected void paintComponent(
+			Graphics	gr)
+		{
+			// Create copy of graphics context
+			Graphics2D gr2d = GuiUtils.copyGraphicsContext(gr);
+
+			// Fill background
+			Rectangle rect = gr2d.getClipBounds();
+			gr2d.setColor(BACKGROUND_COLOUR);
+			gr2d.fillRect(rect.x, rect.y, rect.width, rect.height);
+
+			// Get dimensions
+			int width = getWidth();
+			int height = getHeight();
+
+			// Set rendering hints for text antialiasing and fractional metrics
+			TextRendering.setHints(gr2d);
+
+			// Draw text
+			String str = getText();
+			FontMetrics fontMetrics = gr2d.getFontMetrics();
+			gr2d.setColor(TEXT_COLOUR);
+			gr2d.drawString(str, (width - fontMetrics.stringWidth(str)) / 2,
+							FontUtils.getBaselineOffset(height, fontMetrics));
+
+			// Draw border
+			gr2d.setColor(BORDER_COLOUR);
+			gr2d.drawRect(0, 0, width - 1, height - 1);
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods
+	////////////////////////////////////////////////////////////////////
+
+		public void setValues(
+			int	index,
+			int	maxIndex)
+		{
+			if ((this.index != index) || (this.maxIndex != maxIndex))
+			{
+				this.index = index;
+				this.maxIndex = maxIndex;
+				repaint();
+			}
+		}
+
+		//--------------------------------------------------------------
+
+		private String getText()
+		{
+			return (index > maxIndex) ? END_STR : Integer.toString(index + 1) + " / " + Integer.toString(maxIndex + 1);
+		}
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
+
+
+	// CLASS: ESCAPE-STATUS INDICATOR
+
+
+	private static class EscapeIndicator
+		extends JComponent
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Constants
+	////////////////////////////////////////////////////////////////////
+
+		private static final	int		VERTICAL_MARGIN		= 1;
+		private static final	int		HORIZONTAL_MARGIN	= 4;
+
+		private static final	Color	BORDER_COLOUR		= SingleSelectionListEditor.BORDER_COLOUR;
+		private static final	Color	BACKGROUND_COLOUR	= SingleSelectionListEditor.BACKGROUND_COLOUR;
+		private static final	Color	TEXT_COLOUR			= Colours.FOREGROUND;
+
+	////////////////////////////////////////////////////////////////////
+	//  Class variables
+	////////////////////////////////////////////////////////////////////
+
+		private static	int	preferredWidth;
+		private static	int	preferredHeight;
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance variables
+	////////////////////////////////////////////////////////////////////
+
+		private	String	text;
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private EscapeIndicator(
+			String	text)
+		{
+			this.text = text;
+			AppFont.MAIN.apply(this);
+			FontMetrics fontMetrics = getFontMetrics(getFont());
+			preferredWidth = Math.max(preferredWidth, 2 * HORIZONTAL_MARGIN + fontMetrics.stringWidth(text));
+			preferredHeight = Math.max(preferredHeight,
+									   2 * VERTICAL_MARGIN + fontMetrics.getAscent() + fontMetrics.getDescent());
+			setOpaque(true);
+			setFocusable(false);
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : overriding methods
+	////////////////////////////////////////////////////////////////////
+
+		@Override
+		public Dimension getPreferredSize()
+		{
+			return new Dimension(preferredWidth, preferredHeight);
+		}
+
+		//--------------------------------------------------------------
+
+		@Override
+		protected void paintComponent(
+			Graphics	gr)
+		{
+			// Create copy of graphics context
+			Graphics2D gr2d = GuiUtils.copyGraphicsContext(gr);
+
+			// Fill background
+			Rectangle rect = gr2d.getClipBounds();
+			gr2d.setColor(BACKGROUND_COLOUR);
+			gr2d.fillRect(rect.x, rect.y, rect.width, rect.height);
+
+			// Get dimensions
+			int width = getWidth();
+			int height = getHeight();
+
+			// Set rendering hints for text antialiasing and fractional metrics
+			TextRendering.setHints(gr2d);
+
+			// Draw text
+			FontMetrics fontMetrics = gr2d.getFontMetrics();
+			gr2d.setColor(TEXT_COLOUR);
+			gr2d.drawString(text, (width - fontMetrics.stringWidth(text)) / 2,
+							FontUtils.getBaselineOffset(height, fontMetrics));
+
+			// Draw border
+			gr2d.setColor(BORDER_COLOUR);
+			gr2d.drawRect(0, 0, width - 1, height - 1);
+		}
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
+
+
+	// CLASS: ESCAPE-STATUS PANEL
+
+
+	private static class EscapeStatusPanel
+		extends JPanel
+		implements ParameterEditor.EscapeListener
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance variables
+	////////////////////////////////////////////////////////////////////
+
+		private	EscapeIndicator	tabIndicator;
+		private	EscapeIndicator	lineFeedIndicator;
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private EscapeStatusPanel()
+		{
+			super(new GridLayout(1, 0, -1, 0));
+
+			tabIndicator = new EscapeIndicator("t");
+			add(tabIndicator);
+
+			lineFeedIndicator = new EscapeIndicator("n");
+			add(lineFeedIndicator);
+
+			setTabsEscaped(false);
+			setLineFeedsEscaped(false);
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : ParameterEditor.EscapeListener interface
+	////////////////////////////////////////////////////////////////////
+
+		@Override
+		public void setTabsEscaped(
+			boolean	escaped)
+		{
+			tabIndicator.setVisible(escaped);
+		}
+
+		//--------------------------------------------------------------
+
+		@Override
+		public void setLineFeedsEscaped(
+			boolean	escaped)
+		{
+			lineFeedIndicator.setVisible(escaped);
+		}
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
+
+////////////////////////////////////////////////////////////////////////
+//  Member classes : inner classes
+////////////////////////////////////////////////////////////////////////
+
+
+	// CLASS: FILE-SET BUTTON
+
+
+	private class FileSetButton
+		extends ArrowButton
+		implements MouseListener, Runnable
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance variables
+	////////////////////////////////////////////////////////////////////
+
+		private	ScrollDirection	scrollDirection;
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private FileSetButton(
+			ScrollDirection	scrollDirection)
+		{
+			this(scrollDirection, false);
+		}
+
+		//--------------------------------------------------------------
+
+		private FileSetButton(
+			ScrollDirection	scrollDirection,
+			boolean			bar)
+
+		{
+			super(ARROW_BUTTON_WIDTH, ARROW_BUTTON_HEIGHT, ARROW_SIZE, bar);
+			this.scrollDirection = scrollDirection;
+			setDirection((scrollDirection == ScrollDirection.BACKWARD) ? Direction.LEFT : Direction.RIGHT);
+			if (!bar)
+				setActive(Active.PRESSED);
+			addMouseListener(this);
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : MouseListener interface
+	////////////////////////////////////////////////////////////////////
+
+		@Override
+		public void mouseClicked(
+			MouseEvent	event)
+		{
+			// do nothing
+		}
+
+		//--------------------------------------------------------------
+
+		@Override
+		public void mouseEntered(
+			MouseEvent	event)
+		{
+			// do nothing
+		}
+
+		//--------------------------------------------------------------
+
+		@Override
+		public void mouseExited(
+			MouseEvent	event)
+		{
+			// do nothing
+		}
+
+		//--------------------------------------------------------------
+
+		@Override
+		public void mousePressed(
+			MouseEvent	event)
+		{
+			if (!isBar() && isEnabled())
+			{
+				moveFileSet = InputModifiers.forEvent(event).isControl();
+				SwingUtilities.invokeLater(this);
+			}
+		}
+
+		//--------------------------------------------------------------
+
+		@Override
+		public void mouseReleased(
+			MouseEvent	event)
+		{
+			if (!isBar() && (ControlDialog.this.scrollDirection == scrollDirection))
+				stopScrolling();
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : Runnable interface
+	////////////////////////////////////////////////////////////////////
+
+		@Override
+		public void run()
+		{
+			ControlDialog.this.scrollDirection = scrollDirection;
+			scrollTimer.start();
+			onScrollFileSet();
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : overriding methods
+	////////////////////////////////////////////////////////////////////
+
+		@Override
+		protected void fireActionPerformed(
+			ActionEvent	event)
+		{
+			if (!isScrolling() || (event.getID() != ActionEvent.ACTION_PERFORMED))
+				super.fireActionPerformed(event);
+		}
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
 
 }
 

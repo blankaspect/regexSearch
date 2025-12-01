@@ -61,6 +61,8 @@ import uk.blankaspect.ui.swing.misc.GuiUtils;
 
 import uk.blankaspect.ui.swing.textfield.PathnameField;
 
+import uk.blankaspect.ui.swing.workaround.LinuxWorkarounds;
+
 //----------------------------------------------------------------------
 
 
@@ -97,6 +99,7 @@ public class SinglePathnameFieldDialog
 ////////////////////////////////////////////////////////////////////////
 
 	private	String			key;
+	private	Point			location;
 	private	boolean			accepted;
 	private	PathnameField	field;
 
@@ -240,9 +243,19 @@ public class SinglePathnameFieldDialog
 		// Dispose of window explicitly
 		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 
-		// Handle window closing
+		// Handle window events
 		addWindowListener(new WindowAdapter()
 		{
+			@Override
+			public void windowOpened(
+				WindowEvent	event)
+			{
+				// WORKAROUND for a bug that has been observed on Linux/GNOME whereby a window is displaced downwards
+				// when its location is set.  The error in the y coordinate is the height of the title bar of the
+				// window.  The workaround is to set the location of the window again with an adjustment for the error.
+				LinuxWorkarounds.fixWindowYCoord(event.getWindow(), location);
+			}
+
 			@Override
 			public void windowClosing(
 				WindowEvent	event)
@@ -258,7 +271,7 @@ public class SinglePathnameFieldDialog
 		pack();
 
 		// Set location of dialog
-		Point location = locations.get(key);
+		location = locations.get(key);
 		if (location == null)
 			location = GuiUtils.getComponentLocation(this, owner);
 		setLocation(location);
@@ -310,18 +323,15 @@ public class SinglePathnameFieldDialog
 //  Instance methods : ActionListener interface
 ////////////////////////////////////////////////////////////////////////
 
+	@Override
 	public void actionPerformed(ActionEvent event)
 	{
-		String command = event.getActionCommand();
-
-		if (command.equals(Command.CHOOSE_PATHNAME))
-			onChoosePathname();
-
-		if (command.equals(Command.ACCEPT))
-			onAccept();
-
-		else if (command.equals(Command.CLOSE))
-			onClose();
+		switch (event.getActionCommand())
+		{
+			case Command.CHOOSE_PATHNAME -> onChoosePathname();
+			case Command.ACCEPT          -> onAccept();
+			case Command.CLOSE           -> onClose();
+		}
 	}
 
 	//------------------------------------------------------------------
@@ -339,7 +349,7 @@ public class SinglePathnameFieldDialog
 
 	protected String getPathname()
 	{
-		return (accepted ? field.getText() : null);
+		return accepted ? field.getText() : null;
 	}
 
 	//------------------------------------------------------------------

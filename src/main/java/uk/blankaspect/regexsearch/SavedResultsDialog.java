@@ -39,8 +39,8 @@ class SavedResultsDialog
 //  Constants
 ////////////////////////////////////////////////////////////////////////
 
-	private static final	int	NUM_COLUMNS	= 72;
-	private static final	int	NUM_ROWS	= 24;
+	private static final	int		NUM_COLUMNS	= 72;
+	private static final	int		NUM_ROWS	= 24;
 
 	private static final	String	TITLE_STR	= "Saved results";
 

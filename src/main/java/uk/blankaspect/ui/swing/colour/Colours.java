@@ -146,7 +146,7 @@ public class Colours
 
 		public String getPrefixedKey()
 		{
-			return (classToPrefix(List.class) + KEY_SEPARATOR + key);
+			return classToPrefix(List.class) + KEY_SEPARATOR + key;
 		}
 
 		//--------------------------------------------------------------
@@ -246,7 +246,7 @@ public class Colours
 
 		public String getPrefixedKey()
 		{
-			return (classToPrefix(Table.class) + KEY_SEPARATOR + key);
+			return classToPrefix(Table.class) + KEY_SEPARATOR + key;
 		}
 
 		//--------------------------------------------------------------
@@ -335,7 +335,7 @@ public class Colours
 
 		public String getPrefixedKey()
 		{
-			return (classToPrefix(TextArea.class) + KEY_SEPARATOR + key);
+			return classToPrefix(TextArea.class) + KEY_SEPARATOR + key;
 		}
 
 		//--------------------------------------------------------------

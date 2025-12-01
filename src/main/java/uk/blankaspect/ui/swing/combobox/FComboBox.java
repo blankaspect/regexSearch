@@ -68,7 +68,7 @@ public class FComboBox<E>
 	public E getSelectedValue()
 	{
 		int index = getSelectedIndex();
-		return ((index < 0) ? null : getItemAt(index));
+		return (index < 0) ? null : getItemAt(index);
 	}
 
 	//------------------------------------------------------------------

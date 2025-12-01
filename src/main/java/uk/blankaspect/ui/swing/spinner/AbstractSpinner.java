@@ -63,6 +63,12 @@ public abstract class AbstractSpinner
 	}
 
 ////////////////////////////////////////////////////////////////////////
+//  Instance variables
+////////////////////////////////////////////////////////////////////////
+
+	protected	boolean	alwaysUpdate;
+
+////////////////////////////////////////////////////////////////////////
 //  Constructors
 ////////////////////////////////////////////////////////////////////////
 
@@ -86,6 +92,7 @@ public abstract class AbstractSpinner
 //  Instance methods : ActionListener interface
 ////////////////////////////////////////////////////////////////////////
 
+	@Override
 	public void actionPerformed(ActionEvent event)
 	{
 		String command = event.getActionCommand();
@@ -106,6 +113,7 @@ public abstract class AbstractSpinner
 //  Instance methods : ChangeListener interface
 ////////////////////////////////////////////////////////////////////////
 
+	@Override
 	public void stateChanged(ChangeEvent event)
 	{
 		updateEditorValue();
@@ -117,6 +125,7 @@ public abstract class AbstractSpinner
 //  Instance methods : FocusListener interface
 ////////////////////////////////////////////////////////////////////////
 
+	@Override
 	public void focusGained(FocusEvent event)
 	{
 		// do nothing
@@ -124,6 +133,7 @@ public abstract class AbstractSpinner
 
 	//------------------------------------------------------------------
 
+	@Override
 	public void focusLost(FocusEvent event)
 	{
 		updateValue();
@@ -151,6 +161,7 @@ public abstract class AbstractSpinner
 //  Instance methods : MouseWheelListener interface
 ////////////////////////////////////////////////////////////////////////
 
+	@Override
 	public void mouseWheelMoved(MouseWheelEvent event)
 	{
 		if (getEditor().isFocusOwner())
@@ -244,12 +255,6 @@ public abstract class AbstractSpinner
 	}
 
 	//------------------------------------------------------------------
-
-////////////////////////////////////////////////////////////////////////
-//  Instance variables
-////////////////////////////////////////////////////////////////////////
-
-	protected	boolean	alwaysUpdate;
 
 }
 

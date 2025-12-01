@@ -99,7 +99,7 @@ public class LongRange
 		if (obj instanceof LongRange)
 		{
 			LongRange range = (LongRange)obj;
-			return ((lowerBound == range.lowerBound) && (upperBound == range.upperBound));
+			return (lowerBound == range.lowerBound) && (upperBound == range.upperBound);
 		}
 		return false;
 	}
@@ -129,28 +129,28 @@ public class LongRange
 
 	public long getInterval()
 	{
-		return (upperBound - lowerBound + 1);
+		return upperBound - lowerBound + 1;
 	}
 
 	//------------------------------------------------------------------
 
 	public long getValue(double fraction)
 	{
-		return (lowerBound + Math.round((double)(upperBound - lowerBound) * fraction));
+		return lowerBound + Math.round((double)(upperBound - lowerBound) * fraction);
 	}
 
 	//------------------------------------------------------------------
 
 	public boolean contains(long value)
 	{
-		return ((value >= lowerBound) && (value <= upperBound));
+		return (value >= lowerBound) && (value <= upperBound);
 	}
 
 	//------------------------------------------------------------------
 
 	public long nearestValueWithin(long value)
 	{
-		return (Math.min(Math.max(lowerBound, value), upperBound));
+		return Math.min(Math.max(lowerBound, value), upperBound);
 	}
 
 	//------------------------------------------------------------------

@@ -144,28 +144,28 @@ public class DoubleRange
 
 	public double getInterval()
 	{
-		return (upperBound - lowerBound);
+		return upperBound - lowerBound;
 	}
 
 	//------------------------------------------------------------------
 
 	public double getValue(double fraction)
 	{
-		return (lowerBound + (upperBound - lowerBound) * fraction);
+		return lowerBound + (upperBound - lowerBound) * fraction;
 	}
 
 	//------------------------------------------------------------------
 
 	public boolean contains(double value)
 	{
-		return ((value >= lowerBound) && (value <= upperBound));
+		return (value >= lowerBound) && (value <= upperBound);
 	}
 
 	//------------------------------------------------------------------
 
 	public double nearestValueWithin(double value)
 	{
-		return (Math.min(Math.max(lowerBound, value), upperBound));
+		return Math.min(Math.max(lowerBound, value), upperBound);
 	}
 
 	//------------------------------------------------------------------

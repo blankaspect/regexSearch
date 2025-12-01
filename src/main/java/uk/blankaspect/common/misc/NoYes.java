@@ -18,7 +18,7 @@ package uk.blankaspect.common.misc;
 // IMPORTS
 
 
-import java.util.stream.Stream;
+import java.util.Arrays;
 
 import uk.blankaspect.common.string.StringUtils;
 
@@ -56,7 +56,8 @@ public enum NoYes
 //  Constructors
 ////////////////////////////////////////////////////////////////////////
 
-	private NoYes(String... keys)
+	private NoYes(
+		String...	keys)
 	{
 		this.keys = keys;
 	}
@@ -67,31 +68,33 @@ public enum NoYes
 //  Class methods
 ////////////////////////////////////////////////////////////////////////
 
-	public static NoYes forKey(String key)
+	public static NoYes forKey(
+		String	key)
 	{
-		return Stream.of(values())
-				.filter(value -> Stream.of(value.keys).anyMatch(key0 -> key0.equals(key)))
-				.findFirst()
-				.orElse(null);
+		return Arrays.stream(values())
+				.filter(value -> Arrays.stream(value.keys).anyMatch(k -> k.equals(key))).findFirst().orElse(null);
 	}
 
 	//------------------------------------------------------------------
 
-	public static NoYes forBoolean(boolean value)
+	public static NoYes forBoolean(
+		boolean	value)
 	{
-		return (value ? YES : NO);
+		return value ? YES : NO;
 	}
 
 	//------------------------------------------------------------------
 
-	public static String getKey(boolean value)
+	public static String getKey(
+		boolean	value)
 	{
 		return forBoolean(value).getKey();
 	}
 
 	//------------------------------------------------------------------
 
-	public static String toString(boolean value)
+	public static String toString(
+		boolean	value)
 	{
 		return forBoolean(value).toString();
 	}
@@ -128,7 +131,7 @@ public enum NoYes
 
 	public boolean toBoolean()
 	{
-		return ((this == NO) ? false : true);
+		return (this == NO) ? false : true;
 	}
 
 	//------------------------------------------------------------------

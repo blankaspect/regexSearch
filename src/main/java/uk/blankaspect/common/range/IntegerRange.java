@@ -99,7 +99,7 @@ public class IntegerRange
 		if (obj instanceof IntegerRange)
 		{
 			IntegerRange range = (IntegerRange)obj;
-			return ((lowerBound == range.lowerBound) && (upperBound == range.upperBound));
+			return (lowerBound == range.lowerBound) && (upperBound == range.upperBound);
 		}
 		return false;
 	}
@@ -110,7 +110,7 @@ public class IntegerRange
 	public int hashCode()
 	{
 		int sum = lowerBound + upperBound;
-		return (sum * (sum + 1) / 2 + lowerBound);
+		return sum * (sum + 1) / 2 + lowerBound;
 	}
 
 	//------------------------------------------------------------------

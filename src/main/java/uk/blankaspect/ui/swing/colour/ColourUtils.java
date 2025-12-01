@@ -108,7 +108,7 @@ public class ColourUtils
 		double cMax = (red > green) ? red : green;
 		if (cMax < blue)
 			cMax = blue;
-		return (cMax / (double)MAX_ARGB_COMPONENT_VALUE);
+		return cMax / (double)MAX_ARGB_COMPONENT_VALUE;
 	}
 
 	//------------------------------------------------------------------

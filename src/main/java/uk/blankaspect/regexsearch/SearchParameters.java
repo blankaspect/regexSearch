@@ -299,7 +299,7 @@ class SearchParameters
 
 	public FileSet getFileSet(int index)
 	{
-		return ((index < 0) || (index >= fileSets.size()) ? null : fileSets.get(index));
+		return ((index < 0) || (index >= fileSets.size())) ? null : fileSets.get(index);
 	}
 
 	//------------------------------------------------------------------

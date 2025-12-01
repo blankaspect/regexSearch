@@ -88,10 +88,10 @@ public class KeyAction
 	public static void create(
 		JComponent			component,
 		int					condition,
-		KeyActionPair...	keyActionPairs)
+		KeyActionPair...	keyActions)
 	{
-		for (KeyActionPair keyActionPair : keyActionPairs)
-			create(component, condition, keyActionPair.keyStroke, keyActionPair.action);
+		for (KeyActionPair keyAction : keyActions)
+			create(component, condition, keyAction.keyStroke, keyAction.action);
 	}
 
 	//------------------------------------------------------------------
@@ -99,10 +99,10 @@ public class KeyAction
 	public static void create(
 		JComponent						component,
 		int								condition,
-		List<? extends KeyActionPair>	keyActionPairs)
+		List<? extends KeyActionPair>	keyActions)
 	{
-		for (KeyActionPair keyActionPair : keyActionPairs)
-			create(component, condition, keyActionPair.keyStroke, keyActionPair.action);
+		for (KeyActionPair keyAction : keyActions)
+			create(component, condition, keyAction.keyStroke, keyAction.action);
 	}
 
 	//------------------------------------------------------------------
@@ -125,10 +125,10 @@ public class KeyAction
 		JComponent			component,
 		int					condition,
 		ActionListener		listener,
-		KeyCommandPair...	keyCommandPairs)
+		KeyCommandPair...	keyCommands)
 	{
-		for (KeyCommandPair keyCommandPair : keyCommandPairs)
-			create(component, condition, keyCommandPair.keyStroke, keyCommandPair.command, listener);
+		for (KeyCommandPair keyCommand : keyCommands)
+			create(component, condition, keyCommand.keyStroke, keyCommand.command, listener);
 	}
 
 	//------------------------------------------------------------------
@@ -137,10 +137,28 @@ public class KeyAction
 		JComponent						component,
 		int								condition,
 		ActionListener					listener,
-		List<? extends KeyCommandPair>	keyCommandPairs)
+		List<? extends KeyCommandPair>	keyCommands)
 	{
-		for (KeyCommandPair keyCommandPair : keyCommandPairs)
-			create(component, condition, keyCommandPair.keyStroke, keyCommandPair.command, listener);
+		for (KeyCommandPair keyCommand : keyCommands)
+			create(component, condition, keyCommand.keyStroke, keyCommand.command, listener);
+	}
+
+	//------------------------------------------------------------------
+
+	public static KeyCommandPair command(
+		KeyStroke	keyStroke,
+		String		command)
+	{
+		return new KeyCommandPair(keyStroke, command);
+	}
+
+	//------------------------------------------------------------------
+
+	public static KeyActionPair action(
+		KeyStroke	keyStroke,
+		Action		action)
+	{
+		return new KeyActionPair(keyStroke, action);
 	}
 
 	//------------------------------------------------------------------

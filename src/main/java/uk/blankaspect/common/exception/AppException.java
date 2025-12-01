@@ -184,7 +184,7 @@ public class AppException
 	public static String getString(
 		IId	id)
 	{
-		return ((id == null) ? NO_ERROR_STR : id.getMessage());
+		return (id == null) ? NO_ERROR_STR : id.getMessage();
 	}
 
 	//------------------------------------------------------------------

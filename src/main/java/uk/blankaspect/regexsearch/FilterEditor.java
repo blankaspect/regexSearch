@@ -79,7 +79,7 @@ class FilterEditor
 //  Constants
 ////////////////////////////////////////////////////////////////////////
 
-	private static final	int	MAX_MENU_ITEM_WIDTH	= 320;
+	private static final	int		MAX_MENU_ITEM_WIDTH	= 320;
 
 	private static final	Insets	BUTTON_MARGINS	= new Insets(1, 3, 1, 3);
 
@@ -99,338 +99,25 @@ class FilterEditor
 
 	private static final	KeyAction.KeyCommandPair[]	KEY_COMMANDS	=
 	{
-		new KeyAction.KeyCommandPair
-		(
-			KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, KeyEvent.ALT_DOWN_MASK),
-			Command.EDIT
-		),
-		new KeyAction.KeyCommandPair
-		(
-			KeyStroke.getKeyStroke(KeyEvent.VK_C, KeyEvent.CTRL_DOWN_MASK | KeyEvent.SHIFT_DOWN_MASK),
-			Command.COPY
-		),
-		new KeyAction.KeyCommandPair
-		(
-			KeyStroke.getKeyStroke(KeyEvent.VK_CONTEXT_MENU, 0),
-			Command.SHOW_CONTEXT_MENU
-		)
+		KeyAction.command(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, KeyEvent.ALT_DOWN_MASK),
+						  Command.EDIT),
+		KeyAction.command(KeyStroke.getKeyStroke(KeyEvent.VK_C, KeyEvent.CTRL_DOWN_MASK | KeyEvent.SHIFT_DOWN_MASK),
+						  Command.COPY),
+		KeyAction.command(KeyStroke.getKeyStroke(KeyEvent.VK_CONTEXT_MENU, 0),
+						  Command.SHOW_CONTEXT_MENU)
 	};
 
 ////////////////////////////////////////////////////////////////////////
-//  Member classes : non-inner classes
+//  Instance variables
 ////////////////////////////////////////////////////////////////////////
 
-
-	// LIST DIALOG CLASS
-
-
-	private static class ListDialog
-		extends SingleSelectionListEditor<String>
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constants
-	////////////////////////////////////////////////////////////////////
-
-		private static final	String	FILTER_STR			= "filter";
-		private static final	String	DELETE_MESSAGE_STR	= "Do you want to delete the selected filter?";
-
-		private static final	String[]	TOOLTIP_STRS	=
-		{
-			"Add a new filter",
-			"Edit the selected filter",
-			"Delete the selected filter"
-		};
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private ListDialog(Component          parent,
-						   FileSet.FilterKind filterKind,
-						   List<String>       elements)
-		{
-			super(parent, new EditorSelectionList(elements, false), FileSet.MAX_NUM_FILTERS, TOOLTIP_STRS);
-			this.filterKind = filterKind;
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Class methods
-	////////////////////////////////////////////////////////////////////
-
-		public static List<String> showDialog(Component          parent,
-											  FileSet.FilterKind filterKind,
-											  List<String>       elements)
-		{
-			ListDialog dialog = new ListDialog(parent, filterKind, elements);
-			dialog.setVisible(true);
-			return dialog.getElements();
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : overriding methods
-	////////////////////////////////////////////////////////////////////
-
-		@Override
-		protected String getAddElement()
-		{
-			return PathnameFilterDialog.showDialog(this, getTitleString(ADD_STR), filterKind, null);
-		}
-
-		//--------------------------------------------------------------
-
-		@Override
-		protected String getEditElement(int index)
-		{
-			return PathnameFilterDialog.showDialog(this, getTitleString(EDIT_STR), filterKind,
-												   getElement(index));
-		}
-
-		//--------------------------------------------------------------
-
-		@Override
-		protected boolean confirmDelete()
-		{
-			String[] optionStrs = Utils.getOptionStrings(DELETE_STR);
-			return (JOptionPane.showOptionDialog(this, DELETE_MESSAGE_STR, getTitleString(DELETE_STR),
-												 JOptionPane.OK_CANCEL_OPTION,
-												 JOptionPane.QUESTION_MESSAGE, null, optionStrs,
-												 optionStrs[1]) == JOptionPane.OK_OPTION);
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods
-	////////////////////////////////////////////////////////////////////
-
-		private String getTitleString(String actionStr)
-		{
-			return (actionStr + " " + filterKind.toString().toLowerCase() + " " + FILTER_STR);
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance variables
-	////////////////////////////////////////////////////////////////////
-
-		private	FileSet.FilterKind	filterKind;
-
-	}
-
-	//==================================================================
-
-////////////////////////////////////////////////////////////////////////
-//  Member classes : inner classes
-////////////////////////////////////////////////////////////////////////
-
-
-	// PATTERN FIELD CLASS
-
-
-	private class PatternField
-		extends JTextField
-		implements MouseListener
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constants
-	////////////////////////////////////////////////////////////////////
-
-		private static final	int	VERTICAL_MARGIN		= 1;
-		private static final	int	HORIZONTAL_MARGIN	= 4;
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private PatternField()
-		{
-			// Set properties
-			AppFont.TEXT_FIELD.apply(this);
-			GuiUtils.setPaddedLineBorder(this, VERTICAL_MARGIN, HORIZONTAL_MARGIN);
-			setForeground(AppConstants.TEXT_COLOUR);
-			setDisabledTextColor(Utils.getDisabledTextColour());
-
-			// Add listeners
-			addMouseListener(this);
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : MouseListener interface
-	////////////////////////////////////////////////////////////////////
-
-		public void mouseClicked(MouseEvent event)
-		{
-			// do nothing
-		}
-
-		//--------------------------------------------------------------
-
-		public void mouseEntered(MouseEvent event)
-		{
-			// do nothing
-		}
-
-		//--------------------------------------------------------------
-
-		public void mouseExited(MouseEvent event)
-		{
-			// do nothing
-		}
-
-		//--------------------------------------------------------------
-
-		public void mousePressed(MouseEvent event)
-		{
-			if (SwingUtilities.isLeftMouseButton(event))
-			{
-				if (isEnabled() && (InputModifiers.forEvent(event) == InputModifiers.CTRL))
-					showListDialog();
-			}
-
-			else if (SwingUtilities.isRightMouseButton(event))
-				requestFocusInWindow();
-
-			showContextMenu(event);
-		}
-
-		//--------------------------------------------------------------
-
-		public void mouseReleased(MouseEvent event)
-		{
-			showContextMenu(event);
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : overriding methods
-	////////////////////////////////////////////////////////////////////
-
-		@Override
-		public void setText(String text)
-		{
-			super.setText(text);
-			setCaretPosition(getText().length());
-		}
-
-		//--------------------------------------------------------------
-
-		@Override
-		public Color getBackground()
-		{
-			Color colour = AppConstants.BACKGROUND_COLOUR;
-			if (!isEnabled())
-			{
-				colour = getParent().getBackground();
-				if (colour == null)
-					colour = AppConstants.DISABLED_BACKGROUND_COLOUR;
-			}
-			return colour;
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods
-	////////////////////////////////////////////////////////////////////
-
-		public boolean isEmpty()
-		{
-			Document document = getDocument();
-			return ((document == null) ? true : (document.getLength() == 0));
-		}
-
-		//--------------------------------------------------------------
-
-	}
-
-	//==================================================================
-
-
-	// COMMAND ACTION CLASS
-
-
-	private class CommandAction
-		extends AbstractAction
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private CommandAction(String command,
-							  String text)
-		{
-			super(text);
-			putValue(Action.ACTION_COMMAND_KEY, command);
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : ActionListener interface
-	////////////////////////////////////////////////////////////////////
-
-		public void actionPerformed(ActionEvent event)
-		{
-			String command = event.getActionCommand();
-
-			if (command.equals(Command.EDIT))
-				onEdit();
-
-			else if (command.equals(Command.COPY))
-				onCopy();
-
-			else if (command.equals(Command.SHOW_CONTEXT_MENU))
-				onShowContextMenu();
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods
-	////////////////////////////////////////////////////////////////////
-
-		private void onEdit()
-		{
-			showListDialog();
-		}
-
-		//--------------------------------------------------------------
-
-		private void onCopy()
-		{
-			try
-			{
-				Utils.putClipboardText(patternField.getText());
-			}
-			catch (AppException e)
-			{
-				RegexSearchApp.INSTANCE.showErrorMessage(RegexSearchApp.SHORT_NAME, e);
-			}
-		}
-
-		//--------------------------------------------------------------
-
-		private void onShowContextMenu()
-		{
-			showContextMenu(null);
-		}
-
-		//--------------------------------------------------------------
-
-	}
-
-	//==================================================================
+	private	FileSet.FilterKind	filterKind;
+	private	boolean				suppressEmptyItem;
+	private	ListEditor			editor;
+	private	ActionMap			actionMap;
+	private	PatternField		patternField;
+	private	JPopupMenu			contextMenu;
+	private	JMenu				itemsSubmenu;
 
 ////////////////////////////////////////////////////////////////////////
 //  Constructors
@@ -508,7 +195,7 @@ class FilterEditor
 	public String getText()
 	{
 		String str = FileSet.patternsToString(getPatterns());
-		return (str.isEmpty() && suppressEmptyItem ? null : str);
+		return (str.isEmpty() && suppressEmptyItem) ? null : str;
 	}
 
 	//------------------------------------------------------------------
@@ -522,10 +209,10 @@ class FilterEditor
 
 	public String toActionText(String str)
 	{
-		return ((itemsSubmenu == null)
+		return (itemsSubmenu == null)
 					? str
 					: TextUtils.getLimitedWidthString(str, itemsSubmenu.getFontMetrics(itemsSubmenu.getFont()),
-													  MAX_MENU_ITEM_WIDTH, TextUtils.RemovalMode.END));
+													  MAX_MENU_ITEM_WIDTH, TextUtils.RemovalMode.END);
 	}
 
 	//------------------------------------------------------------------
@@ -694,16 +381,321 @@ class FilterEditor
 	//------------------------------------------------------------------
 
 ////////////////////////////////////////////////////////////////////////
-//  Instance variables
+//  Member classes : non-inner classes
 ////////////////////////////////////////////////////////////////////////
 
-	private	FileSet.FilterKind	filterKind;
-	private	boolean				suppressEmptyItem;
-	private	ListEditor			editor;
-	private	ActionMap			actionMap;
-	private	PatternField		patternField;
-	private	JPopupMenu			contextMenu;
-	private	JMenu				itemsSubmenu;
+
+	// LIST DIALOG CLASS
+
+
+	private static class ListDialog
+		extends SingleSelectionListEditor<String>
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Constants
+	////////////////////////////////////////////////////////////////////
+
+		private static final	String	FILTER_STR			= "filter";
+		private static final	String	DELETE_MESSAGE_STR	= "Do you want to delete the selected filter?";
+
+		private static final	String[]	TOOLTIP_STRS	=
+		{
+			"Add a new filter",
+			"Edit the selected filter",
+			"Delete the selected filter"
+		};
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance variables
+	////////////////////////////////////////////////////////////////////
+
+		private	FileSet.FilterKind	filterKind;
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private ListDialog(Component          parent,
+						   FileSet.FilterKind filterKind,
+						   List<String>       elements)
+		{
+			super(parent, new EditorSelectionList(elements, false), FileSet.MAX_NUM_FILTERS, TOOLTIP_STRS);
+			this.filterKind = filterKind;
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Class methods
+	////////////////////////////////////////////////////////////////////
+
+		public static List<String> showDialog(Component          parent,
+											  FileSet.FilterKind filterKind,
+											  List<String>       elements)
+		{
+			ListDialog dialog = new ListDialog(parent, filterKind, elements);
+			dialog.setVisible(true);
+			return dialog.getElements();
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : overriding methods
+	////////////////////////////////////////////////////////////////////
+
+		@Override
+		protected String getAddElement()
+		{
+			return PathnameFilterDialog.showDialog(this, getTitleString(ADD_STR), filterKind, null);
+		}
+
+		//--------------------------------------------------------------
+
+		@Override
+		protected String getEditElement(int index)
+		{
+			return PathnameFilterDialog.showDialog(this, getTitleString(EDIT_STR), filterKind,
+												   getElement(index));
+		}
+
+		//--------------------------------------------------------------
+
+		@Override
+		protected boolean confirmDelete()
+		{
+			String[] optionStrs = Utils.getOptionStrings(DELETE_STR);
+			return (JOptionPane.showOptionDialog(this, DELETE_MESSAGE_STR, getTitleString(DELETE_STR),
+												 JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null,
+												 optionStrs, optionStrs[1]) == JOptionPane.OK_OPTION);
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods
+	////////////////////////////////////////////////////////////////////
+
+		private String getTitleString(String actionStr)
+		{
+			return actionStr + " " + filterKind.toString().toLowerCase() + " " + FILTER_STR;
+		}
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
+
+////////////////////////////////////////////////////////////////////////
+//  Member classes : inner classes
+////////////////////////////////////////////////////////////////////////
+
+
+	// PATTERN FIELD CLASS
+
+
+	private class PatternField
+		extends JTextField
+		implements MouseListener
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Constants
+	////////////////////////////////////////////////////////////////////
+
+		private static final	int	VERTICAL_MARGIN		= 1;
+		private static final	int	HORIZONTAL_MARGIN	= 4;
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private PatternField()
+		{
+			// Set properties
+			AppFont.TEXT_FIELD.apply(this);
+			GuiUtils.setPaddedLineBorder(this, VERTICAL_MARGIN, HORIZONTAL_MARGIN);
+			setForeground(AppConstants.TEXT_COLOUR);
+			setDisabledTextColor(Utils.getDisabledTextColour());
+
+			// Add listeners
+			addMouseListener(this);
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : MouseListener interface
+	////////////////////////////////////////////////////////////////////
+
+		@Override
+		public void mouseClicked(MouseEvent event)
+		{
+			// do nothing
+		}
+
+		//--------------------------------------------------------------
+
+		@Override
+		public void mouseEntered(MouseEvent event)
+		{
+			// do nothing
+		}
+
+		//--------------------------------------------------------------
+
+		@Override
+		public void mouseExited(MouseEvent event)
+		{
+			// do nothing
+		}
+
+		//--------------------------------------------------------------
+
+		@Override
+		public void mousePressed(MouseEvent event)
+		{
+			if (SwingUtilities.isLeftMouseButton(event))
+			{
+				if (isEnabled() && (InputModifiers.forEvent(event) == InputModifiers.CTRL))
+					showListDialog();
+			}
+
+			else if (SwingUtilities.isRightMouseButton(event))
+				requestFocusInWindow();
+
+			showContextMenu(event);
+		}
+
+		//--------------------------------------------------------------
+
+		@Override
+		public void mouseReleased(MouseEvent event)
+		{
+			showContextMenu(event);
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : overriding methods
+	////////////////////////////////////////////////////////////////////
+
+		@Override
+		public void setText(String text)
+		{
+			super.setText(text);
+			setCaretPosition(getText().length());
+		}
+
+		//--------------------------------------------------------------
+
+		@Override
+		public Color getBackground()
+		{
+			Color colour = AppConstants.BACKGROUND_COLOUR;
+			if (!isEnabled())
+			{
+				colour = getParent().getBackground();
+				if (colour == null)
+					colour = AppConstants.DISABLED_BACKGROUND_COLOUR;
+			}
+			return colour;
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods
+	////////////////////////////////////////////////////////////////////
+
+		public boolean isEmpty()
+		{
+			Document document = getDocument();
+			return (document == null) ? true : (document.getLength() == 0);
+		}
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
+
+
+	// COMMAND ACTION CLASS
+
+
+	private class CommandAction
+		extends AbstractAction
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private CommandAction(String command,
+							  String text)
+		{
+			super(text);
+			putValue(Action.ACTION_COMMAND_KEY, command);
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : ActionListener interface
+	////////////////////////////////////////////////////////////////////
+
+		@Override
+		public void actionPerformed(ActionEvent event)
+		{
+			switch (event.getActionCommand())
+			{
+				case Command.EDIT              -> onEdit();
+				case Command.COPY              -> onCopy();
+				case Command.SHOW_CONTEXT_MENU -> onShowContextMenu();
+			}
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods
+	////////////////////////////////////////////////////////////////////
+
+		private void onEdit()
+		{
+			showListDialog();
+		}
+
+		//--------------------------------------------------------------
+
+		private void onCopy()
+		{
+			try
+			{
+				Utils.putClipboardText(patternField.getText());
+			}
+			catch (AppException e)
+			{
+				RegexSearchApp.INSTANCE.showErrorMessage(RegexSearchApp.SHORT_NAME, e);
+			}
+		}
+
+		//--------------------------------------------------------------
+
+		private void onShowContextMenu()
+		{
+			showContextMenu(null);
+		}
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
 
 }
 

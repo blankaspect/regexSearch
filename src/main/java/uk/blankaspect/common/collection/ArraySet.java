@@ -110,7 +110,7 @@ public class ArraySet<E>
 	public boolean add(
 		E	element)
 	{
-		return (contains(element) ? false : super.add(element));
+		return contains(element) ? false : super.add(element);
 	}
 
 	//------------------------------------------------------------------

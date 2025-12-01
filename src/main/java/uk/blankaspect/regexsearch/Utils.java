@@ -162,7 +162,7 @@ class Utils
 
 	public static char getFileSeparatorChar()
 	{
-		return (AppConfig.INSTANCE.isShowUnixPathnames() ? '/' : File.separatorChar);
+		return AppConfig.INSTANCE.isShowUnixPathnames() ? '/' : File.separatorChar;
 	}
 
 	//------------------------------------------------------------------
@@ -287,8 +287,7 @@ class Utils
 	public static Color getDisabledTextColour()
 	{
 		Color colour = UIManager.getColor(PANEL_BACKGROUND_COLOUR_KEY);
-		return ((colour == null) ? AppConstants.DISABLED_TEXT_COLOUR
-								 : ColourUtils.scaleBrightness(colour, 0.75f));
+		return (colour == null) ? AppConstants.DISABLED_TEXT_COLOUR : ColourUtils.scaleBrightness(colour, 0.75f);
 	}
 
 	//------------------------------------------------------------------

@@ -2,7 +2,7 @@
 
 AppConstants.java
 
-Application constants interface.
+Interface: application constants.
 
 \*====================================================================*/
 
@@ -25,6 +25,8 @@ import java.awt.event.KeyEvent;
 
 import javax.swing.KeyStroke;
 
+import uk.blankaspect.common.misc.FilenameSuffixFilter;
+
 import uk.blankaspect.ui.swing.action.KeyAction;
 
 import uk.blankaspect.ui.swing.colour.Colours;
@@ -32,7 +34,7 @@ import uk.blankaspect.ui.swing.colour.Colours;
 //----------------------------------------------------------------------
 
 
-// APPLICATION CONSTANTS INTERFACE
+// INTERFACE: APPLICATION CONSTANTS
 
 
 interface AppConstants
@@ -58,8 +60,9 @@ interface AppConstants
 	// Filename extensions
 	String	XML_FILENAME_EXTENSION	= ".xml";
 
-	// File-filter descriptions
-	String	XML_FILES_STR	= "XML files";
+	// Filters for file choosers
+	FilenameSuffixFilter XML_FILE_FILTER	=
+			new FilenameSuffixFilter("XML files", XML_FILENAME_EXTENSION);
 
 	// Colours
 	Color	TEXT_COLOUR					= Colours.FOREGROUND;
@@ -67,23 +70,19 @@ interface AppConstants
 	Color	BACKGROUND_COLOUR			= Colours.BACKGROUND;
 	Color	DISABLED_BACKGROUND_COLOUR	= new Color(220, 220, 212);
 
-	// List editor command map
-	KeyStroke	LE_KEY_COMMIT			=
-							KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, KeyEvent.CTRL_DOWN_MASK);
-	KeyStroke	LE_KEY_DELETE			=
-							KeyStroke.getKeyStroke(KeyEvent.VK_DELETE,
-												   KeyEvent.CTRL_DOWN_MASK | KeyEvent.SHIFT_DOWN_MASK);
-	KeyStroke	LE_KEY_SELECT_PREVIOUS	=
-							KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_UP, KeyEvent.CTRL_DOWN_MASK);
-	KeyStroke	LE_KEY_SELECT_NEXT		=
-							KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_DOWN, KeyEvent.CTRL_DOWN_MASK);
+	// List-editor command map
+	KeyStroke	LE_KEY_COMMIT			= KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, KeyEvent.CTRL_DOWN_MASK);
+	KeyStroke	LE_KEY_DELETE			= KeyStroke.getKeyStroke(KeyEvent.VK_DELETE,
+																 KeyEvent.CTRL_DOWN_MASK | KeyEvent.SHIFT_DOWN_MASK);
+	KeyStroke	LE_KEY_SELECT_PREVIOUS	= KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_UP, KeyEvent.CTRL_DOWN_MASK);
+	KeyStroke	LE_KEY_SELECT_NEXT		= KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_DOWN, KeyEvent.CTRL_DOWN_MASK);
 
 	KeyAction.KeyCommandPair[]	LIST_EDITOR_KEY_COMMANDS	=
 	{
-		new KeyAction.KeyCommandPair(LE_KEY_COMMIT,            ListEditor.Command.COMMIT),
-		new KeyAction.KeyCommandPair(LE_KEY_DELETE,            ListEditor.Command.DELETE),
-		new KeyAction.KeyCommandPair(LE_KEY_SELECT_PREVIOUS,   ListEditor.Command.SELECT_PREVIOUS),
-		new KeyAction.KeyCommandPair(LE_KEY_SELECT_NEXT,       ListEditor.Command.SELECT_NEXT)
+		KeyAction.command(LE_KEY_COMMIT,          ListEditor.Command.COMMIT),
+		KeyAction.command(LE_KEY_DELETE,          ListEditor.Command.DELETE),
+		KeyAction.command(LE_KEY_SELECT_PREVIOUS, ListEditor.Command.SELECT_PREVIOUS),
+		KeyAction.command(LE_KEY_SELECT_NEXT,     ListEditor.Command.SELECT_NEXT)
 	};
 
 }

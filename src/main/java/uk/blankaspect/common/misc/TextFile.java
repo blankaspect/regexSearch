@@ -212,14 +212,14 @@ public class TextFile
 
 		private Object getBuffer()
 		{
-			return (sync ? syncBuffer : nonSyncBuffer);
+			return sync ? syncBuffer : nonSyncBuffer;
 		}
 
 		//--------------------------------------------------------------
 
 		private int getLength()
 		{
-			return (sync ? syncBuffer.length() : nonSyncBuffer.length());
+			return sync ? syncBuffer.length() : nonSyncBuffer.length();
 		}
 
 		//--------------------------------------------------------------

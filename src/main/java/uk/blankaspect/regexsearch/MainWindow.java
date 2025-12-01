@@ -61,12 +61,13 @@ import uk.blankaspect.common.exception.ExceptionUtils;
 
 import uk.blankaspect.common.filesystem.PathnameUtils;
 
-import uk.blankaspect.common.misc.FilenameSuffixFilter;
 import uk.blankaspect.common.misc.PathnameFilter;
 
 import uk.blankaspect.common.string.StringUtils;
 
 import uk.blankaspect.common.thread.DaemonFactory;
+
+import uk.blankaspect.ui.swing.filechooser.FileChooserUtils;
 
 import uk.blankaspect.ui.swing.menu.FMenu;
 import uk.blankaspect.ui.swing.menu.FMenuItem;
@@ -76,6 +77,8 @@ import uk.blankaspect.ui.swing.misc.GuiUtils;
 import uk.blankaspect.ui.swing.text.TextRendering;
 
 import uk.blankaspect.ui.swing.textarea.TextArea;
+
+import uk.blankaspect.ui.swing.workaround.LinuxWorkarounds;
 
 //----------------------------------------------------------------------
 
@@ -303,7 +306,8 @@ class MainWindow
 		addWindowListener(new WindowAdapter()
 		{
 			@Override
-			public void windowClosing(WindowEvent event)
+			public void windowClosing(
+				WindowEvent	event)
 			{
 				AppCommand.EXIT.execute();
 			}
@@ -316,12 +320,19 @@ class MainWindow
 		pack();
 
 		// Set location of window
-		setLocation(config.isMainWindowLocation()
-								? GuiUtils.getLocationWithinScreen(this, config.getMainWindowLocation())
-								: GuiUtils.getComponentLocation(this));
+		Point location = config.getMainWindowLocation();
+		location = (location == null)
+							? GuiUtils.getComponentLocation(this)
+							: GuiUtils.getLocationWithinScreen(this, location);
+		setLocation(location);
 
 		// Make window visible
 		setVisible(true);
+
+		// WORKAROUND for a bug that has been observed on Linux/GNOME whereby a window is displaced downwards when its
+		// location is set.  The error in the y coordinate is the height of the title bar of the window.  The workaround
+		// is to set the location of the window again with an adjustment for the error.
+		LinuxWorkarounds.fixWindowYCoord(this, location);
 	}
 
 	//------------------------------------------------------------------
@@ -428,9 +439,7 @@ class MainWindow
 	public void actionPerformed(
 		ActionEvent	event)
 	{
-		String command = event.getActionCommand();
-
-		if (command.equals(Command.SHOW_CONTEXT_MENU))
+		if (event.getActionCommand().equals(Command.SHOW_CONTEXT_MENU))
 			onShowContextMenu();
 
 		updateCommands();
@@ -855,13 +864,12 @@ class MainWindow
 			openFileChooser = new JFileChooser(getSearchParams().getFile());
 			openFileChooser.setDialogTitle(OPEN_SEARCH_PARAMS_STR);
 			openFileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-			openFileChooser.setFileFilter(new FilenameSuffixFilter(AppConstants.XML_FILES_STR,
-																   AppConstants.XML_FILENAME_EXTENSION));
+			FileChooserUtils.setFilter(openFileChooser, AppConstants.XML_FILE_FILTER);
 		}
 		openFileChooser.rescanCurrentDirectory();
 		return (openFileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION)
-							? openFileChooser.getSelectedFile()
-							: null;
+				? openFileChooser.getSelectedFile()
+				: null;
 	}
 
 	//------------------------------------------------------------------
@@ -874,14 +882,13 @@ class MainWindow
 			saveFileChooser = new JFileChooser(getSearchParams().getFile());
 			saveFileChooser.setDialogTitle(SAVE_SEARCH_PARAMS_STR);
 			saveFileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-			saveFileChooser.setFileFilter(new FilenameSuffixFilter(AppConstants.XML_FILES_STR,
-																   AppConstants.XML_FILENAME_EXTENSION));
+			FileChooserUtils.setFilter(saveFileChooser, AppConstants.XML_FILE_FILTER);
 		}
 		saveFileChooser.setSelectedFile((file == null) ? new File("") : file);
 		saveFileChooser.rescanCurrentDirectory();
 		return (saveFileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION)
-							? Utils.appendSuffix(saveFileChooser.getSelectedFile(), AppConstants.XML_FILENAME_EXTENSION)
-							: null;
+				? Utils.appendSuffix(saveFileChooser.getSelectedFile(), AppConstants.XML_FILENAME_EXTENSION)
+				: null;
 	}
 
 	//------------------------------------------------------------------

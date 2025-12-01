@@ -120,6 +120,7 @@ public class ListEditor
 	//  Instance methods : ActionListener interface
 	////////////////////////////////////////////////////////////////////
 
+		@Override
 		public void actionPerformed(ActionEvent event)
 		{
 			ListEditor.this.actionPerformed(event);
@@ -158,24 +159,23 @@ public class ListEditor
 //  Instance methods : ActionListener interface
 ////////////////////////////////////////////////////////////////////////
 
+	@Override
 	public void actionPerformed(ActionEvent event)
 	{
 		String command = event.getActionCommand();
 
-		if (command.equals(Command.COMMIT))
-			onCommit();
-
-		else if (command.equals(Command.DELETE))
-			onDelete();
-
-		else if (command.equals(Command.SELECT_PREVIOUS))
-			onSelectPrevious();
-
-		else if (command.equals(Command.SELECT_NEXT))
-			onSelectNext();
-
-		else if (command.startsWith(Command.SELECT_ITEM))
+		if (command.startsWith(Command.SELECT_ITEM))
 			onSelectItem(Integer.parseInt(StringUtils.removePrefix(command, Command.SELECT_ITEM)));
+		else
+		{
+			switch (command)
+			{
+				case Command.COMMIT          -> onCommit();
+				case Command.DELETE          -> onDelete();
+				case Command.SELECT_PREVIOUS -> onSelectPrevious();
+				case Command.SELECT_NEXT     -> onSelectNext();
+			}
+		}
 	}
 
 	//------------------------------------------------------------------
@@ -239,7 +239,7 @@ public class ListEditor
 	{
 		String text = textModel.getText();
 		String item = getItem();
-		return ((text == null) ? (item != null) : !text.equals(item));
+		return (text == null) ? (item != null) : !text.equals(item);
 	}
 
 	//------------------------------------------------------------------
@@ -343,7 +343,7 @@ public class ListEditor
 
 	private String getItem()
 	{
-		return ((itemIndex < 0) ? null : items.get(itemIndex));
+		return (itemIndex < 0) ? null : items.get(itemIndex);
 	}
 
 	//------------------------------------------------------------------

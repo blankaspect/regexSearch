@@ -2,7 +2,7 @@
 
 PathnameField.java
 
-Pathname field class.
+Class: pathname field.
 
 \*====================================================================*/
 
@@ -42,7 +42,7 @@ import uk.blankaspect.ui.swing.transfer.TextExporter;
 //----------------------------------------------------------------------
 
 
-// PATHNAME FIELD CLASS
+// CLASS: PATHNAME FIELD
 
 
 public class PathnameField
@@ -51,164 +51,12 @@ public class PathnameField
 {
 
 ////////////////////////////////////////////////////////////////////////
-//  Member interfaces
+//  Instance variables
 ////////////////////////////////////////////////////////////////////////
 
-
-	// IMPORT LISTENER INTERFACE
-
-
-	@FunctionalInterface
-	public interface IImportListener
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Methods
-	////////////////////////////////////////////////////////////////////
-
-		void dataImported(ImportEvent event);
-
-		//--------------------------------------------------------------
-
-	}
-
-	//==================================================================
-
-////////////////////////////////////////////////////////////////////////
-//  Member classes : non-inner classes
-////////////////////////////////////////////////////////////////////////
-
-
-	// IMPORT EVENT CLASS
-
-
-	public static class ImportEvent
-		extends EventObject
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private ImportEvent(PathnameField source)
-		{
-			super(source);
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : overriding methods
-	////////////////////////////////////////////////////////////////////
-
-		@Override
-		public PathnameField getSource()
-		{
-			return (PathnameField)source;
-		}
-
-		//--------------------------------------------------------------
-
-	}
-
-	//==================================================================
-
-////////////////////////////////////////////////////////////////////////
-//  Member classes : inner classes
-////////////////////////////////////////////////////////////////////////
-
-
-	// FILE TRANSFER HANDLER CLASS
-
-
-	private class FileTransferHandler
-		extends TextExporter
-		implements Runnable
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private FileTransferHandler(TransferHandler oldTransferHandler)
-		{
-			this.oldTransferHandler = oldTransferHandler;
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : Runnable interface
-	////////////////////////////////////////////////////////////////////
-
-		public void run()
-		{
-			fireDataImported();
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : overriding methods
-	////////////////////////////////////////////////////////////////////
-
-		@Override
-		public boolean canImport(TransferHandler.TransferSupport support)
-		{
-			boolean supported = !support.isDrop() || ((support.getSourceDropActions() & COPY) == COPY);
-			if (supported)
-				supported = isEnabled() &&
-							(DataImporter.isFileList(support.getDataFlavors()) ||
-							 ((oldTransferHandler != null) && oldTransferHandler.canImport(support)));
-			if (support.isDrop() && supported)
-				support.setDropAction(COPY);
-			return supported;
-		}
-
-		//--------------------------------------------------------------
-
-		@Override
-		public boolean importData(TransferHandler.TransferSupport support)
-		{
-			// Import the pathname of the first file of a list of files
-			if (DataImporter.isFileList(support.getDataFlavors()))
-			{
-				try
-				{
-					List<File> files = DataImporter.getFiles(support.getTransferable());
-					if (!files.isEmpty())
-					{
-						String pathname = convertPathname(getPathname(files.get(0)));
-						if (support.isDrop())
-							setText(pathname);
-						else
-							replaceSelection(pathname);
-						SwingUtilities.invokeLater(this);
-						return true;
-					}
-				}
-				catch (Exception e)
-				{
-					e.printStackTrace();
-					return false;
-				}
-			}
-
-			// Import transferred data with the old transfer handler
-			return ((oldTransferHandler == null) ? false : oldTransferHandler.importData(support));
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance variables
-	////////////////////////////////////////////////////////////////////
-
-		private	TransferHandler	oldTransferHandler;
-
-	}
-
-	//==================================================================
+	private	boolean					unixStyle;
+	private	List<IImportListener>	importListeners;
+	private	ImportEvent				importEvent;
 
 ////////////////////////////////////////////////////////////////////////
 //  Constructors
@@ -333,7 +181,7 @@ public class PathnameField
 	public boolean isEmpty()
 	{
 		Document document = getDocument();
-		return ((document == null) ? true : (document.getLength() == 0));
+		return (document == null) ? true : (document.getLength() == 0);
 	}
 
 	//------------------------------------------------------------------
@@ -405,12 +253,164 @@ public class PathnameField
 	//------------------------------------------------------------------
 
 ////////////////////////////////////////////////////////////////////////
-//  Instance variables
+//  Member interfaces
 ////////////////////////////////////////////////////////////////////////
 
-	private	boolean					unixStyle;
-	private	List<IImportListener>	importListeners;
-	private	ImportEvent				importEvent;
+
+	// INTERFACE: IMPORT LISTENER
+
+
+	@FunctionalInterface
+	public interface IImportListener
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Methods
+	////////////////////////////////////////////////////////////////////
+
+		void dataImported(ImportEvent event);
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
+
+////////////////////////////////////////////////////////////////////////
+//  Member classes : non-inner classes
+////////////////////////////////////////////////////////////////////////
+
+
+	// CLASS: IMPORT EVENT
+
+
+	public static class ImportEvent
+		extends EventObject
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private ImportEvent(PathnameField source)
+		{
+			super(source);
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : overriding methods
+	////////////////////////////////////////////////////////////////////
+
+		@Override
+		public PathnameField getSource()
+		{
+			return (PathnameField)source;
+		}
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
+
+////////////////////////////////////////////////////////////////////////
+//  Member classes : inner classes
+////////////////////////////////////////////////////////////////////////
+
+
+	// CLASS: FILE-TRANSFER HANDLER
+
+
+	private class FileTransferHandler
+		extends TextExporter
+		implements Runnable
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance variables
+	////////////////////////////////////////////////////////////////////
+
+		private	TransferHandler	oldTransferHandler;
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private FileTransferHandler(TransferHandler oldTransferHandler)
+		{
+			this.oldTransferHandler = oldTransferHandler;
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : Runnable interface
+	////////////////////////////////////////////////////////////////////
+
+		public void run()
+		{
+			fireDataImported();
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : overriding methods
+	////////////////////////////////////////////////////////////////////
+
+		@Override
+		public boolean canImport(TransferHandler.TransferSupport support)
+		{
+			boolean supported = !support.isDrop() || ((support.getSourceDropActions() & COPY) == COPY);
+			if (supported)
+				supported = isEnabled() &&
+							(DataImporter.isFileList(support.getDataFlavors()) ||
+							 ((oldTransferHandler != null) && oldTransferHandler.canImport(support)));
+			if (support.isDrop() && supported)
+				support.setDropAction(COPY);
+			return supported;
+		}
+
+		//--------------------------------------------------------------
+
+		@Override
+		public boolean importData(TransferHandler.TransferSupport support)
+		{
+			// Import the pathname of the first file of a list of files
+			if (DataImporter.isFileList(support.getDataFlavors()))
+			{
+				try
+				{
+					List<File> files = DataImporter.getFiles(support.getTransferable());
+					if (!files.isEmpty())
+					{
+						String pathname = convertPathname(getPathname(files.get(0)));
+						if (support.isDrop())
+							setText(pathname);
+						else
+							replaceSelection(pathname);
+						SwingUtilities.invokeLater(this);
+						return true;
+					}
+				}
+				catch (Exception e)
+				{
+					e.printStackTrace();
+					return false;
+				}
+			}
+
+			// Import transferred data with the old transfer handler
+			return (oldTransferHandler == null) ? false : oldTransferHandler.importData(support);
+		}
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
 
 }
 

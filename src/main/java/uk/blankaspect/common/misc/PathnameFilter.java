@@ -559,10 +559,10 @@ public class PathnameFilter
 		if (pattern == null)
 			throw new IllegalStateException();
 
-		return (isMatchAbsolute()
+		return isMatchAbsolute()
 						? absolutePatternTokens.size() - getAbsolutePathnameComponents(file).size()
 						: getPathnameComponents(new File(basePathname)).size() + patternTokens.size()
-																				- getPathnameComponents(file).size());
+																				- getPathnameComponents(file).size();
 	}
 
 	//------------------------------------------------------------------
@@ -645,11 +645,13 @@ public class PathnameFilter
 	{
 		List<PatternToken> tokens = new ArrayList<>();
 		for (String str : strs)
+		{
 			tokens.add(((str.indexOf(NAME_SINGLE_WILDCARD_CHAR) < 0) && (str.indexOf(NAME_MULTIPLE_WILDCARD_CHAR) < 0))
 								? new PatternToken(str, ignoreCase)
 								: str.equals(PATH_MULTIPLE_WILDCARD_STR)
 										? new PatternToken(PatternToken.Kind.PATH_MULTIPLE_WILDCARD)
 										: new PatternToken(PatternToken.Kind.PATTERN, str, ignoreCase));
+		}
 		return tokens;
 	}
 

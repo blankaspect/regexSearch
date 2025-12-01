@@ -2,7 +2,7 @@
 
 FPathnameField.java
 
-Pathname field class.
+Class: pathname field.
 
 \*====================================================================*/
 
@@ -32,7 +32,7 @@ import uk.blankaspect.ui.swing.textfield.PathnameField;
 //----------------------------------------------------------------------
 
 
-// PATHNAME FIELD CLASS
+// CLASS: PATHNAME FIELD
 
 
 class FPathnameField
@@ -46,6 +46,12 @@ class FPathnameField
 	private static final	int	NUM_COLUMNS	= 40;
 
 ////////////////////////////////////////////////////////////////////////
+//  Class variables
+////////////////////////////////////////////////////////////////////////
+
+	private static	Map<String, List<FPathnameField>>	observers	= new HashMap<>();
+
+////////////////////////////////////////////////////////////////////////
 //  Constructors
 ////////////////////////////////////////////////////////////////////////
 
@@ -57,7 +63,8 @@ class FPathnameField
 
 	//------------------------------------------------------------------
 
-	public FPathnameField(String pathname)
+	public FPathnameField(
+		String	pathname)
 	{
 		super(pathname, NUM_COLUMNS);
 		_init();
@@ -65,7 +72,8 @@ class FPathnameField
 
 	//------------------------------------------------------------------
 
-	public FPathnameField(File file)
+	public FPathnameField(
+		File	file)
 	{
 		super(file, NUM_COLUMNS);
 		_init();
@@ -77,8 +85,9 @@ class FPathnameField
 //  Class methods
 ////////////////////////////////////////////////////////////////////////
 
-	public static void addObserver(String         key,
-								   FPathnameField field)
+	public static void addObserver(
+		String			key,
+		FPathnameField	field)
 	{
 		List<FPathnameField> fields = observers.get(key);
 		if (fields == null)
@@ -92,7 +101,8 @@ class FPathnameField
 
 	//------------------------------------------------------------------
 
-	public static void removeObservers(String key)
+	public static void removeObservers(
+		String	key)
 	{
 		List<FPathnameField> fields = observers.get(key);
 		if (fields != null)
@@ -117,12 +127,6 @@ class FPathnameField
 	}
 
 	//------------------------------------------------------------------
-
-////////////////////////////////////////////////////////////////////////
-//  Class variables
-////////////////////////////////////////////////////////////////////////
-
-	private static	Map<String, List<FPathnameField>>	observers	= new HashMap<>();
 
 }
 

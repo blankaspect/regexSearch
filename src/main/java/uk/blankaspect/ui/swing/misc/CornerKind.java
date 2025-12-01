@@ -172,8 +172,8 @@ public enum CornerKind
 								int boundingDimension,
 								int size)
 	{
-		return (Math.min(Math.max(boundingCoord + size, coord + dimension),
-						 boundingCoord + boundingDimension) - dimension);
+		return Math.min(Math.max(boundingCoord + size, coord + dimension),
+						boundingCoord + boundingDimension) - dimension;
 	}
 
 	//------------------------------------------------------------------

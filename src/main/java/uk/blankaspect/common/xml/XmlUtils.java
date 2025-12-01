@@ -31,8 +31,8 @@ import java.net.URI;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -302,7 +302,7 @@ public class XmlUtils
 	public static String appendAttributeName(String path,
 											 String attrName)
 	{
-		return (path + XmlConstants.ATTRIBUTE_PREFIX + attrName);
+		return path + XmlConstants.ATTRIBUTE_PREFIX + attrName;
 	}
 
 	//------------------------------------------------------------------
@@ -343,7 +343,7 @@ public class XmlUtils
 	public static boolean hasChildren(Element element,
 									  short   nodeType)
 	{
-		return hasChildren(element, Collections.singleton(nodeType));
+		return hasChildren(element, Set.of(nodeType));
 	}
 
 	//------------------------------------------------------------------
@@ -513,7 +513,7 @@ public class XmlUtils
 	public static String getAttribute(Element element,
 									  String  attributeName)
 	{
-		return (element.hasAttribute(attributeName) ? element.getAttribute(attributeName) : null);
+		return element.hasAttribute(attributeName) ? element.getAttribute(attributeName) : null;
 	}
 
 	//------------------------------------------------------------------
@@ -522,9 +522,9 @@ public class XmlUtils
 									  String  namespaceName,
 									  String  attributeName)
 	{
-		return (element.hasAttributeNS(namespaceName, attributeName)
+		return element.hasAttributeNS(namespaceName, attributeName)
 													? element.getAttributeNS(namespaceName, attributeName)
-													: null);
+													: null;
 	}
 
 	//------------------------------------------------------------------
@@ -606,7 +606,7 @@ public class XmlUtils
 			++pathIndex;
 		}
 
-		return ((pathIndex < pathComponents.size()) ? null : (Element)node);
+		return (pathIndex < pathComponents.size()) ? null : (Element)node;
 	}
 
 	//------------------------------------------------------------------

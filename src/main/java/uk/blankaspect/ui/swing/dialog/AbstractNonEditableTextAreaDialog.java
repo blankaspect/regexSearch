@@ -50,6 +50,8 @@ import uk.blankaspect.ui.swing.font.FontUtils;
 
 import uk.blankaspect.ui.swing.misc.GuiUtils;
 
+import uk.blankaspect.ui.swing.workaround.LinuxWorkarounds;
+
 //----------------------------------------------------------------------
 
 
@@ -68,6 +70,21 @@ public abstract class AbstractNonEditableTextAreaDialog
 	private static final	int	TEXT_AREA_HORIZONTAL_MARGIN	= 4;
 
 	private static final	int	BUTTON_GAP	= 16;
+
+////////////////////////////////////////////////////////////////////////
+//  Class variables
+////////////////////////////////////////////////////////////////////////
+
+	private static	Map<String, Point>	locations	= new Hashtable<>();
+
+////////////////////////////////////////////////////////////////////////
+//  Instance variables
+////////////////////////////////////////////////////////////////////////
+
+	private	String					key;
+	private	Point					location;
+	private	JTextArea				textArea;
+	private	Map<String, JButton>	buttons;
 
 ////////////////////////////////////////////////////////////////////////
 //  Constructors
@@ -177,11 +194,22 @@ public abstract class AbstractNonEditableTextAreaDialog
 		// Dispose of window explicitly
 		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 
-		// Handle window closing
+		// Handle window events
 		addWindowListener(new WindowAdapter()
 		{
 			@Override
-			public void windowClosing(WindowEvent event)
+			public void windowOpened(
+				WindowEvent	event)
+			{
+				// WORKAROUND for a bug that has been observed on Linux/GNOME whereby a window is displaced downwards
+				// when its location is set.  The error in the y coordinate is the height of the title bar of the
+				// window.  The workaround is to set the location of the window again with an adjustment for the error.
+				LinuxWorkarounds.fixWindowYCoord(event.getWindow(), location);
+			}
+
+			@Override
+			public void windowClosing(
+				WindowEvent	event)
 			{
 				onClose();
 			}
@@ -194,7 +222,7 @@ public abstract class AbstractNonEditableTextAreaDialog
 		pack();
 
 		// Set location of dialog
-		Point location = locations.get(key);
+		location = locations.get(key);
 		if (location == null)
 			location = GuiUtils.getComponentLocation(this, owner);
 		setLocation(location);
@@ -202,7 +230,6 @@ public abstract class AbstractNonEditableTextAreaDialog
 		// Set default button
 		if (defaultButtonKey != null)
 			getRootPane().setDefaultButton(getButton(defaultButtonKey));
-
 	}
 
 	//------------------------------------------------------------------
@@ -275,20 +302,6 @@ public abstract class AbstractNonEditableTextAreaDialog
 	}
 
 	//------------------------------------------------------------------
-
-////////////////////////////////////////////////////////////////////////
-//  Class variables
-////////////////////////////////////////////////////////////////////////
-
-	private static	Map<String, Point>	locations	= new Hashtable<>();
-
-////////////////////////////////////////////////////////////////////////
-//  Instance variables
-////////////////////////////////////////////////////////////////////////
-
-	private	String					key;
-	private	JTextArea				textArea;
-	private	Map<String, JButton>	buttons;
 
 }
 

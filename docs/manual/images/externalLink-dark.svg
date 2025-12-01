@@ -13,16 +13,14 @@
        id="style"
        type="text/css">
       <![CDATA[
-        path
-        {
+        path {
           fill: none;
           stroke: #A0C0FC;
           stroke-width: 9;
           stroke-linecap: round;
           stroke-linejoin: round;
         }
-        path.narrow
-        {
+        path.narrow {
           stroke-width: 6;
         }
       ]]>

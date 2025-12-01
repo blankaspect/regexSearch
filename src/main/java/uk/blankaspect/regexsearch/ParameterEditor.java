@@ -34,8 +34,8 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
-import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -105,18 +105,18 @@ class ParameterEditor
 //  Constants
 ////////////////////////////////////////////////////////////////////////
 
-	public static final		int	MIN_NUM_COLUMNS		= 16;
-	public static final		int	MAX_NUM_COLUMNS		= 256;
-	public static final		int	DEFAULT_NUM_COLUMNS	= 80;
+	public static final		int		MIN_NUM_COLUMNS		= 16;
+	public static final		int		MAX_NUM_COLUMNS		= 256;
+	public static final		int		DEFAULT_NUM_COLUMNS	= 80;
 
-	public static final		int	MIN_NUM_ROWS		= 1;
-	public static final		int	MAX_NUM_ROWS		= 32;
-	public static final		int	DEFAULT_NUM_ROWS	= 4;
+	public static final		int		MIN_NUM_ROWS		= 1;
+	public static final		int		MAX_NUM_ROWS		= 32;
+	public static final		int		DEFAULT_NUM_ROWS	= 4;
 
-	private static final	int	VERTICAL_MARGIN		= 1;
-	private static final	int	HORIZONTAL_MARGIN	= 4;
+	private static final	int		VERTICAL_MARGIN		= 1;
+	private static final	int		HORIZONTAL_MARGIN	= 4;
 
-	private static final	int	MAX_MENU_ITEM_WIDTH	= 320;
+	private static final	int		MAX_MENU_ITEM_WIDTH	= 320;
 
 	private static final	Insets	ICON_BUTTON_MARGINS		= new Insets(1, 1, 1, 1);
 	private static final	Insets	ESCAPE_BUTTON_MARGINS	= new Insets(1, 3, 1, 3);
@@ -141,31 +141,16 @@ class ParameterEditor
 
 	private static final	KeyAction.KeyCommandPair[]	KEY_COMMANDS	=
 	{
-		new KeyAction.KeyCommandPair
-		(
-			KeyStroke.getKeyStroke(KeyEvent.VK_T, KeyEvent.CTRL_DOWN_MASK),
-			Command.TOGGLE_TABS_ESCAPED
-		),
-		new KeyAction.KeyCommandPair
-		(
-			KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.CTRL_DOWN_MASK),
-			Command.TOGGLE_LINE_FEEDS_ESCAPED
-		),
-		new KeyAction.KeyCommandPair
-		(
-			KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, KeyEvent.ALT_DOWN_MASK),
-			Command.EDIT
-		),
-		new KeyAction.KeyCommandPair
-		(
-			KeyStroke.getKeyStroke(KeyEvent.VK_C, KeyEvent.CTRL_DOWN_MASK | KeyEvent.SHIFT_DOWN_MASK),
-			Command.COPY
-		),
-		new KeyAction.KeyCommandPair
-		(
-			KeyStroke.getKeyStroke(KeyEvent.VK_CONTEXT_MENU, 0),
-			Command.SHOW_CONTEXT_MENU
-		)
+		KeyAction.command(KeyStroke.getKeyStroke(KeyEvent.VK_T, KeyEvent.CTRL_DOWN_MASK),
+						  Command.TOGGLE_TABS_ESCAPED),
+		KeyAction.command(KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.CTRL_DOWN_MASK),
+						  Command.TOGGLE_LINE_FEEDS_ESCAPED),
+		KeyAction.command(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, KeyEvent.ALT_DOWN_MASK),
+						  Command.EDIT),
+		KeyAction.command(KeyStroke.getKeyStroke(KeyEvent.VK_C, KeyEvent.CTRL_DOWN_MASK | KeyEvent.SHIFT_DOWN_MASK),
+						  Command.COPY),
+		KeyAction.command(KeyStroke.getKeyStroke(KeyEvent.VK_CONTEXT_MENU, 0),
+						  Command.SHOW_CONTEXT_MENU)
 	};
 
 ////////////////////////////////////////////////////////////////////////
@@ -474,7 +459,7 @@ class ParameterEditor
 	public String getText(
 		boolean	escape)
 	{
-		return (escape ? escape(getText()) : getText());
+		return escape ? escape(getText()) : getText();
 	}
 
 	//------------------------------------------------------------------
@@ -1015,10 +1000,9 @@ class ParameterEditor
 
 			// Set Tab and Shift+Tab as focus traversal keys
 			setFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS,
-								  Collections.singleton(KeyStroke.getKeyStroke(KeyEvent.VK_TAB, 0)));
+								  Set.of(KeyStroke.getKeyStroke(KeyEvent.VK_TAB, 0)));
 			setFocusTraversalKeys(KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS,
-								  Collections.singleton(KeyStroke.getKeyStroke(KeyEvent.VK_TAB,
-																			   KeyEvent.SHIFT_DOWN_MASK)));
+								  Set.of(KeyStroke.getKeyStroke(KeyEvent.VK_TAB, KeyEvent.SHIFT_DOWN_MASK)));
 
 			// Add listeners
 			addMouseListener(this);
@@ -1268,25 +1252,18 @@ class ParameterEditor
 	//  Instance methods : ActionListener interface
 	////////////////////////////////////////////////////////////////////
 
+		@Override
 		public void actionPerformed(
 			ActionEvent	event)
 		{
-			String command = event.getActionCommand();
-
-			if (command.equals(Command.TOGGLE_TABS_ESCAPED))
-				onToggleTabsEscaped();
-
-			else if (command.equals(Command.TOGGLE_LINE_FEEDS_ESCAPED))
-				onToggleLineFeedsEscaped();
-
-			else if (command.equals(Command.EDIT))
-				onEdit();
-
-			else if (command.equals(Command.COPY))
-				onCopy();
-
-			else if (command.equals(Command.SHOW_CONTEXT_MENU))
-				onShowContextMenu();
+			switch (event.getActionCommand())
+			{
+				case Command.TOGGLE_TABS_ESCAPED       -> onToggleTabsEscaped();
+				case Command.TOGGLE_LINE_FEEDS_ESCAPED -> onToggleLineFeedsEscaped();
+				case Command.EDIT                      -> onEdit();
+				case Command.COPY                      -> onCopy();
+				case Command.SHOW_CONTEXT_MENU         -> onShowContextMenu();
+			}
 		}
 
 		//--------------------------------------------------------------

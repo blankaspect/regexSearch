@@ -822,7 +822,7 @@ public abstract class Property
 		@Override
 		public String toString()
 		{
-			return ((format == null) ? value.toString() : format.format(value));
+			return (format == null) ? value.toString() : format.format(value);
 		}
 
 		//--------------------------------------------------------------
@@ -953,7 +953,7 @@ public abstract class Property
 									Object obj)
 		{
 			T value = getValue(index);
-			return ((value == null) ? (obj == null) : value.equals(obj));
+			return (value == null) ? (obj == null) : value.equals(obj);
 		}
 
 		//--------------------------------------------------------------
@@ -1143,7 +1143,7 @@ public abstract class Property
 									Object obj)
 		{
 			T value = getValue(mapKey);
-			return ((value == null) ? (obj == null) : value.equals(obj));
+			return (value == null) ? (obj == null) : value.equals(obj);
 		}
 
 		//--------------------------------------------------------------
@@ -1336,7 +1336,7 @@ public abstract class Property
 									Object obj)
 		{
 			T value = getValue(mapKey, index);
-			return ((value == null) ? (obj == null) : value.equals(obj));
+			return (value == null) ? (obj == null) : value.equals(obj);
 		}
 
 		//--------------------------------------------------------------
@@ -1534,7 +1534,7 @@ public abstract class Property
 									Object obj)
 		{
 			T value = getValue(map1Key, map2Key);
-			return ((value == null) ? (obj == null) : value.equals(obj));
+			return (value == null) ? (obj == null) : value.equals(obj);
 		}
 
 		//--------------------------------------------------------------
