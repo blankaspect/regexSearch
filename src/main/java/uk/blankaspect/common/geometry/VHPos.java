@@ -169,52 +169,29 @@ public enum VHPos
 			throw new IllegalArgumentException("Null horizontal position");
 
 		// Return vertical-horizontal position
-		switch (v)
+		return switch (v)
 		{
-			case TOP:
-				switch (h)
-				{
-					case LEFT:
-						return VHPos.TOP_LEFT;
+			case TOP    -> switch (h)
+			{
+				case LEFT   -> VHPos.TOP_LEFT;
+				case CENTRE -> VHPos.TOP_CENTRE;
+				case RIGHT  -> VHPos.TOP_RIGHT;
+			};
 
-					case CENTRE:
-						return VHPos.TOP_CENTRE;
+			case CENTRE -> switch (h)
+			{
+				case LEFT   -> VHPos.CENTRE_LEFT;
+				case CENTRE -> VHPos.CENTRE_CENTRE;
+				case RIGHT  -> VHPos.CENTRE_RIGHT;
+			};
 
-					case RIGHT:
-						return VHPos.TOP_RIGHT;
-				}
-				break;
-
-			case CENTRE:
-				switch (h)
-				{
-					case LEFT:
-						return VHPos.CENTRE_LEFT;
-
-					case CENTRE:
-						return VHPos.CENTRE_CENTRE;
-
-					case RIGHT:
-						return VHPos.CENTRE_RIGHT;
-				}
-				break;
-
-			case BOTTOM:
-				switch (h)
-				{
-					case LEFT:
-						return VHPos.BOTTOM_LEFT;
-
-					case CENTRE:
-						return VHPos.BOTTOM_CENTRE;
-
-					case RIGHT:
-						return VHPos.BOTTOM_RIGHT;
-				}
-				break;
-		}
-
-		return null;
+			case BOTTOM -> switch (h)
+			{
+				case LEFT   -> VHPos.BOTTOM_LEFT;
+				case CENTRE -> VHPos.BOTTOM_CENTRE;
+				case RIGHT  -> VHPos.BOTTOM_RIGHT;
+			};
+		};
 	}
 
 	//------------------------------------------------------------------
@@ -230,7 +207,7 @@ public enum VHPos
 	 * @return the vertical position of this pairing of a vertical position and a horizontal position.
 	 */
 
-	public V getV()
+	public V v()
 	{
 		return v;
 	}
@@ -243,7 +220,7 @@ public enum VHPos
 	 * @return the horizontal position of this pairing of a vertical position and a horizontal position.
 	 */
 
-	public H getH()
+	public H h()
 	{
 		return h;
 	}
@@ -377,7 +354,8 @@ public enum VHPos
 			 */
 
 			@Override
-			public boolean isOpposite(H other)
+			public boolean isOpposite(
+				H	other)
 			{
 				return (other == RIGHT);
 			}
@@ -393,7 +371,8 @@ public enum VHPos
 			 */
 
 			@Override
-			public boolean isOpposite(H other)
+			public boolean isOpposite(
+				H	other)
 			{
 				return false;
 			}
@@ -409,7 +388,8 @@ public enum VHPos
 			 */
 
 			@Override
-			public boolean isOpposite(H other)
+			public boolean isOpposite(
+				H	other)
 			{
 				return (other == LEFT);
 			}
@@ -444,7 +424,8 @@ public enum VHPos
 		 * @return {@code true} if {@code other} is opposite this horizontal position.
 		 */
 
-		public abstract boolean isOpposite(H other);
+		public abstract boolean isOpposite(
+			H	other);
 
 		//--------------------------------------------------------------
 

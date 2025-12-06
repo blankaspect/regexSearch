@@ -383,23 +383,21 @@ public class GuiUtils
 		int height = component.getHeight();
 
 		// Calculate x coordinate
-		int x1 = rect.x;
-		int dx = rect.width - width;
-		int x = switch (pos.getH())
+		int dw = rect.width - width;
+		int x = rect.x + switch (pos.h())
 		{
-			case LEFT   -> x1;
-			case CENTRE -> x1 + dx / 2;
-			case RIGHT  -> x1 + dx;
+			case LEFT   -> 0;
+			case CENTRE -> dw / 2;
+			case RIGHT  -> dw;
 		};
 
 		// Calculate y coordinate
-		int y1 = rect.y;
-		int dy = rect.height - height;
-		int y = switch (pos.getV())
+		int dh = rect.height - height;
+		int y = rect.y + switch (pos.v())
 		{
-			case TOP    -> y1;
-			case CENTRE -> y1 + dy / 2;
-			case BOTTOM -> y1 + dy;
+			case TOP    -> 0;
+			case CENTRE -> dh / 2;
+			case BOTTOM -> dh;
 		};
 
 		// Return location
