@@ -51,7 +51,7 @@ public class StringUtils
 		/**
 		 * The separator is discarded after splitting.
 		 */
-		NONE,
+		DISCARD,
 
 		/**
 		 * The separator is the last character of the prefix after splitting.
@@ -348,7 +348,7 @@ public class StringUtils
 		int			index,
 		SplitMode	splitMode)
 	{
-		return (index < 0) ? new String[] { str, (splitMode == SplitMode.NONE) ? null : "" }
+		return (index < 0) ? new String[] { str, (splitMode == SplitMode.DISCARD) ? null : "" }
 						   : new String[] { str.substring(0, (splitMode == SplitMode.PREFIX) ? index + 1 : index),
 											str.substring((splitMode == SplitMode.SUFFIX) ? index : index + 1) };
 	}
@@ -372,7 +372,7 @@ public class StringUtils
 		String	str,
 		char	ch)
 	{
-		return splitAt(str, str.indexOf(ch), SplitMode.NONE);
+		return splitAt(str, str.indexOf(ch), SplitMode.DISCARD);
 	}
 
 	//------------------------------------------------------------------
@@ -432,7 +432,7 @@ public class StringUtils
 		String	str,
 		char	ch)
 	{
-		return splitAt(str, str.lastIndexOf(ch), SplitMode.NONE);
+		return splitAt(str, str.lastIndexOf(ch), SplitMode.DISCARD);
 	}
 
 	//------------------------------------------------------------------

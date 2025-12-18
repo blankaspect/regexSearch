@@ -119,25 +119,22 @@ public class DataImporter
 					}
 				}
 			}
-			else
+			else if (transferable.getTransferData(URI_LIST_FLAVOUR) instanceof String text)
 			{
-				if (transferable.getTransferData(URI_LIST_FLAVOUR) instanceof String text)
+				String[] strs = text.split("[\\r\\n]+");
+				for (String str : strs)
 				{
-					String[] strs = text.split("[\\r\\n]+");
-					for (String str : strs)
+					try
 					{
-						try
-						{
-							URI uri = new URI(str);
-							if (FILE_SCHEME_STR.equals(uri.getScheme()))
-								files.add(new File(uri));
-							else if (allowAnyUri)
-								files.add(new File(str));
-						}
-						catch (URISyntaxException e)
-						{
-							ExceptionUtils.printStderrLocated(e);
-						}
+						URI uri = new URI(str);
+						if (FILE_SCHEME_STR.equals(uri.getScheme()))
+							files.add(new File(uri));
+						else if (allowAnyUri)
+							files.add(new File(str));
+					}
+					catch (URISyntaxException e)
+					{
+						ExceptionUtils.printStderrLocated(e);
 					}
 				}
 			}

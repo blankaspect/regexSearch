@@ -62,7 +62,8 @@ public class PathnameField
 //  Constructors
 ////////////////////////////////////////////////////////////////////////
 
-	public PathnameField(int numColumns)
+	public PathnameField(
+		int	numColumns)
 	{
 		super(numColumns);
 		setTransferHandler(new FileTransferHandler(getTransferHandler()));
@@ -70,8 +71,9 @@ public class PathnameField
 
 	//------------------------------------------------------------------
 
-	public PathnameField(String pathname,
-						 int    numColumns)
+	public PathnameField(
+		String	pathname,
+		int		numColumns)
 	{
 		this(numColumns);
 		setPathname(pathname);
@@ -79,8 +81,9 @@ public class PathnameField
 
 	//------------------------------------------------------------------
 
-	public PathnameField(File file,
-						 int  numColumns)
+	public PathnameField(
+		File	file,
+		int		numColumns)
 	{
 		this(numColumns);
 		if (file != null)
@@ -89,9 +92,10 @@ public class PathnameField
 
 	//------------------------------------------------------------------
 
-	public PathnameField(File    file,
-						 int     numColumns,
-						 boolean unixStyle)
+	public PathnameField(
+		File	file,
+		int		numColumns,
+		boolean	unixStyle)
 	{
 		this(numColumns);
 		this.unixStyle = unixStyle;
@@ -105,7 +109,8 @@ public class PathnameField
 //  Class methods
 ////////////////////////////////////////////////////////////////////////
 
-	protected static String getPathname(File file)
+	protected static String getPathname(
+		File	file)
 	{
 		String pathname = null;
 		if (file != null)
@@ -129,7 +134,9 @@ public class PathnameField
 //  Instance methods : Property.IObserver interface
 ////////////////////////////////////////////////////////////////////////
 
-	public void propertyChanged(Property property)
+	@Override
+	public void propertyChanged(
+		Property	property)
 	{
 		setUnixStyle(((Property.BooleanProperty)property).getValue());
 	}
@@ -186,21 +193,24 @@ public class PathnameField
 
 	//------------------------------------------------------------------
 
-	public void setPathname(String pathname)
+	public void setPathname(
+		String	pathname)
 	{
 		setText(convertPathname(pathname));
 	}
 
 	//------------------------------------------------------------------
 
-	public void setFile(File file)
+	public void setFile(
+		File	file)
 	{
 		setPathname(getPathname(file));
 	}
 
 	//------------------------------------------------------------------
 
-	public void setUnixStyle(boolean unixStyle)
+	public void setUnixStyle(
+		boolean	unixStyle)
 	{
 		if (this.unixStyle != unixStyle)
 		{
@@ -211,7 +221,8 @@ public class PathnameField
 
 	//------------------------------------------------------------------
 
-	public void addImportListener(IImportListener listener)
+	public void addImportListener(
+		IImportListener	listener)
 	{
 		if (importListeners == null)
 			importListeners = new ArrayList<>();
@@ -220,7 +231,8 @@ public class PathnameField
 
 	//------------------------------------------------------------------
 
-	public void removeImportListener(IImportListener listener)
+	public void removeImportListener(
+		IImportListener	listener)
 	{
 		if (importListeners != null)
 			importListeners.remove(listener);
@@ -241,7 +253,8 @@ public class PathnameField
 
 	//------------------------------------------------------------------
 
-	protected String convertPathname(String pathname)
+	protected String convertPathname(
+		String	pathname)
 	{
 		return (pathname == null)
 						? null
@@ -268,7 +281,8 @@ public class PathnameField
 	//  Methods
 	////////////////////////////////////////////////////////////////////
 
-		void dataImported(ImportEvent event);
+		void dataImported(
+			ImportEvent	event);
 
 		//--------------------------------------------------------------
 
@@ -292,7 +306,8 @@ public class PathnameField
 	//  Constructors
 	////////////////////////////////////////////////////////////////////
 
-		private ImportEvent(PathnameField source)
+		private ImportEvent(
+			PathnameField	source)
 		{
 			super(source);
 		}
@@ -325,7 +340,6 @@ public class PathnameField
 
 	private class FileTransferHandler
 		extends TextExporter
-		implements Runnable
 	{
 
 	////////////////////////////////////////////////////////////////////
@@ -338,20 +352,10 @@ public class PathnameField
 	//  Constructors
 	////////////////////////////////////////////////////////////////////
 
-		private FileTransferHandler(TransferHandler oldTransferHandler)
+		private FileTransferHandler(
+			TransferHandler	oldTransferHandler)
 		{
 			this.oldTransferHandler = oldTransferHandler;
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : Runnable interface
-	////////////////////////////////////////////////////////////////////
-
-		public void run()
-		{
-			fireDataImported();
 		}
 
 		//--------------------------------------------------------------
@@ -361,13 +365,16 @@ public class PathnameField
 	////////////////////////////////////////////////////////////////////
 
 		@Override
-		public boolean canImport(TransferHandler.TransferSupport support)
+		public boolean canImport(
+			TransferHandler.TransferSupport	support)
 		{
 			boolean supported = !support.isDrop() || ((support.getSourceDropActions() & COPY) == COPY);
 			if (supported)
-				supported = isEnabled() &&
-							(DataImporter.isFileList(support.getDataFlavors()) ||
-							 ((oldTransferHandler != null) && oldTransferHandler.canImport(support)));
+			{
+				supported = isEnabled()
+							&& (DataImporter.isFileList(support.getDataFlavors())
+								|| ((oldTransferHandler != null) && oldTransferHandler.canImport(support)));
+			}
 			if (support.isDrop() && supported)
 				support.setDropAction(COPY);
 			return supported;
@@ -376,7 +383,8 @@ public class PathnameField
 		//--------------------------------------------------------------
 
 		@Override
-		public boolean importData(TransferHandler.TransferSupport support)
+		public boolean importData(
+			TransferHandler.TransferSupport	support)
 		{
 			// Import the pathname of the first file of a list of files
 			if (DataImporter.isFileList(support.getDataFlavors()))
@@ -391,7 +399,7 @@ public class PathnameField
 							setText(pathname);
 						else
 							replaceSelection(pathname);
-						SwingUtilities.invokeLater(this);
+						SwingUtilities.invokeLater(PathnameField.this::fireDataImported);
 						return true;
 					}
 				}

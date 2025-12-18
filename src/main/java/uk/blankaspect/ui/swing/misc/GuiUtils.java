@@ -323,19 +323,21 @@ public class GuiUtils
 
 	public static Point getComponentLocation(
 		Component	component,
-		Component	relativeLocator)
+		Component	referenceComponent)
 	{
-		return getComponentLocation(component, relativeLocator, VHPos.CENTRE_CENTRE);
+		return getComponentLocation(component, referenceComponent, VHPos.CENTRE_CENTRE);
 	}
 
 	//------------------------------------------------------------------
 
 	public static Point getComponentLocation(
 		Component	component,
-		Component	relativeLocator,
+		Component	referenceComponent,
 		VHPos		pos)
 	{
-		return getComponentLocation(component, (relativeLocator == null) ? null : relativeLocator.getBounds(), pos);
+		return getComponentLocation(component, (referenceComponent == null)
+				? null
+				: referenceComponent.getBounds(), pos);
 	}
 
 	//------------------------------------------------------------------

@@ -50,7 +50,7 @@ class ResultList
 	private static final	String	NUM_MATCHED_FILES_STR	= "Number of files containing matches";
 	private static final	String	NUM_MATCHES_STR			= "Number of matches";
 	private static final	String	NUM_REPLACEMENTS_STR	= "Number of replacements";
-	private static final	String	EQUALS_STR				= " = ";
+	private static final	String	COLON_STR				= " : ";
 
 ////////////////////////////////////////////////////////////////////////
 //  Member classes : non-inner classes
@@ -274,12 +274,12 @@ class ResultList
 		if (!elements.isEmpty())
 			elements.add(new Element());
 		if (result.numFiles() >= 0)
-			elements.add(new Element(NUM_FILES_STR + EQUALS_STR + result.numFiles()));
+			elements.add(new Element(NUM_FILES_STR + COLON_STR + result.numFiles()));
 		if (result.numMatchedFiles() >= 0)
-			elements.add(new Element(NUM_MATCHED_FILES_STR + EQUALS_STR + result.numMatchedFiles()));
-		elements.add(new Element(NUM_MATCHES_STR + EQUALS_STR + result.numMatches()));
+			elements.add(new Element(NUM_MATCHED_FILES_STR + COLON_STR + result.numMatchedFiles()));
+		elements.add(new Element(NUM_MATCHES_STR + COLON_STR + result.numMatches()));
 		if (result.numReplacements() >= 0)
-			elements.add(new Element(NUM_REPLACEMENTS_STR + EQUALS_STR + result.numReplacements()));
+			elements.add(new Element(NUM_REPLACEMENTS_STR + COLON_STR + result.numReplacements()));
 		fireStateChanged();
 	}
 

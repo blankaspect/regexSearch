@@ -1455,7 +1455,7 @@ public abstract class Property
 			this.map2KeyClass = map2KeyClass;
 			values = new EnumMap<>(map1KeyClass);
 			for (E1 mapKey : map1KeyClass.getEnumConstants())
-				values.put(mapKey, new EnumMap<E2, T>(map2KeyClass));
+				values.put(mapKey, new EnumMap<>(map2KeyClass));
 		}
 
 		//--------------------------------------------------------------

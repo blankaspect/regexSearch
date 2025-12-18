@@ -662,53 +662,18 @@ class MainWindow
 		{
 			switch (command)
 			{
-				case IMPORT_FILE:
-					onImportFile();
-					break;
-
-				case OPEN_SEARCH_PARAMETERS:
-					onOpenSearchParams();
-					break;
-
-				case SAVE_SEARCH_PARAMETERS:
-					onSaveSearchParams();
-					break;
-
-				case EXIT:
-					onExit();
-					break;
-
-				case EDIT_FILE:
-					onEditFile();
-					break;
-
-				case EDIT_FILE_DEFERRED:
-					onEditFileDeferred();
-					break;
-
-				case SEARCH:
-					onSearch();
-					break;
-
-				case COPY_RESULTS:
-					onCopyResults();
-					break;
-
-				case SAVE_RESULTS:
-					onSaveResults();
-					break;
-
-				case VIEW_SAVED_RESULTS:
-					onViewSavedResults();
-					break;
-
-				case TOGGLE_CONTROL_DIALOG:
-					onToggleControlDialog();
-					break;
-
-				case EDIT_PREFERENCES:
-					onEditPreferences();
-					break;
+				case IMPORT_FILE            -> onImportFile();
+				case OPEN_SEARCH_PARAMETERS -> onOpenSearchParams();
+				case SAVE_SEARCH_PARAMETERS -> onSaveSearchParams();
+				case EXIT                   -> onExit();
+				case EDIT_FILE              -> onEditFile();
+				case EDIT_FILE_DEFERRED     -> onEditFileDeferred();
+				case SEARCH                 -> onSearch();
+				case COPY_RESULTS           -> onCopyResults();
+				case SAVE_RESULTS           -> onSaveResults();
+				case VIEW_SAVED_RESULTS     -> onViewSavedResults();
+				case TOGGLE_CONTROL_DIALOG  -> onToggleControlDialog();
+				case EDIT_PREFERENCES       -> onEditPreferences();
 			}
 		}
 		catch (AppException e)
