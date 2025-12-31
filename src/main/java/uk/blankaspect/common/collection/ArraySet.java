@@ -62,7 +62,7 @@ public class ArraySet<E>
 
 	//------------------------------------------------------------------
 
-	@SafeVarargs
+	@SuppressWarnings("unchecked")
 	public ArraySet(
 		E...	elements)
 	{

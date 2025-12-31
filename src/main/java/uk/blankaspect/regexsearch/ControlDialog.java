@@ -547,7 +547,6 @@ class ControlDialog
 		// Editor: pathname
 		pathnameEditor = new PathnameEditor(FileSet.MAX_NUM_PATHNAMES);
 		pathnameEditor.addImportListener(this);
-		pathnameEditor.addUnixStyleObserver();
 
 		gbc.gridx = 1;
 		gbc.gridy = gridY++;

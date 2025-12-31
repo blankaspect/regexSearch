@@ -22,6 +22,8 @@ import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 
+import java.io.File;
+
 import java.util.List;
 
 import uk.blankaspect.ui.swing.font.FontUtils;
@@ -96,7 +98,7 @@ class EditorSelectionList
 		if (isPathname)
 		{
 			if (fontMetrics.stringWidth(text) > maxTextWidth)
-				text = TextUtils.getLimitedWidthPathname(text, fontMetrics, maxTextWidth, Utils.getFileSeparatorChar());
+				text = TextUtils.getLimitedWidthPathname(text, fontMetrics, maxTextWidth, File.separatorChar);
 		}
 		else
 			text = truncateText(text, fontMetrics, maxTextWidth);

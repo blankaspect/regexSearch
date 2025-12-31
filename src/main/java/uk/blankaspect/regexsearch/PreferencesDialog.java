@@ -130,8 +130,6 @@ class PreferencesDialog
 //  Constants
 ////////////////////////////////////////////////////////////////////////
 
-	private static final	String	KEY	= PreferencesDialog.class.getCanonicalName();
-
 	// Main panel
 	private static final	int		MODIFIERS_MASK	=
 			ActionEvent.ALT_MASK | ActionEvent.META_MASK | ActionEvent.CTRL_MASK | ActionEvent.SHIFT_MASK;
@@ -148,7 +146,6 @@ class PreferencesDialog
 	private static final	String	IGNORE_FILENAME_CASE_STR		= "Ignore case of filenames";
 	private static final	String	FILE_WRITING_MODE_STR			= "File-writing mode";
 	private static final	String	PRESERVE_LINE_SEPARATOR_STR		= "Preserve line-separator kind";
-	private static final	String	SHOW_UNIX_PATHNAMES_STR			= "Display UNIX-style pathnames";
 	private static final	String	SELECT_TEXT_ON_FOCUS_GAINED_STR	= "Select text when focus is gained";
 	private static final	String	SAVE_MAIN_WINDOW_LOCATION_STR	= "Save location of main window";
 	private static final	String	HIDE_CONTROL_DIALOG_STR			= "Hide control dialog when searching";
@@ -268,7 +265,6 @@ class PreferencesDialog
 	private	BooleanComboBox							ignoreFilenameCaseComboBox;
 	private	FComboBox<FileWritingMode>				fileWritingModeComboBox;
 	private	BooleanComboBox							preserveLineSeparatorComboBox;
-	private	BooleanComboBox							showUnixPathnamesComboBox;
 	private	BooleanComboBox							selectTextOnFocusGainedComboBox;
 	private	BooleanComboBox							saveMainWindowLocationComboBox;
 	private	BooleanComboBox							hideControlDialogComboBox;
@@ -765,8 +761,6 @@ class PreferencesDialog
 
 	private void onClose()
 	{
-		FPathnameField.removeObservers(KEY);
-
 		location = getLocation();
 		tabIndex = tabbedPanel.getSelectedIndex();
 		setVisible(false);
@@ -980,36 +974,6 @@ class PreferencesDialog
 		gbc.insets = AppConstants.COMPONENT_INSETS;
 		gridBag.setConstraints(preserveLineSeparatorComboBox, gbc);
 		controlPanel.add(preserveLineSeparatorComboBox);
-
-		// Label: show UNIX pathnames
-		JLabel showUnixPathnamesLabel = new FLabel(SHOW_UNIX_PATHNAMES_STR);
-
-		gbc.gridx = 0;
-		gbc.gridy = gridY;
-		gbc.gridwidth = 1;
-		gbc.gridheight = 1;
-		gbc.weightx = 0.0;
-		gbc.weighty = 0.0;
-		gbc.anchor = GridBagConstraints.LINE_END;
-		gbc.fill = GridBagConstraints.NONE;
-		gbc.insets = AppConstants.COMPONENT_INSETS;
-		gridBag.setConstraints(showUnixPathnamesLabel, gbc);
-		controlPanel.add(showUnixPathnamesLabel);
-
-		// Combo box: show UNIX pathnames
-		showUnixPathnamesComboBox = new BooleanComboBox(config.isShowUnixPathnames());
-
-		gbc.gridx = 1;
-		gbc.gridy = gridY++;
-		gbc.gridwidth = 1;
-		gbc.gridheight = 1;
-		gbc.weightx = 0.0;
-		gbc.weighty = 0.0;
-		gbc.anchor = GridBagConstraints.LINE_START;
-		gbc.fill = GridBagConstraints.NONE;
-		gbc.insets = AppConstants.COMPONENT_INSETS;
-		gridBag.setConstraints(showUnixPathnamesComboBox, gbc);
-		controlPanel.add(showUnixPathnamesComboBox);
 
 		// Label: select text on focus gained
 		JLabel selectTextOnFocusGainedLabel = new FLabel(SELECT_TEXT_ON_FOCUS_GAINED_STR);
@@ -2002,7 +1966,6 @@ class PreferencesDialog
 
 		// Panel: default search parameters
 		defaultSearchParamsField = new FPathnameField(config.getDefaultSearchParamsFile());
-		FPathnameField.addObserver(KEY, defaultSearchParamsField);
 		JPanel defaultSearchParamsPanel = new PathnamePanel(defaultSearchParamsField,
 															Command.CHOOSE_DEFAULT_SEARCH_PARAMS_FILE,
 															this);
@@ -2266,7 +2229,6 @@ class PreferencesDialog
 		config.setIgnoreFilenameCase(ignoreFilenameCaseComboBox.getSelectedValue());
 		config.setFileWritingMode(fileWritingModeComboBox.getSelectedValue());
 		config.setPreserveLineSeparator(preserveLineSeparatorComboBox.getSelectedValue());
-		config.setShowUnixPathnames(showUnixPathnamesComboBox.getSelectedValue());
 		config.setSelectTextOnFocusGained(selectTextOnFocusGainedComboBox.getSelectedValue());
 		if (saveMainWindowLocationComboBox.getSelectedValue() != config.isMainWindowLocation())
 			config.setMainWindowLocation(saveMainWindowLocationComboBox.getSelectedValue() ? new Point()
@@ -2703,8 +2665,8 @@ class PreferencesDialog
 			AppFont.TEXT_FIELD.apply(this);
 			GuiUtils.setTextComponentMargins(this);
 			setText((Character.isISOControl(ch) || !getFont().canDisplay(ch))
-															? NumberUtils.uIntToHexString(ch, 4, '0')
-															: Character.toString(ch));
+								? NumberUtils.uIntToHexStringUpper(ch, 4, '0')
+								: Character.toString(ch));
 		}
 
 		//--------------------------------------------------------------

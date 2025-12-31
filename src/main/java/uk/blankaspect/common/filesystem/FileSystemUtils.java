@@ -72,7 +72,7 @@ public class FileSystemUtils
 	private static final	DecimalFormat	LONG_SIZE_FORMAT;
 
 	/** The date/time pattern of the suffix of the name of a temporary time-based location. */
-	private static final	String	TEMP_LOCATION_SUFFIX_PATTERN	= "uuuuMMdd-HHmmss";
+	private static final	String	TEMP_LOCATION_SUFFIX_PATTERN	= "yyyyMMdd-HHmmss";
 
 	/** Miscellaneous strings. */
 	private static final	String	BYTE_STR	= "byte";

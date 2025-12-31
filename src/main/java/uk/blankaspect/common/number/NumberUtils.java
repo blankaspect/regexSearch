@@ -41,18 +41,18 @@ public class NumberUtils
 //  Constants
 ////////////////////////////////////////////////////////////////////////
 
-	/** Upper-case digits. */
-	public static final		char[]	DIGITS_UPPER	=
-	{
-		'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H',
-		'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'
-	};
-
 	/** Lower-case digits. */
 	public static final		char[]	DIGITS_LOWER	=
 	{
 		'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h',
 		'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'
+	};
+
+	/** Upper-case digits. */
+	public static final		char[]	DIGITS_UPPER	=
+	{
+		'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H',
+		'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'
 	};
 
 	/** Powers of ten, {@code int}. */
@@ -67,19 +67,9 @@ public class NumberUtils
 	/** A mask for handling an unsigned long value as a {@link BigInteger}. */
 	private static final	BigInteger	ULONG_MASK;
 
-	public enum DigitCase
-	{
-		UPPER,
-		LOWER
-	}
-
-	private static final	String	OUTPUT_TEXT_TOO_LONG_STR	= "The output text is too long for a string";
-
-////////////////////////////////////////////////////////////////////////
-//  Class variables
-////////////////////////////////////////////////////////////////////////
-
-	private static	char[]	digits	= DIGITS_UPPER;
+	private static final	String	OUTPUT_TEXT_TOO_LONG_STR		= "The output text is too long for a string";
+	private static final	String	NUM_DIGITS_OUT_OF_BOUNDS_STR	= "Number of digits out of bounds: ";
+	private static final	String	RADIX_OUT_OF_BOUNDS_STR			= "Radix out of bounds: ";
 
 ////////////////////////////////////////////////////////////////////////
 //  Static initialiser
@@ -132,45 +122,6 @@ public class NumberUtils
 ////////////////////////////////////////////////////////////////////////
 //  Class methods
 ////////////////////////////////////////////////////////////////////////
-
-	public static boolean setUpper()
-	{
-		if (digits == DIGITS_UPPER)
-			return false;
-		digits = DIGITS_UPPER;
-		return true;
-	}
-
-	//------------------------------------------------------------------
-
-	public static boolean setLower()
-	{
-		if (digits == DIGITS_LOWER)
-			return false;
-		digits = DIGITS_LOWER;
-		return true;
-	}
-
-	//------------------------------------------------------------------
-
-	public static DigitCase setDigitCase(
-		DigitCase	digitCase)
-	{
-		DigitCase oldCase = (digits == DIGITS_UPPER) ? DigitCase.UPPER : DigitCase.LOWER;
-		switch (digitCase)
-		{
-			case UPPER:
-				digits = DIGITS_UPPER;
-				break;
-
-			case LOWER:
-				digits = DIGITS_LOWER;
-				break;
-		}
-		return oldCase;
-	}
-
-	//------------------------------------------------------------------
 
 	public static int parseDigitUpper(
 		char	ch,
@@ -312,14 +263,6 @@ public class NumberUtils
 
 	//------------------------------------------------------------------
 
-	public static String byteToHexString(
-		int	value)
-	{
-		return new String(new char[] { digits[(value >> 4) & 0x0F], digits[value & 0x0F] });
-	}
-
-	//------------------------------------------------------------------
-
 	public static String uIntToBinString(
 		int	value)
 	{
@@ -426,12 +369,18 @@ public class NumberUtils
 	 * Returns a decimal string representation of the specified unsigned number.  The length of the returned string is
 	 * determined by the specified number of digits, <i>numDigits</i>:
 	 * <ul>
-	 *   <li>If <i>numDigits</i> is greater than the length of the string representation of the number, the string will
-	 *       be padded on the left with the specified character.</li>
-	 *   <li>If <i>numDigits</i> is greater than 0 but less than the length of the string representation of the number,
-	 *       the string will be truncated on the left.</li>
-	 *   <li>If <i>numDigits</i> is less than or equal to 0, the string representation of the number will not be
-	 *       truncated or padded.</li>
+	 *   <li>
+	 *     If <i>numDigits</i> is greater than the length of the string representation of the number, the string will be
+	 *     padded on the left with the specified character.
+	 *   </li>
+	 *   <li>
+	 *     If <i>numDigits</i> is greater than 0 but less than the length of the string representation of the number,
+	 *     the string will be truncated on the left.
+	 *   </li>
+	 *   <li>
+	 *     If <i>numDigits</i> is less than or equal to 0, the string representation of the number will not be truncated
+	 *     or padded.
+	 *   </li>
 	 * </ul>
 	 *
 	 * @param  value
@@ -484,10 +433,39 @@ public class NumberUtils
 
 	//------------------------------------------------------------------
 
+	public static String uIntToHexStringUpper(
+		int	value)
+	{
+		return uIntToHexStringUpper(value, 0, '\0');
+	}
+
+	//------------------------------------------------------------------
+
 	public static String uIntToHexString(
 		int		value,
 		int		numDigits,
 		char	padChar)
+	{
+		return uIntToHexString(value, numDigits, padChar, DIGITS_LOWER);
+	}
+
+	//------------------------------------------------------------------
+
+	public static String uIntToHexStringUpper(
+		int		value,
+		int		numDigits,
+		char	padChar)
+	{
+		return uIntToHexString(value, numDigits, padChar, DIGITS_UPPER);
+	}
+
+	//------------------------------------------------------------------
+
+	private static String uIntToHexString(
+		int		value,
+		int		numDigits,
+		char	padChar,
+		char[]	digits)
 	{
 		// Allocate buffer
 		char[] buffer = new char[(numDigits > 0) ? numDigits : Integer.SIZE >> 2];
@@ -527,10 +505,39 @@ public class NumberUtils
 
 	//------------------------------------------------------------------
 
+	public static String uLongToHexStringUpper(
+		long	value)
+	{
+		return uLongToHexStringUpper(value, 0, '\0');
+	}
+
+	//------------------------------------------------------------------
+
 	public static String uLongToHexString(
 		long	value,
 		int		numDigits,
 		char	padChar)
+	{
+		return uLongToHexString(value, numDigits, padChar, DIGITS_LOWER);
+	}
+
+	//------------------------------------------------------------------
+
+	public static String uLongToHexStringUpper(
+		long	value,
+		int		numDigits,
+		char	padChar)
+	{
+		return uLongToHexString(value, numDigits, padChar, DIGITS_UPPER);
+	}
+
+	//------------------------------------------------------------------
+
+	private static String uLongToHexString(
+		long	value,
+		int		numDigits,
+		char	padChar,
+		char[]	digits)
 	{
 		// Allocate buffer
 		char[] buffer = new char[(numDigits > 0) ? numDigits : Long.SIZE >> 2];
@@ -564,12 +571,16 @@ public class NumberUtils
 
 	/**
 	 * Returns a string representation of the specified unsigned number with the specified number of digits and the
-	 * specified radix.
+	 * specified radix.  Digits greater than 9 are represented by lower-case letters.
 	 * <ul>
-	 *   <li>If the specified number of digits is less than the length of the string representation of the number, the
-	 *       string will be truncated on the left.</li>
-	 *   <li>If the specified number of digits is greater than the length of the string representation of the number,
-	 *       the string will be padded on the left with the specified character.</li>
+	 *   <li>
+	 *     If the specified number of digits is less than the length of the string representation of the number, the
+	 *     string will be truncated on the left.
+	 *   </li>
+	 *   <li>
+	 *     If the specified number of digits is greater than the length of the string representation of the number, the
+	 *     string will be padded on the left with the specified character.
+	 *   </li>
 	 * </ul>
 	 *
 	 * @param  value
@@ -591,15 +602,65 @@ public class NumberUtils
 		char	padChar,
 		int		radix)
 	{
+		return uIntToString(value, numDigits, padChar, radix, DIGITS_LOWER);
+	}
+
+	//------------------------------------------------------------------
+
+	/**
+	 * Returns a string representation of the specified unsigned number with the specified number of digits and the
+	 * specified radix.  Digits greater than 9 are represented by upper-case letters.
+	 * <ul>
+	 *   <li>
+	 *     If the specified number of digits is less than the length of the string representation of the number, the
+	 *     string will be truncated on the left.
+	 *   </li>
+	 *   <li>
+	 *     If the specified number of digits is greater than the length of the string representation of the number, the
+	 *     string will be padded on the left with the specified character.
+	 *   </li>
+	 * </ul>
+	 *
+	 * @param  value
+	 *           the unsigned number for which a string representation is required.
+	 * @param  numDigits
+	 *           the number of digits in the string representation of {@code value}.
+	 * @param  padChar
+	 *           the character with which the returned string will be padded on the left if the length of the string
+	 *           representation of {@code value} is less than {@code numDigits}.
+	 * @param  radix
+	 *           the radix of the string representation of {@code value}.
+	 * @return a string representation of {@code value} that may be truncated or padded on the left in the way described
+	 *         above.
+	 */
+
+	public static String uIntToStringUpper(
+		int		value,
+		int		numDigits,
+		char	padChar,
+		int		radix)
+	{
+		return uIntToString(value, numDigits, padChar, radix, DIGITS_UPPER);
+	}
+
+	//------------------------------------------------------------------
+
+	private static String uIntToString(
+		int		value,
+		int		numDigits,
+		char	padChar,
+		int		radix,
+		char[]	digits)
+	{
 		// If value is negative, handle it as long
 		if (value < 0)
 			return uLongToString(value & 0xFFFFFFFFL, numDigits, padChar, radix);
 
 		// Validate arguments
 		if (numDigits < 1)
-			throw new IllegalArgumentException("Number of digits out of bounds: " + numDigits);
+			throw new IllegalArgumentException(NUM_DIGITS_OUT_OF_BOUNDS_STR + numDigits);
 		if ((radix < 2) || (radix > digits.length))
-			throw new IllegalArgumentException("Radix out of bounds: " + radix);
+			throw new IllegalArgumentException(RADIX_OUT_OF_BOUNDS_STR + radix);
 
 		// Allocate buffer for digits
 		char[] buffer = new char[numDigits];
@@ -626,12 +687,16 @@ public class NumberUtils
 
 	/**
 	 * Returns a string representation of the specified unsigned number with the specified number of digits and the
-	 * specified radix.
+	 * specified radix.  Digits greater than 9 are represented by lower-case letters.
 	 * <ul>
-	 *   <li>If the specified number of digits is less than the length of the string representation of the number, the
-	 *       string will be truncated on the left.</li>
-	 *   <li>If the specified number of digits is greater than the length of the string representation of the number,
-	 *       the string will be padded on the left with the specified character.</li>
+	 *   <li>
+	 *     If the specified number of digits is less than the length of the string representation of the number, the
+	 *     string will be truncated on the left.
+	 *   </li>
+	 *   <li>
+	 *     If the specified number of digits is greater than the length of the string representation of the number, the
+	 *     string will be padded on the left with the specified character.
+	 *   </li>
 	 * </ul>
 	 *
 	 * @param  value
@@ -653,11 +718,61 @@ public class NumberUtils
 		char	padChar,
 		int		radix)
 	{
+		return uLongToString(value, numDigits, padChar, radix, DIGITS_LOWER);
+	}
+
+	//------------------------------------------------------------------
+
+	/**
+	 * Returns a string representation of the specified unsigned number with the specified number of digits and the
+	 * specified radix.  Digits greater than 9 are represented by upper-case letters.
+	 * <ul>
+	 *   <li>
+	 *     If the specified number of digits is less than the length of the string representation of the number, the
+	 *     string will be truncated on the left.
+	 *   </li>
+	 *   <li>
+	 *     If the specified number of digits is greater than the length of the string representation of the number, the
+	 *     string will be padded on the left with the specified character.
+	 *   </li>
+	 * </ul>
+	 *
+	 * @param  value
+	 *           the unsigned number for which a string representation is required.
+	 * @param  numDigits
+	 *           the number of digits in the string representation of {@code value}.
+	 * @param  padChar
+	 *           the character with which the returned string will be padded on the left if the length of the string
+	 *           representation of {@code value} is less than {@code numDigits}.
+	 * @param  radix
+	 *           the radix of the string representation of {@code value}.
+	 * @return a string representation of {@code value} that may be truncated or padded on the left in the way described
+	 *         above.
+	 */
+
+	public static String uLongToStringUpper(
+		long	value,
+		int		numDigits,
+		char	padChar,
+		int		radix)
+	{
+		return uLongToString(value, numDigits, padChar, radix, DIGITS_UPPER);
+	}
+
+	//------------------------------------------------------------------
+
+	private static String uLongToString(
+		long	value,
+		int		numDigits,
+		char	padChar,
+		int		radix,
+		char[]	digits)
+	{
 		// Validate arguments
 		if (numDigits < 1)
-			throw new IllegalArgumentException("Number of digits out of bounds: " + numDigits);
+			throw new IllegalArgumentException(NUM_DIGITS_OUT_OF_BOUNDS_STR + numDigits);
 		if ((radix < 2) || (radix > digits.length))
-			throw new IllegalArgumentException("Radix out of bounds: " + radix);
+			throw new IllegalArgumentException(RADIX_OUT_OF_BOUNDS_STR + radix);
 
 		// If value is negative, handle it as BigInteger
 		if (value < 0)
@@ -920,8 +1035,8 @@ public class NumberUtils
 	//------------------------------------------------------------------
 
 	/**
-	 * Parses a string representation of an unsigned integer and returns the result.  The radix of the
-	 * string is determined from its prefix:
+	 * Parses a string representation of an unsigned integer and returns the result.  The radix of the string is
+	 * determined from its prefix:
 	 * <ul>
 	 *   <li>if the string starts with "0b" or "0B", it is parsed as a binary representation,</li>
 	 *   <li>else if it starts with "0x" or "0X", it is parsed as a hexadecimal representation,</li>
@@ -1045,8 +1160,8 @@ public class NumberUtils
 	//------------------------------------------------------------------
 
 	/**
-	 * Parses a string representation of an unsigned long integer and returns the result.  The radix of the
-	 * string is determined from its prefix:
+	 * Parses a string representation of an unsigned long integer and returns the result.  The radix of the string is
+	 * determined from its prefix:
 	 * <ul>
 	 *   <li>if the string starts with "0b" or "0B", it is parsed as a binary representation,</li>
 	 *   <li>else if it starts with "0x" or "0X", it is parsed as a hexadecimal representation,</li>
@@ -1079,8 +1194,8 @@ public class NumberUtils
 	//------------------------------------------------------------------
 
 	/**
-	 * Parses a string representation of an unsigned long integer and returns the result.  The radix of the
-	 * string is determined from its prefix:
+	 * Parses a string representation of an unsigned long integer and returns the result.  The radix of the string is
+	 * determined from its prefix:
 	 * <ul>
 	 *   <li>if the string starts with "0b" or "0B", it is parsed as a binary representation,</li>
 	 *   <li>else if it starts with "0x" or "0X", it is parsed as a hexadecimal representation,</li>
@@ -1128,10 +1243,34 @@ public class NumberUtils
 
 	//------------------------------------------------------------------
 
+	public static String byteToHexString(
+		int	value)
+	{
+		return new String(new char[] { DIGITS_LOWER[(value >> 4) & 0x0F], DIGITS_LOWER[value & 0x0F] });
+	}
+
+	//------------------------------------------------------------------
+
+	public static String byteToHexStringUpper(
+		int	value)
+	{
+		return new String(new char[] { DIGITS_UPPER[(value >> 4) & 0x0F], DIGITS_UPPER[value & 0x0F] });
+	}
+
+	//------------------------------------------------------------------
+
 	public static String bytesToHexString(
 		byte[]	data)
 	{
 		return bytesToHexString(data, 0, data.length, 0);
+	}
+
+	//------------------------------------------------------------------
+
+	public static String bytesToHexStringUpper(
+		byte[]	data)
+	{
+		return bytesToHexStringUpper(data, 0, data.length, 0);
 	}
 
 	//------------------------------------------------------------------
@@ -1141,6 +1280,15 @@ public class NumberUtils
 		int		bytesPerLine)
 	{
 		return bytesToHexString(data, 0, data.length, bytesPerLine);
+	}
+
+	//------------------------------------------------------------------
+
+	public static String bytesToHexStringUpper(
+		byte[]	data,
+		int		bytesPerLine)
+	{
+		return bytesToHexStringUpper(data, 0, data.length, bytesPerLine);
 	}
 
 	//------------------------------------------------------------------
@@ -1155,11 +1303,44 @@ public class NumberUtils
 
 	//------------------------------------------------------------------
 
+	public static String bytesToHexStringUpper(
+		byte[]	data,
+		int		offset,
+		int		length)
+	{
+		return bytesToHexStringUpper(data, offset, length, 0);
+	}
+
+	//------------------------------------------------------------------
+
 	public static String bytesToHexString(
 		byte[]	data,
 		int		offset,
 		int		length,
 		int		bytesPerLine)
+	{
+		return bytesToHexString(data, offset, length, bytesPerLine, DIGITS_LOWER);
+	}
+
+	//------------------------------------------------------------------
+
+	public static String bytesToHexStringUpper(
+		byte[]	data,
+		int		offset,
+		int		length,
+		int		bytesPerLine)
+	{
+		return bytesToHexString(data, offset, length, bytesPerLine, DIGITS_UPPER);
+	}
+
+	//------------------------------------------------------------------
+
+	private static String bytesToHexString(
+		byte[]	data,
+		int		offset,
+		int		length,
+		int		bytesPerLine,
+		char[]	digits)
 	{
 		StringBuilder buffer = new StringBuilder();
 		int endOffset = offset + length;
@@ -1186,6 +1367,17 @@ public class NumberUtils
 
 	//------------------------------------------------------------------
 
+	public static String bytesToHexStringUpper(
+		byte[]	data,
+		int		bytesPerLine,
+		int		numDigits,
+		String	separator)
+	{
+		return bytesToHexStringUpper(data, 0, data.length, bytesPerLine, numDigits, separator, null, null);
+	}
+
+	//------------------------------------------------------------------
+
 	public static String bytesToHexString(
 		byte[]	data,
 		int		offset,
@@ -1195,6 +1387,19 @@ public class NumberUtils
 		String	separator)
 	{
 		return bytesToHexString(data, offset, length, bytesPerLine, numDigits, separator, null, null);
+	}
+
+	//------------------------------------------------------------------
+
+	public static String bytesToHexStringUpper(
+		byte[]	data,
+		int		offset,
+		int		length,
+		int		bytesPerLine,
+		int		numDigits,
+		String	separator)
+	{
+		return bytesToHexStringUpper(data, offset, length, bytesPerLine, numDigits, separator, null, null);
 	}
 
 	//------------------------------------------------------------------
@@ -1212,6 +1417,19 @@ public class NumberUtils
 
 	//------------------------------------------------------------------
 
+	public static String bytesToHexStringUpper(
+		byte[]	data,
+		int		bytesPerLine,
+		int		numDigits,
+		String	separator,
+		String	prefix,
+		String	suffix)
+	{
+		return bytesToHexStringUpper(data, 0, data.length, bytesPerLine, numDigits, separator, prefix, suffix);
+	}
+
+	//------------------------------------------------------------------
+
 	public static String bytesToHexString(
 		byte[]	data,
 		int		offset,
@@ -1221,6 +1439,37 @@ public class NumberUtils
 		String	separator,
 		String	prefix,
 		String	suffix)
+	{
+		return bytesToHexString(data, offset, length, bytesPerLine, numDigits, separator, prefix, suffix, DIGITS_LOWER);
+	}
+
+	//------------------------------------------------------------------
+
+	public static String bytesToHexStringUpper(
+		byte[]	data,
+		int		offset,
+		int		length,
+		int		bytesPerLine,
+		int		numDigits,
+		String	separator,
+		String	prefix,
+		String	suffix)
+	{
+		return bytesToHexString(data, offset, length, bytesPerLine, numDigits, separator, prefix, suffix, DIGITS_UPPER);
+	}
+
+	//------------------------------------------------------------------
+
+	private static String bytesToHexString(
+		byte[]	data,
+		int		offset,
+		int		length,
+		int		bytesPerLine,
+		int		numDigits,
+		String	separator,
+		String	prefix,
+		String	suffix,
+		char[]	digits)
 	{
 		int charsPerByte = (numDigits == 0) ? 2 : numDigits;
 		if (separator != null)
@@ -1272,6 +1521,17 @@ public class NumberUtils
 
 	//------------------------------------------------------------------
 
+	public static String intsToHexStringUpper(
+		int[]	data,
+		int		intsPerLine,
+		int		numDigits,
+		String	separator)
+	{
+		return intsToHexStringUpper(data, 0, data.length, intsPerLine, numDigits, separator, null, null);
+	}
+
+	//------------------------------------------------------------------
+
 	public static String intsToHexString(
 		int[]	data,
 		int		offset,
@@ -1281,6 +1541,19 @@ public class NumberUtils
 		String	separator)
 	{
 		return intsToHexString(data, offset, length, intsPerLine, numDigits, separator, null, null);
+	}
+
+	//------------------------------------------------------------------
+
+	public static String intsToHexStringUpper(
+		int[]	data,
+		int		offset,
+		int		length,
+		int		intsPerLine,
+		int		numDigits,
+		String	separator)
+	{
+		return intsToHexStringUpper(data, offset, length, intsPerLine, numDigits, separator, null, null);
 	}
 
 	//------------------------------------------------------------------
@@ -1298,6 +1571,19 @@ public class NumberUtils
 
 	//------------------------------------------------------------------
 
+	public static String intsToHexStringUpper(
+		int[]	data,
+		int		intsPerLine,
+		int		numDigits,
+		String	separator,
+		String	prefix,
+		String	suffix)
+	{
+		return intsToHexStringUpper(data, 0, data.length, intsPerLine, numDigits, separator, prefix, suffix);
+	}
+
+	//------------------------------------------------------------------
+
 	public static String intsToHexString(
 		int[]	data,
 		int		offset,
@@ -1307,6 +1593,37 @@ public class NumberUtils
 		String	separator,
 		String	prefix,
 		String	suffix)
+	{
+		return intsToHexString(data, offset, length, intsPerLine, numDigits, separator, prefix, suffix, false);
+	}
+
+	//------------------------------------------------------------------
+
+	public static String intsToHexStringUpper(
+		int[]	data,
+		int		offset,
+		int		length,
+		int		intsPerLine,
+		int		numDigits,
+		String	separator,
+		String	prefix,
+		String	suffix)
+	{
+		return intsToHexString(data, offset, length, intsPerLine, numDigits, separator, prefix, suffix, true);
+	}
+
+	//------------------------------------------------------------------
+
+	private static String intsToHexString(
+		int[]	data,
+		int		offset,
+		int		length,
+		int		intsPerLine,
+		int		numDigits,
+		String	separator,
+		String	prefix,
+		String	suffix,
+		boolean	upperCase)
 	{
 		int charsPerByte = (numDigits == 0) ? 2 * Integer.BYTES : numDigits;
 		if (separator != null)
@@ -1340,7 +1657,10 @@ public class NumberUtils
 			else if ((separator != null) && (i > 0))
 				buffer.append(separator);
 
-			buffer.append(uIntToHexString(data[offset + i], numDigits, '0'));
+			if (upperCase)
+				buffer.append(uIntToHexStringUpper(data[offset + i], numDigits, '0'));
+			else
+				buffer.append(uIntToHexString(data[offset + i], numDigits, '0'));
 		}
 		return buffer.toString();
 	}

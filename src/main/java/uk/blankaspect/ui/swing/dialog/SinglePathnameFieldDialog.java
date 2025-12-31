@@ -114,7 +114,7 @@ public class SinglePathnameFieldDialog
 		String	labelStr,
 		String	pathname)
 	{
-		this(owner, title, key, labelStr, pathname, 0, false);
+		this(owner, title, key, labelStr, pathname, 0);
 	}
 
 	//------------------------------------------------------------------
@@ -125,8 +125,7 @@ public class SinglePathnameFieldDialog
 		String	key,
 		String	labelStr,
 		String	pathname,
-		int		numColumns,
-		boolean	unixStyle)
+		int		numColumns)
 	{
 		// Call superclass constructor
 		super(owner, title, ModalityType.APPLICATION_MODAL);
@@ -165,7 +164,7 @@ public class SinglePathnameFieldDialog
 		controlPanel.add(label);
 
 		// Pathname panel
-		field = new Field(pathname, (numColumns == 0) ? DEFAULT_NUM_COLUMNS : numColumns, unixStyle);
+		field = new Field(pathname, (numColumns == 0) ? DEFAULT_NUM_COLUMNS : numColumns);
 		PathnamePanel pathnamePanel = new PathnamePanel(field, Command.CHOOSE_PATHNAME, this);
 
 		gbc.gridx = 1;
@@ -307,12 +306,10 @@ public class SinglePathnameFieldDialog
 		String		key,
 		String		labelStr,
 		String		pathname,
-		int			numColumns,
-		boolean		unixStyle)
+		int			numColumns)
 	{
 		SinglePathnameFieldDialog dialog =
-				new SinglePathnameFieldDialog(GuiUtils.getWindow(parent), title, key, labelStr, pathname, numColumns,
-											  unixStyle);
+				new SinglePathnameFieldDialog(GuiUtils.getWindow(parent), title, key, labelStr, pathname, numColumns);
 		dialog.setVisible(true);
 		return dialog.getPathname();
 	}
@@ -415,13 +412,11 @@ public class SinglePathnameFieldDialog
 
 		private Field(
 			String	pathname,
-			int		numColumns,
-			boolean	unixStyle)
+			int		numColumns)
 		{
 			super(pathname, numColumns);
 			FontUtils.setAppFont(FontKey.TEXT_FIELD, this);
 			GuiUtils.setTextComponentMargins(this);
-			setUnixStyle(unixStyle);
 		}
 
 		//--------------------------------------------------------------

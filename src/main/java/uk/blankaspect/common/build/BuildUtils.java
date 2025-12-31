@@ -44,7 +44,7 @@ public class BuildUtils
 ////////////////////////////////////////////////////////////////////////
 
 	/** The pattern for the date and time in the version string. */
-	private static final	String	VERSION_DATE_TIME_PATTERN	= "uuuuMMdd-HHmmss";
+	private static final	String	VERSION_DATE_TIME_PATTERN	= "yyyyMMdd-HHmmss";
 
 	/** Keys of build properties. */
 	private interface BuildPropertyKey

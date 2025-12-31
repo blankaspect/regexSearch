@@ -360,8 +360,7 @@ class TaskProgressDialog
 			else
 			{
 				infoField1.setText(TextUtils.getLimitedWidthPathname(Utils.getPathname(file), fontMetrics,
-																	 infoField1.getWidth(),
-																	 Utils.getFileSeparatorChar()));
+																	 infoField1.getWidth(), File.separatorChar));
 				infoField2.setText("[ " + numFiles + " ]");
 			}
 		});

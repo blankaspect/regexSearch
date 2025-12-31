@@ -57,7 +57,6 @@ import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 
 import uk.blankaspect.common.exception.AppException;
-import uk.blankaspect.common.exception.ExceptionUtils;
 
 import uk.blankaspect.common.filesystem.PathnameUtils;
 
@@ -575,9 +574,7 @@ class MainWindow
 			textView.setModel(textModel);
 			textModel.addChangeListener(textView);
 
-			currentPathname = (file == null)
-								? AppConstants.CLIPBOARD_STR
-								: Utils.getPathname(file, AppConfig.INSTANCE.isShowUnixPathnames());
+			currentPathname = (file == null) ? AppConstants.CLIPBOARD_STR : Utils.getPathname(file);
 			updateTitle();
 		}
 		else
@@ -1169,7 +1166,6 @@ class MainWindow
 	{
 		if (PreferencesDialog.showDialog(this))
 		{
-			ExceptionUtils.setUnixStyle(AppConfig.INSTANCE.isShowUnixPathnames());
 			controlDialog.updatePreferences();
 		}
 	}

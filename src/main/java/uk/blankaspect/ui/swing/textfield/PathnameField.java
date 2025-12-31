@@ -34,8 +34,6 @@ import uk.blankaspect.common.exception.ExceptionUtils;
 
 import uk.blankaspect.common.filesystem.PathnameUtils;
 
-import uk.blankaspect.common.property.Property;
-
 import uk.blankaspect.ui.swing.transfer.DataImporter;
 import uk.blankaspect.ui.swing.transfer.TextExporter;
 
@@ -47,14 +45,12 @@ import uk.blankaspect.ui.swing.transfer.TextExporter;
 
 public class PathnameField
 	extends JTextField
-	implements Property.IObserver
 {
 
 ////////////////////////////////////////////////////////////////////////
 //  Instance variables
 ////////////////////////////////////////////////////////////////////////
 
-	private	boolean					unixStyle;
 	private	List<IImportListener>	importListeners;
 	private	ImportEvent				importEvent;
 
@@ -92,19 +88,6 @@ public class PathnameField
 
 	//------------------------------------------------------------------
 
-	public PathnameField(
-		File	file,
-		int		numColumns,
-		boolean	unixStyle)
-	{
-		this(numColumns);
-		this.unixStyle = unixStyle;
-		if (file != null)
-			setFile(file);
-	}
-
-	//------------------------------------------------------------------
-
 ////////////////////////////////////////////////////////////////////////
 //  Class methods
 ////////////////////////////////////////////////////////////////////////
@@ -131,28 +114,8 @@ public class PathnameField
 	//------------------------------------------------------------------
 
 ////////////////////////////////////////////////////////////////////////
-//  Instance methods : Property.IObserver interface
-////////////////////////////////////////////////////////////////////////
-
-	@Override
-	public void propertyChanged(
-		Property	property)
-	{
-		setUnixStyle(((Property.BooleanProperty)property).getValue());
-	}
-
-	//------------------------------------------------------------------
-
-////////////////////////////////////////////////////////////////////////
 //  Instance methods
 ////////////////////////////////////////////////////////////////////////
-
-	public boolean isUnixStyle()
-	{
-		return unixStyle;
-	}
-
-	//------------------------------------------------------------------
 
 	public String getPathname()
 	{
@@ -196,7 +159,7 @@ public class PathnameField
 	public void setPathname(
 		String	pathname)
 	{
-		setText(convertPathname(pathname));
+		setText(denormalisePathname(pathname));
 	}
 
 	//------------------------------------------------------------------
@@ -205,18 +168,6 @@ public class PathnameField
 		File	file)
 	{
 		setPathname(getPathname(file));
-	}
-
-	//------------------------------------------------------------------
-
-	public void setUnixStyle(
-		boolean	unixStyle)
-	{
-		if (this.unixStyle != unixStyle)
-		{
-			this.unixStyle = unixStyle;
-			setPathname(getPathname());
-		}
 	}
 
 	//------------------------------------------------------------------
@@ -253,14 +204,20 @@ public class PathnameField
 
 	//------------------------------------------------------------------
 
-	protected String convertPathname(
+	/**
+	 * Replaces all occurrences of '/' in the specified pathname with the system's line separator and returns the
+	 * result.
+	 *
+	 * @param  pathname
+	 *           the pathname that will be denormalised.  The pathname may be {@code null}.
+	 * @return {@code pathname} with all occurrences of '/' replaced with the system's line separator, or {@code null}
+	 *         if {@code pathname} is {@code null}.
+	 */
+
+	private static String denormalisePathname(
 		String	pathname)
 	{
-		return (pathname == null)
-						? null
-						: unixStyle
-								? PathnameUtils.toUnixStyle(pathname, true)
-								: pathname.replace('/', File.separatorChar);
+		return (pathname == null) ? null : pathname.replace('/', File.separatorChar);
 	}
 
 	//------------------------------------------------------------------
@@ -394,7 +351,7 @@ public class PathnameField
 					List<File> files = DataImporter.getFiles(support.getTransferable());
 					if (!files.isEmpty())
 					{
-						String pathname = convertPathname(getPathname(files.get(0)));
+						String pathname = denormalisePathname(getPathname(files.get(0)));
 						if (support.isDrop())
 							setText(pathname);
 						else

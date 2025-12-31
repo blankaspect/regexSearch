@@ -102,7 +102,7 @@ public abstract class AbstractIntegerSpinner
 		try
 		{
 			int value = getEditorValue();
-			int boundedValue = getBoundedValue(value);
+			int boundedValue = clampValue(value);
 			setIntValue(boundedValue);
 			if (alwaysUpdate || (value != boundedValue) || isEditorInvalid())
 				setEditorValue(boundedValue);
@@ -128,7 +128,7 @@ public abstract class AbstractIntegerSpinner
 	{
 		long value = Math.min(Math.max((long)Integer.MIN_VALUE, (long)getIntValue() + (long)increment),
 							  (long)Integer.MAX_VALUE);
-		setIntValue(getBoundedValue((int)value));
+		setIntValue(clampValue((int)value));
 	}
 
 	//------------------------------------------------------------------
@@ -154,7 +154,7 @@ public abstract class AbstractIntegerSpinner
 	public void setMinimum(int minValue)
 	{
 		((SpinnerNumberModel)getModel()).setMinimum(minValue);
-		setIntValue(getBoundedValue(getIntValue()));
+		setIntValue(clampValue(getIntValue()));
 	}
 
 	//------------------------------------------------------------------
@@ -162,7 +162,7 @@ public abstract class AbstractIntegerSpinner
 	public void setMaximum(int maxValue)
 	{
 		((SpinnerNumberModel)getModel()).setMaximum(maxValue);
-		setIntValue(getBoundedValue(getIntValue()));
+		setIntValue(clampValue(getIntValue()));
 	}
 
 	//------------------------------------------------------------------
@@ -214,7 +214,7 @@ public abstract class AbstractIntegerSpinner
 
 	//------------------------------------------------------------------
 
-	protected int getBoundedValue(int value)
+	protected int clampValue(int value)
 	{
 		SpinnerNumberModel model = (SpinnerNumberModel)getModel();
 		int minValue = (Integer)model.getMinimum();

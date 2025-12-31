@@ -32,7 +32,6 @@ import java.awt.event.MouseListener;
 
 import java.io.File;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.AbstractAction;
@@ -51,8 +50,6 @@ import javax.swing.SwingUtilities;
 import uk.blankaspect.common.exception.AppException;
 
 import uk.blankaspect.common.misc.SystemUtils;
-
-import uk.blankaspect.common.property.Property;
 
 import uk.blankaspect.ui.swing.action.KeyAction;
 
@@ -172,8 +169,7 @@ class PathnameEditor
 								   String title,
 								   String pathname)
 			{
-				super(owner, title, KEY, PATHNAME_STR, pathname, 0,
-					  AppConfig.INSTANCE.isShowUnixPathnames());
+				super(owner, title, KEY, PATHNAME_STR, pathname, 0);
 			}
 
 			//----------------------------------------------------------
@@ -186,8 +182,7 @@ class PathnameEditor
 											 String    title,
 											 String    pathname)
 			{
-				PathnameDialog dialog = new PathnameDialog(GuiUtils.getWindow(parent), title,
-														   pathname);
+				PathnameDialog dialog = new PathnameDialog(GuiUtils.getWindow(parent), title, pathname);
 				dialog.setVisible(true);
 				return dialog.getPathname();
 			}
@@ -315,8 +310,7 @@ class PathnameEditor
 			// Set properties
 			AppFont.TEXT_FIELD.apply(this);
 			GuiUtils.setPaddedLineBorder(this, VERTICAL_MARGIN, HORIZONTAL_MARGIN);
-			setUnixStyle(AppConfig.INSTANCE.isShowUnixPathnames());
-			setForeground(AppConstants.TEXT_COLOUR);
+				setForeground(AppConstants.TEXT_COLOUR);
 			setDisabledTextColor(Utils.getDisabledTextColour());
 
 			// Add listeners
@@ -397,19 +391,6 @@ class PathnameEditor
 					colour = AppConstants.DISABLED_BACKGROUND_COLOUR;
 			}
 			return colour;
-		}
-
-		//--------------------------------------------------------------
-
-		@Override
-		public void propertyChanged(Property property)
-		{
-			super.propertyChanged(property);
-
-			List<String> items = new ArrayList<>();
-			for (String item : getItems())
-				items.add(convertPathname(item));
-			setItems(items);
 		}
 
 		//--------------------------------------------------------------
@@ -627,7 +608,7 @@ class PathnameEditor
 		return (itemsSubmenu == null)
 					? str
 					: TextUtils.getLimitedWidthPathname(str, itemsSubmenu.getFontMetrics(itemsSubmenu.getFont()),
-														MAX_MENU_ITEM_WIDTH, Utils.getFileSeparatorChar());
+														MAX_MENU_ITEM_WIDTH, File.separatorChar);
 	}
 
 	//------------------------------------------------------------------
@@ -718,13 +699,6 @@ class PathnameEditor
 	public void addImportListener(PathnameField.IImportListener listener)
 	{
 		pathnameField.addImportListener(listener);
-	}
-
-	//------------------------------------------------------------------
-
-	public void addUnixStyleObserver()
-	{
-		AppConfig.INSTANCE.addShowUnixPathnamesObserver(pathnameField);
 	}
 
 	//------------------------------------------------------------------

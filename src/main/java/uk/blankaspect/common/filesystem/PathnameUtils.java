@@ -112,46 +112,6 @@ public class PathnameUtils
 
 	//------------------------------------------------------------------
 
-	public static String toUnixStyle(
-		String	pathname,
-		boolean	abbreviateUserHome)
-	{
-		// If pathname starts with user's home directory, replace it with '~'
-		if (abbreviateUserHome)
-		{
-			String userHome = SystemUtils.userHomeDirectoryPathname();
-			if ((userHome != null) && pathname.startsWith(userHome))
-				pathname = PathnameUtils.USER_HOME_PREFIX + pathname.substring(userHome.length());
-		}
-
-		// Replace non-Unix file separators with Unix separators
-		return pathname.replace(File.separatorChar, '/');
-	}
-
-	//------------------------------------------------------------------
-
-	public static String toSystemStyle(
-		String	pathname)
-	{
-		if (File.separatorChar != '/')
-		{
-			// Replace Unix file separators with local separators
-			pathname = pathname.replace('/', File.separatorChar);
-
-			// If pathname starts with '~', replace it with user's home directory
-			if (pathname.startsWith(USER_HOME_PREFIX))
-			{
-				String userHome = SystemUtils.userHomeDirectoryPathname();
-				if (userHome != null)
-					pathname = userHome + pathname.substring(USER_HOME_PREFIX.length());
-			}
-		}
-
-		return pathname;
-	}
-
-	//------------------------------------------------------------------
-
 	/**
 	 * Returns {@code true} if the suffix of the specified pathname matches any of the specified suffixes (filename
 	 * extensions, for example).  Letter case is ignored if {@link #ignoreFilenameCase} is {@code true}.

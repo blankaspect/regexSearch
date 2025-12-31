@@ -2,7 +2,7 @@
 
 Utils.java
 
-Utility methods class.
+Class: utility methods class.
 
 \*====================================================================*/
 
@@ -41,14 +41,12 @@ import uk.blankaspect.common.exception.AppException;
 
 import uk.blankaspect.common.exception2.ExceptionUtils;
 
-import uk.blankaspect.common.filesystem.PathnameUtils;
-
 import uk.blankaspect.ui.swing.colour.ColourUtils;
 
 //----------------------------------------------------------------------
 
 
-// UTILITY METHODS CLASS
+// CLASS: UTILITY METHODS
 
 
 class Utils
@@ -61,63 +59,6 @@ class Utils
 	private static final	String	FAILED_TO_GET_PATHNAME_STR	= "Failed to get the canonical pathname for ";
 
 	private static final	String	PANEL_BACKGROUND_COLOUR_KEY	= "Panel.background";
-
-////////////////////////////////////////////////////////////////////////
-//  Enumerated types
-////////////////////////////////////////////////////////////////////////
-
-
-	// ERROR IDENTIFIERS
-
-
-	private enum ErrorId
-		implements AppException.IId
-	{
-
-	////////////////////////////////////////////////////////////////////
-	//  Constants
-	////////////////////////////////////////////////////////////////////
-
-		CLIPBOARD_IS_UNAVAILABLE
-		("The clipboard is currently unavailable."),
-
-		FAILED_TO_GET_CLIPBOARD_DATA
-		("Failed to get data from the clipboard."),
-
-		NO_TEXT_ON_CLIPBOARD
-		("There is no text on the clipboard.");
-
-	////////////////////////////////////////////////////////////////////
-	//  Constructors
-	////////////////////////////////////////////////////////////////////
-
-		private ErrorId(String message)
-		{
-			this.message = message;
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance methods : AppException.IId interface
-	////////////////////////////////////////////////////////////////////
-
-		public String getMessage()
-		{
-			return message;
-		}
-
-		//--------------------------------------------------------------
-
-	////////////////////////////////////////////////////////////////////
-	//  Instance variables
-	////////////////////////////////////////////////////////////////////
-
-		private	String	message;
-
-	}
-
-	//==================================================================
 
 ////////////////////////////////////////////////////////////////////////
 //  Constructors
@@ -133,8 +74,10 @@ class Utils
 //  Class methods
 ////////////////////////////////////////////////////////////////////////
 
-	public static int indexOf(Object   target,
-							  Object[] values)
+	@SuppressWarnings("unchecked")
+	public static <T> int indexOf(
+		T		target,
+		T...	values)
 	{
 		for (int i = 0; i < values.length; i++)
 		{
@@ -146,7 +89,8 @@ class Utils
 
 	//------------------------------------------------------------------
 
-	public static String uniqueCharsString(String str)
+	public static String uniqueCharsString(
+		String	str)
 	{
 		StringBuilder buffer = new StringBuilder(str.length());
 		for (int i = str.length() - 1; i >= 0; i--)
@@ -160,22 +104,8 @@ class Utils
 
 	//------------------------------------------------------------------
 
-	public static char getFileSeparatorChar()
-	{
-		return AppConfig.INSTANCE.isShowUnixPathnames() ? '/' : File.separatorChar;
-	}
-
-	//------------------------------------------------------------------
-
-	public static String getPathname(File file)
-	{
-		return getPathname(file, AppConfig.INSTANCE.isShowUnixPathnames());
-	}
-
-	//------------------------------------------------------------------
-
-	public static String getPathname(File    file,
-									 boolean unixStyle)
+	public static String getPathname(
+		File	file)
 	{
 		String pathname = null;
 		if (file != null)
@@ -190,9 +120,6 @@ class Utils
 				System.err.println("- " + e);
 				pathname = file.getAbsolutePath();
 			}
-
-			if (unixStyle)
-				pathname = PathnameUtils.toUnixStyle(pathname, true);
 		}
 		return pathname;
 	}
@@ -209,8 +136,9 @@ class Utils
 
 	//------------------------------------------------------------------
 
-	public static File appendSuffix(File   file,
-									String suffix)
+	public static File appendSuffix(
+		File	file,
+		String	suffix)
 	{
 		String filename = file.getName();
 		if (!filename.isEmpty() && (filename.indexOf('.') < 0))
@@ -220,11 +148,12 @@ class Utils
 
 	//------------------------------------------------------------------
 
-	public static String[] getOptionStrings(String... optionStrs)
+	public static String[] getOptionStrings(
+		String...	options)
 	{
-		String[] strs = new String[optionStrs.length + 1];
-		System.arraycopy(optionStrs, 0, strs, 0, optionStrs.length);
-		strs[optionStrs.length] = AppConstants.CANCEL_STR;
+		String[] strs = new String[options.length + 1];
+		System.arraycopy(options, 0, strs, 0, options.length);
+		strs[options.length] = AppConstants.CANCEL_STR;
 		return strs;
 	}
 
@@ -256,7 +185,8 @@ class Utils
 
 	//------------------------------------------------------------------
 
-	public static void putClipboardText(String text)
+	public static void putClipboardText(
+		String	text)
 		throws AppException
 	{
 		try
@@ -272,12 +202,13 @@ class Utils
 
 	//------------------------------------------------------------------
 
-	public static void showContextMenu(JPopupMenu contextMenu,
-									   Component  invoker,
-									   MouseEvent event)
+	public static void showContextMenu(
+		JPopupMenu	contextMenu,
+		Component	reference,
+		MouseEvent	event)
 	{
 		if (event == null)
-			contextMenu.show(invoker, 0, 0);
+			contextMenu.show(reference, 0, 0);
 		else
 			contextMenu.show(event.getComponent(), event.getX(), event.getY());
 	}
@@ -291,6 +222,65 @@ class Utils
 	}
 
 	//------------------------------------------------------------------
+
+////////////////////////////////////////////////////////////////////////
+//  Enumerated types
+////////////////////////////////////////////////////////////////////////
+
+
+	// ENUMERATION: ERROR IDENTIFIERS
+
+
+	private enum ErrorId
+		implements AppException.IId
+	{
+
+	////////////////////////////////////////////////////////////////////
+	//  Constants
+	////////////////////////////////////////////////////////////////////
+
+		CLIPBOARD_IS_UNAVAILABLE
+		("The clipboard is currently unavailable."),
+
+		FAILED_TO_GET_CLIPBOARD_DATA
+		("Failed to get data from the clipboard."),
+
+		NO_TEXT_ON_CLIPBOARD
+		("There is no text on the clipboard.");
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance variables
+	////////////////////////////////////////////////////////////////////
+
+		private	String	message;
+
+	////////////////////////////////////////////////////////////////////
+	//  Constructors
+	////////////////////////////////////////////////////////////////////
+
+		private ErrorId(
+			String	message)
+		{
+			this.message = message;
+		}
+
+		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Instance methods : AppException.IId interface
+	////////////////////////////////////////////////////////////////////
+
+		@Override
+		public String getMessage()
+		{
+			return message;
+		}
+
+		//--------------------------------------------------------------
+
+	}
+
+	//==================================================================
 
 }
 

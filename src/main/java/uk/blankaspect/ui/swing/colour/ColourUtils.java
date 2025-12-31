@@ -72,14 +72,16 @@ public class ColourUtils
 //  Class methods
 ////////////////////////////////////////////////////////////////////////
 
-	public static boolean isTransparent(Color colour)
+	public static boolean isTransparent(
+		Color	colour)
 	{
 		return (colour.getAlpha() < MAX_ARGB_COMPONENT_VALUE);
 	}
 
 	//------------------------------------------------------------------
 
-	public static double getOpacity(Color colour)
+	public static double getOpacity(
+		Color	colour)
 	{
 		int alpha = colour.getAlpha();
 		return (alpha < MAX_ARGB_COMPONENT_VALUE) ? (double)alpha / (double)MAX_ARGB_COMPONENT_VALUE : MAX_OPACITY;
@@ -87,23 +89,26 @@ public class ColourUtils
 
 	//------------------------------------------------------------------
 
-	public static double getBrightness(Color colour)
+	public static double getBrightness(
+		Color	colour)
 	{
 		return getBrightness(colour.getRed(), colour.getGreen(), colour.getBlue());
 	}
 
 	//------------------------------------------------------------------
 
-	public static double getBrightness(int rgb)
+	public static double getBrightness(
+		int	rgb)
 	{
 		return getBrightness((rgb >> 16) & 0xFF, (rgb >> 8) & 0xFF, rgb & 0xFF);
 	}
 
 	//------------------------------------------------------------------
 
-	public static double getBrightness(int red,
-									   int green,
-									   int blue)
+	public static double getBrightness(
+		int	red,
+		int	green,
+		int	blue)
 	{
 		double cMax = (red > green) ? red : green;
 		if (cMax < blue)
@@ -113,8 +118,9 @@ public class ColourUtils
 
 	//------------------------------------------------------------------
 
-	public static Color scaleBrightness(Color  colour,
-										double factor)
+	public static Color scaleBrightness(
+		Color	colour,
+		double	factor)
 	{
 		float[] hsb = new float[3];
 		Color.RGBtoHSB(colour.getRed(), colour.getGreen(), colour.getBlue(), hsb);
@@ -123,21 +129,24 @@ public class ColourUtils
 
 	//------------------------------------------------------------------
 
-	public static Color copy(Color colour)
+	public static Color copy(
+		Color	colour)
 	{
 		return new Color(colour.getRGB(), true);
 	}
 
 	//------------------------------------------------------------------
 
-	public static Color opaque(Color colour)
+	public static Color opaque(
+		Color	colour)
 	{
 		return new Color(colour.getRGB());
 	}
 
 	//------------------------------------------------------------------
 
-	public static Color invert(Color colour)
+	public static Color invert(
+		Color	colour)
 	{
 		return new Color(MAX_ARGB_COMPONENT_VALUE - colour.getRed(), MAX_ARGB_COMPONENT_VALUE - colour.getGreen(),
 						 MAX_ARGB_COMPONENT_VALUE - colour.getBlue(), colour.getAlpha());
@@ -145,8 +154,9 @@ public class ColourUtils
 
 	//------------------------------------------------------------------
 
-	public static Color blend(Color foreground,
-							  Color background)
+	public static Color blend(
+		Color	foreground,
+		Color	background)
 	{
 		Color result = foreground;
 		int alpha = foreground.getAlpha();
@@ -164,9 +174,10 @@ public class ColourUtils
 
 	//------------------------------------------------------------------
 
-	public static Color interpolateHsb(Color  colour1,
-									   Color  colour2,
-									   double colour2Fraction)
+	public static Color interpolateHsb(
+		Color	colour1,
+		Color	colour2,
+		double	colour2Fraction)
 	{
 		float[] hsb1 = new float[3];
 		Color.RGBtoHSB(colour1.getRed(), colour1.getGreen(), colour1.getBlue(), hsb1);
@@ -182,7 +193,8 @@ public class ColourUtils
 
 	//------------------------------------------------------------------
 
-	public static String colourToRgbString(int rgb)
+	public static String colourToRgbString(
+		int	rgb)
 	{
 		StringBuilder buffer = new StringBuilder(32);
 		buffer.append(rgb >> 16 & 0xFF);
@@ -201,22 +213,21 @@ public class ColourUtils
 
 	//------------------------------------------------------------------
 
-	public static String colourToRgbString(Color colour)
+	public static String colourToRgbString(
+		Color	colour)
 	{
 		return colourToRgbString(colour.getRGB());
 	}
 
 	//------------------------------------------------------------------
 
-	public static String colourToHexString(Color colour)
+	public static String colourToHexString(
+		Color	colour)
 	{
-		boolean lowerCase = NumberUtils.setUpper();
-		String str = new String(HEX_FORMAT_PREFIX + NumberUtils.byteToHexString(colour.getRed())
-														+ NumberUtils.byteToHexString(colour.getGreen())
-														+ NumberUtils.byteToHexString(colour.getBlue()));
-		if (lowerCase)
-			NumberUtils.setLower();
-		return str;
+		return HEX_FORMAT_PREFIX
+				+ NumberUtils.byteToHexStringUpper(colour.getRed())
+				+ NumberUtils.byteToHexStringUpper(colour.getGreen())
+				+ NumberUtils.byteToHexStringUpper(colour.getBlue());
 	}
 
 	//------------------------------------------------------------------
@@ -226,7 +237,8 @@ public class ColourUtils
 	 * @throws ValueOutOfBoundsException  if an RGB value in {@code str} is outside the range [0..255].
 	 */
 
-	public static Color parseColour(String str)
+	public static Color parseColour(
+		String	str)
 	{
 		Color colour = null;
 		if (str.startsWith(HEX_FORMAT_PREFIX))

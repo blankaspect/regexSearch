@@ -2,7 +2,7 @@
 
 FComboBox.java
 
-Combo box class.
+Class: combo box.
 
 \*====================================================================*/
 
@@ -26,7 +26,7 @@ import uk.blankaspect.ui.swing.font.FontUtils;
 //----------------------------------------------------------------------
 
 
-// COMBO BOX CLASS
+// CLASS: COMBO BOX
 
 
 public class FComboBox<E>
@@ -44,7 +44,9 @@ public class FComboBox<E>
 
 	//------------------------------------------------------------------
 
-	public FComboBox(E[] items)
+	@SuppressWarnings("unchecked")
+	public FComboBox(
+		E... items)
 	{
 		super(items);
 		_init();
@@ -52,7 +54,8 @@ public class FComboBox<E>
 
 	//------------------------------------------------------------------
 
-	public FComboBox(Iterable<E> items)
+	public FComboBox(
+		Iterable<E>	items)
 	{
 		super();
 		_init();
@@ -73,14 +76,16 @@ public class FComboBox<E>
 
 	//------------------------------------------------------------------
 
-	public void setSelectedValue(E value)
+	public void setSelectedValue(
+		E	value)
 	{
 		setSelectedItem(value);
 	}
 
 	//------------------------------------------------------------------
 
-	public void addItems(Iterable<E> items)
+	public void addItems(
+		Iterable<E>	items)
 	{
 		for (E item : items)
 			addItem(item);

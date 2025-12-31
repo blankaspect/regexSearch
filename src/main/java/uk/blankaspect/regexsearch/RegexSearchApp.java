@@ -30,7 +30,6 @@ import uk.blankaspect.common.build.BuildUtils;
 import uk.blankaspect.common.cls.ClassUtils;
 
 import uk.blankaspect.common.exception.AppException;
-import uk.blankaspect.common.exception.ExceptionUtils;
 import uk.blankaspect.common.exception.FileException;
 
 import uk.blankaspect.common.exception2.LocationException;
@@ -214,9 +213,6 @@ public class RegexSearchApp
 		// Read configuration
 		AppConfig config = AppConfig.INSTANCE;
 		config.read();
-
-		// Set UNIX style for pathnames in file exceptions
-		ExceptionUtils.setUnixStyle(config.isShowUnixPathnames());
 
 		// Set text antialiasing
 		TextRendering.setAntialiasing(config.getTextAntialiasing());

@@ -25,8 +25,6 @@ import java.util.List;
 
 import java.util.stream.Collectors;
 
-import uk.blankaspect.common.filesystem.PathnameUtils;
-
 //----------------------------------------------------------------------
 
 
@@ -51,12 +49,6 @@ public class ExceptionUtils
 	}
 
 	//------------------------------------------------------------------
-
-////////////////////////////////////////////////////////////////////////
-//  Class variables
-////////////////////////////////////////////////////////////////////////
-
-	private static	boolean	unixStyle;
 
 ////////////////////////////////////////////////////////////////////////
 //  Class methods
@@ -135,21 +127,6 @@ public class ExceptionUtils
 
 	//------------------------------------------------------------------
 
-	public static boolean isUnixStyle()
-	{
-		return unixStyle;
-	}
-
-	//------------------------------------------------------------------
-
-	public static void setUnixStyle(
-		boolean	unixStyle)
-	{
-		ExceptionUtils.unixStyle = unixStyle;
-	}
-
-	//------------------------------------------------------------------
-
 	public static String getPathname(
 		File	file)
 	{
@@ -172,11 +149,7 @@ public class ExceptionUtils
 		File	file,
 		int		maxLength)
 	{
-		String pathname = getPathname(file);
-		if (unixStyle && (pathname != null))
-			pathname = PathnameUtils.toUnixStyle(pathname, true);
-
-		return getLimitedPathname(pathname, maxLength);
+		return getLimitedPathname(getPathname(file), maxLength);
 	}
 
 	//------------------------------------------------------------------
@@ -190,13 +163,12 @@ public class ExceptionUtils
 			return null;
 
 		// Split the pathname into its elements
-		char separatorChar = unixStyle ? '/' : File.separatorChar;
 		List<String> elements = new ArrayList<>();
 		int index = 0;
 		while (index < pathname.length())
 		{
 			int startIndex = index;
-			index = pathname.indexOf(separatorChar, index);
+			index = pathname.indexOf(File.separatorChar, index);
 			if (index < 0)
 				index = pathname.length();
 			if (index > startIndex)
@@ -211,7 +183,7 @@ public class ExceptionUtils
 		int numElements = 0;
 		for (int i = elements.size() - 1; i >= 0; i--)
 		{
-			buffer.append(separatorChar);
+			buffer.append(File.separatorChar);
 			buffer.append(elements.get(i));
 			if (buffer.length() > maxLength)
 				break;
@@ -233,7 +205,7 @@ public class ExceptionUtils
 		buffer = new StringBuilder(ELLIPSIS_STR);
 		for (int i = elements.size() - numElements; i < elements.size(); i++)
 		{
-			buffer.append(separatorChar);
+			buffer.append(File.separatorChar);
 			buffer.append(elements.get(i));
 		}
 		return buffer.toString();

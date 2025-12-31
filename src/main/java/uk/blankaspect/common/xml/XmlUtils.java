@@ -147,7 +147,7 @@ public class XmlUtils
 	//  Methods
 	////////////////////////////////////////////////////////////////////
 
-		public boolean acceptElement(Element element);
+		boolean acceptElement(Element element);
 
 		//--------------------------------------------------------------
 
