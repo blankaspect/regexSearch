@@ -50,7 +50,7 @@ public class ErrorLogger
 	private static final	String	FILENAME	= "error.log";
 
 	private static final	DateTimeFormatter	TIMESTAMP_FORMATTER	=
-			DateTimeFormatter.ofPattern("uuuu-MM-dd HH:mm:ss.SSS");
+			DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
 
 ////////////////////////////////////////////////////////////////////////
 //  Constructors

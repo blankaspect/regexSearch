@@ -453,8 +453,9 @@ class AppConfig
 			{
 				try
 				{
-					if (field.getName().startsWith(Property.FIELD_PREFIX))
-						properties.add((Property)field.get(this));
+					if (field.getName().startsWith(Property.FIELD_PREFIX)
+							&& (field.get(this) instanceof Property property))
+						properties.add(property);
 				}
 				catch (IllegalAccessException e)
 				{

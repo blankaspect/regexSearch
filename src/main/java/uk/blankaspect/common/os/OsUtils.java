@@ -52,10 +52,10 @@ public class OsUtils
 ////////////////////////////////////////////////////////////////////////
 
 	/**
-	 * Returns {@code true} if the operating system is UNIX-like.  The method returns {@code true} if {@linkplain
+	 * Returns {@code true} if the operating system is Unix-like.  The method returns {@code true} if {@linkplain
 	 * File#separatorChar File.separatorChar} is '/' (U+002F).
 	 *
-	 * @return {@code true} if the operating system is UNIX-like based on {@code File.separatorChar}.
+	 * @return {@code true} if the operating system is Unix-like based on {@code File.separatorChar}.
 	 */
 
 	public static boolean isUnixLike()
