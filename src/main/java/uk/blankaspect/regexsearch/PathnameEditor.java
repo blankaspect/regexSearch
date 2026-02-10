@@ -20,6 +20,7 @@ package uk.blankaspect.regexsearch;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.FontMetrics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -40,7 +41,6 @@ import javax.swing.ActionMap;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
-import javax.swing.JMenu;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
@@ -117,6 +117,314 @@ class PathnameEditor
 	};
 
 ////////////////////////////////////////////////////////////////////////
+//  Class variables
+////////////////////////////////////////////////////////////////////////
+
+	private static	JFileChooser	fileChooser;
+
+////////////////////////////////////////////////////////////////////////
+//  Instance variables
+////////////////////////////////////////////////////////////////////////
+
+	private	ListEditor	editor;
+	private	ActionMap	actionMap;
+	private	TextField	pathnameField;
+
+////////////////////////////////////////////////////////////////////////
+//  Constructors
+////////////////////////////////////////////////////////////////////////
+
+	public PathnameEditor(int maxNumItems)
+	{
+		// Initialise instance variables
+		editor = new ListEditor(maxNumItems, this);
+
+		// Initialise actions
+		actionMap = new ActionMap();
+		addAction(Command.CHOOSE_PATHNAME, AppConstants.ELLIPSIS_STR);
+		addAction(Command.EDIT, EDIT_STR + AppConstants.ELLIPSIS_STR);
+		addAction(Command.COPY, COPY_STR);
+		addAction(Command.SHOW_CONTEXT_MENU, null);
+
+		// Set layout
+		GridBagLayout gridBag = new GridBagLayout();
+		GridBagConstraints gbc = new GridBagConstraints();
+		setLayout(gridBag);
+
+		int gridX = 0;
+
+		// Field: pathname
+		pathnameField = new TextField();
+
+		gbc.gridx = gridX++;
+		gbc.gridy = 0;
+		gbc.gridwidth = 1;
+		gbc.gridheight = 1;
+		gbc.weightx = 1.0;
+		gbc.weighty = 0.0;
+		gbc.anchor = GridBagConstraints.LINE_START;
+		gbc.fill = GridBagConstraints.BOTH;
+		gbc.insets = new Insets(0, 0, 0, 0);
+		gridBag.setConstraints(pathnameField, gbc);
+		add(pathnameField);
+
+		// Button: browse
+		JButton browseButton = new FButton(getAction(Command.CHOOSE_PATHNAME));
+		browseButton.setMargin(BROWSE_BUTTON_MARGINS);
+		browseButton.setToolTipText(CHOOSE_PATHNAME_TOOLTIP_STR);
+
+		gbc.gridx = gridX++;
+		gbc.gridy = 0;
+		gbc.gridwidth = 1;
+		gbc.gridheight = 1;
+		gbc.weightx = 0.0;
+		gbc.weighty = 0.0;
+		gbc.anchor = GridBagConstraints.LINE_START;
+		gbc.fill = GridBagConstraints.VERTICAL;
+		gbc.insets = new Insets(0, 6, 0, 0);
+		gridBag.setConstraints(browseButton, gbc);
+		add(browseButton);
+
+		// Update actions
+		updateActions();
+
+		// Add editor commands to action map
+		KeyAction.create(this, JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT, editor,
+						 AppConstants.LIST_EDITOR_KEY_COMMANDS);
+
+		// Add commands to action map
+		for (KeyAction.KeyCommandPair command : KEY_COMMANDS)
+			KeyAction.create(this, JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT, command.keyStroke(),
+							 getAction(command.command()));
+	}
+
+	//------------------------------------------------------------------
+
+////////////////////////////////////////////////////////////////////////
+//  Class methods
+////////////////////////////////////////////////////////////////////////
+
+	private static File chooseFile(Component parent,
+								   File      file)
+	{
+		if (fileChooser == null)
+		{
+			fileChooser = new JFileChooser(SystemUtils.userHomeDirectoryPathname());
+			fileChooser.setApproveButtonMnemonic(KeyEvent.VK_S);
+		}
+		fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+		fileChooser.setDialogTitle(SELECT_FILE_OR_DIRECTORY_STR);
+		fileChooser.setApproveButtonToolTipText(SELECT_FILE_OR_DIRECTORY_STR);
+		if (file != null)
+		{
+			if (file.isDirectory())
+				fileChooser.setSelectedFile(file);
+			else
+				fileChooser.setCurrentDirectory(file);
+		}
+		fileChooser.rescanCurrentDirectory();
+		return (fileChooser.showDialog(parent, SELECT_STR) == JFileChooser.APPROVE_OPTION)
+				? fileChooser.getSelectedFile()
+				: null;
+	}
+
+	//------------------------------------------------------------------
+
+////////////////////////////////////////////////////////////////////////
+//  Instance methods : ListEditor.ITextModel interface
+////////////////////////////////////////////////////////////////////////
+
+	@Override
+	public String getText()
+	{
+		String str = pathnameField.getText();
+		return str.isEmpty() ? null : str;
+	}
+
+	//------------------------------------------------------------------
+
+	public void setText(String text)
+	{
+		pathnameField.setText(text);
+	}
+
+	//------------------------------------------------------------------
+
+	public String toActionText(
+		String		str,
+		FontMetrics fontMetrics)
+	{
+		return TextUtils.getLimitedWidthPathname(str, fontMetrics, MAX_MENU_ITEM_WIDTH, File.separatorChar);
+	}
+
+	//------------------------------------------------------------------
+
+////////////////////////////////////////////////////////////////////////
+//  Instance methods : overriding methods
+////////////////////////////////////////////////////////////////////////
+
+	@Override
+	public void setEnabled(boolean enabled)
+	{
+		super.setEnabled(enabled);
+		for (Component component : getComponents())
+			component.setEnabled(enabled);
+	}
+
+	//------------------------------------------------------------------
+
+	@Override
+	public boolean requestFocusInWindow()
+	{
+		return pathnameField.requestFocusInWindow();
+	}
+
+	//------------------------------------------------------------------
+
+////////////////////////////////////////////////////////////////////////
+//  Instance methods
+////////////////////////////////////////////////////////////////////////
+
+	public boolean isEmpty()
+	{
+		return pathnameField.isEmpty();
+	}
+
+	//------------------------------------------------------------------
+
+	public File getFile()
+	{
+		return pathnameField.getFile();
+	}
+
+	//------------------------------------------------------------------
+
+	public List<String> getItems()
+	{
+		return editor.getItems();
+	}
+
+	//------------------------------------------------------------------
+
+	public int getIndex()
+	{
+		return editor.getItemIndex();
+	}
+
+	//------------------------------------------------------------------
+
+	public void setFile(File file)
+	{
+		pathnameField.setFile(file);
+		updateList();
+	}
+
+	//------------------------------------------------------------------
+
+	public void setItems(List<String> items)
+	{
+		editor.setItems(items);
+	}
+
+	//------------------------------------------------------------------
+
+	public void setIndex(int index)
+	{
+		editor.setItemIndex(index);
+	}
+
+	//------------------------------------------------------------------
+
+	public void updateList()
+	{
+		editor.updateList();
+	}
+
+	//------------------------------------------------------------------
+
+	public void addImportListener(PathnameField.IImportListener listener)
+	{
+		pathnameField.addImportListener(listener);
+	}
+
+	//------------------------------------------------------------------
+
+	private CommandAction getAction(String key)
+	{
+		return (CommandAction)actionMap.get(key);
+	}
+
+	//------------------------------------------------------------------
+
+	private void addAction(String key,
+						   String text)
+	{
+		actionMap.put(key, new CommandAction(key, text));
+	}
+
+	//------------------------------------------------------------------
+
+	private void updateActions()
+	{
+		editor.updateActions();
+		getAction(Command.COPY).setEnabled(!pathnameField.isEmpty());
+	}
+
+	//------------------------------------------------------------------
+
+	private void showListDialog()
+	{
+		List<String> items = ListDialog.showDialog(this, getItems());
+		if (items != null)
+			setItems(items);
+	}
+
+	//------------------------------------------------------------------
+
+	private void showContextMenu(MouseEvent event)
+	{
+		if (isEnabled() && ((event == null) || event.isPopupTrigger()))
+		{
+			// Create context menu
+			JPopupMenu menu = new JPopupMenu();
+
+			editor.updateList();
+			FMenu submenu = new FMenu(SELECT_ITEM_STR);
+			submenu.setEnabled(!editor.isEmpty());
+			if (submenu.isEnabled())
+			{
+				FontMetrics fontMetrics = submenu.getFontMetrics(submenu.getFont());
+				for (Action action : editor.getItemActions(fontMetrics))
+					submenu.add(new FMenuItem(action));
+			}
+			menu.add(submenu);
+
+			menu.add(new FMenuItem(editor.getAction(ListEditor.Command.SELECT_PREVIOUS)));
+			menu.add(new FMenuItem(editor.getAction(ListEditor.Command.SELECT_NEXT)));
+
+			menu.addSeparator();
+
+			menu.add(new FMenuItem(getAction(Command.EDIT)));
+
+			menu.addSeparator();
+
+			menu.add(new FMenuItem(getAction(Command.COPY)));
+
+			menu.addSeparator();
+
+			menu.add(new FMenuItem(editor.getAction(ListEditor.Command.DELETE)));
+
+			// Update actions for menu items
+			updateActions();
+
+			// Display menu
+			Utils.showContextMenu(menu, this, event);
+		}
+	}
+
+	//------------------------------------------------------------------
+
+////////////////////////////////////////////////////////////////////////
 //  Member classes : non-inner classes
 ////////////////////////////////////////////////////////////////////////
 
@@ -142,68 +450,6 @@ class PathnameEditor
 			"Edit the selected pathname",
 			"Delete the selected pathname"
 		};
-
-	////////////////////////////////////////////////////////////////////
-	//  Member classes : non-inner classes
-	////////////////////////////////////////////////////////////////////
-
-
-		// PATHNAME DIALOG CLASS
-
-
-		private static class PathnameDialog
-			extends SinglePathnameFieldDialog
-		{
-
-		////////////////////////////////////////////////////////////////
-		//  Constants
-		////////////////////////////////////////////////////////////////
-
-			private static final	String	KEY	= PathnameDialog.class.getCanonicalName();
-
-		////////////////////////////////////////////////////////////////
-		//  Constructors
-		////////////////////////////////////////////////////////////////
-
-			private PathnameDialog(Window owner,
-								   String title,
-								   String pathname)
-			{
-				super(owner, title, KEY, PATHNAME_STR, pathname, 0);
-			}
-
-			//----------------------------------------------------------
-
-		////////////////////////////////////////////////////////////////
-		//  Class methods
-		////////////////////////////////////////////////////////////////
-
-			private static String showDialog(Component parent,
-											 String    title,
-											 String    pathname)
-			{
-				PathnameDialog dialog = new PathnameDialog(GuiUtils.getWindow(parent), title, pathname);
-				dialog.setVisible(true);
-				return dialog.getPathname();
-			}
-
-			//----------------------------------------------------------
-
-		////////////////////////////////////////////////////////////////
-		//  Instance methods : overriding methods
-		////////////////////////////////////////////////////////////////
-
-			@Override
-			protected File chooseFile()
-			{
-				return PathnameEditor.chooseFile(this, getField().getCanonicalFile());
-			}
-
-			//----------------------------------------------------------
-
-		}
-
-		//==============================================================
 
 	////////////////////////////////////////////////////////////////////
 	//  Constructors
@@ -273,6 +519,68 @@ class PathnameEditor
 		}
 
 		//--------------------------------------------------------------
+
+	////////////////////////////////////////////////////////////////////
+	//  Member classes : non-inner classes
+	////////////////////////////////////////////////////////////////////
+
+
+		// PATHNAME DIALOG CLASS
+
+
+		private static class PathnameDialog
+			extends SinglePathnameFieldDialog
+		{
+
+		////////////////////////////////////////////////////////////////
+		//  Constants
+		////////////////////////////////////////////////////////////////
+
+			private static final	String	KEY	= PathnameDialog.class.getCanonicalName();
+
+		////////////////////////////////////////////////////////////////
+		//  Constructors
+		////////////////////////////////////////////////////////////////
+
+			private PathnameDialog(Window owner,
+								   String title,
+								   String pathname)
+			{
+				super(owner, title, KEY, PATHNAME_STR, pathname, 0);
+			}
+
+			//----------------------------------------------------------
+
+		////////////////////////////////////////////////////////////////
+		//  Class methods
+		////////////////////////////////////////////////////////////////
+
+			private static String showDialog(Component parent,
+											 String    title,
+											 String    pathname)
+			{
+				PathnameDialog dialog = new PathnameDialog(GuiUtils.getWindow(parent), title, pathname);
+				dialog.setVisible(true);
+				return dialog.getPathname();
+			}
+
+			//----------------------------------------------------------
+
+		////////////////////////////////////////////////////////////////
+		//  Instance methods : overriding methods
+		////////////////////////////////////////////////////////////////
+
+			@Override
+			protected File chooseFile()
+			{
+				return PathnameEditor.chooseFile(this, getField().getCanonicalFile());
+			}
+
+			//----------------------------------------------------------
+
+		}
+
+		//==============================================================
 
 	}
 
@@ -482,321 +790,6 @@ class PathnameEditor
 	}
 
 	//==================================================================
-
-////////////////////////////////////////////////////////////////////////
-//  Constructors
-////////////////////////////////////////////////////////////////////////
-
-	public PathnameEditor(int maxNumItems)
-	{
-		// Initialise instance variables
-		editor = new ListEditor(maxNumItems, this);
-
-		// Initialise actions
-		actionMap = new ActionMap();
-		addAction(Command.CHOOSE_PATHNAME, AppConstants.ELLIPSIS_STR);
-		addAction(Command.EDIT, EDIT_STR + AppConstants.ELLIPSIS_STR);
-		addAction(Command.COPY, COPY_STR);
-		addAction(Command.SHOW_CONTEXT_MENU, null);
-
-		// Set layout
-		GridBagLayout gridBag = new GridBagLayout();
-		GridBagConstraints gbc = new GridBagConstraints();
-		setLayout(gridBag);
-
-		int gridX = 0;
-
-		// Field: pathname
-		pathnameField = new TextField();
-
-		gbc.gridx = gridX++;
-		gbc.gridy = 0;
-		gbc.gridwidth = 1;
-		gbc.gridheight = 1;
-		gbc.weightx = 1.0;
-		gbc.weighty = 0.0;
-		gbc.anchor = GridBagConstraints.LINE_START;
-		gbc.fill = GridBagConstraints.BOTH;
-		gbc.insets = new Insets(0, 0, 0, 0);
-		gridBag.setConstraints(pathnameField, gbc);
-		add(pathnameField);
-
-		// Button: browse
-		JButton browseButton = new FButton(getAction(Command.CHOOSE_PATHNAME));
-		browseButton.setMargin(BROWSE_BUTTON_MARGINS);
-		browseButton.setToolTipText(CHOOSE_PATHNAME_TOOLTIP_STR);
-
-		gbc.gridx = gridX++;
-		gbc.gridy = 0;
-		gbc.gridwidth = 1;
-		gbc.gridheight = 1;
-		gbc.weightx = 0.0;
-		gbc.weighty = 0.0;
-		gbc.anchor = GridBagConstraints.LINE_START;
-		gbc.fill = GridBagConstraints.VERTICAL;
-		gbc.insets = new Insets(0, 6, 0, 0);
-		gridBag.setConstraints(browseButton, gbc);
-		add(browseButton);
-
-		// Update actions
-		updateActions();
-
-		// Add editor commands to action map
-		KeyAction.create(this, JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT, editor,
-						 AppConstants.LIST_EDITOR_KEY_COMMANDS);
-
-		// Add commands to action map
-		for (KeyAction.KeyCommandPair command : KEY_COMMANDS)
-			KeyAction.create(this, JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT, command.keyStroke(),
-							 getAction(command.command()));
-	}
-
-	//------------------------------------------------------------------
-
-////////////////////////////////////////////////////////////////////////
-//  Class methods
-////////////////////////////////////////////////////////////////////////
-
-	private static File chooseFile(Component parent,
-								   File      file)
-	{
-		if (fileChooser == null)
-		{
-			fileChooser = new JFileChooser(SystemUtils.userHomeDirectoryPathname());
-			fileChooser.setApproveButtonMnemonic(KeyEvent.VK_S);
-		}
-		fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-		fileChooser.setDialogTitle(SELECT_FILE_OR_DIRECTORY_STR);
-		fileChooser.setApproveButtonToolTipText(SELECT_FILE_OR_DIRECTORY_STR);
-		if (file != null)
-		{
-			if (file.isDirectory())
-				fileChooser.setSelectedFile(file);
-			else
-				fileChooser.setCurrentDirectory(file);
-		}
-		fileChooser.rescanCurrentDirectory();
-		return (fileChooser.showDialog(parent, SELECT_STR) == JFileChooser.APPROVE_OPTION)
-				? fileChooser.getSelectedFile()
-				: null;
-	}
-
-	//------------------------------------------------------------------
-
-////////////////////////////////////////////////////////////////////////
-//  Instance methods : ListEditor.ITextModel interface
-////////////////////////////////////////////////////////////////////////
-
-	@Override
-	public String getText()
-	{
-		String str = pathnameField.getText();
-		return str.isEmpty() ? null : str;
-	}
-
-	//------------------------------------------------------------------
-
-	public void setText(String text)
-	{
-		pathnameField.setText(text);
-	}
-
-	//------------------------------------------------------------------
-
-	public String toActionText(String str)
-	{
-		return (itemsSubmenu == null)
-					? str
-					: TextUtils.getLimitedWidthPathname(str, itemsSubmenu.getFontMetrics(itemsSubmenu.getFont()),
-														MAX_MENU_ITEM_WIDTH, File.separatorChar);
-	}
-
-	//------------------------------------------------------------------
-
-////////////////////////////////////////////////////////////////////////
-//  Instance methods : overriding methods
-////////////////////////////////////////////////////////////////////////
-
-	@Override
-	public void setEnabled(boolean enabled)
-	{
-		super.setEnabled(enabled);
-		for (Component component : getComponents())
-			component.setEnabled(enabled);
-	}
-
-	//------------------------------------------------------------------
-
-	@Override
-	public boolean requestFocusInWindow()
-	{
-		return pathnameField.requestFocusInWindow();
-	}
-
-	//------------------------------------------------------------------
-
-////////////////////////////////////////////////////////////////////////
-//  Instance methods
-////////////////////////////////////////////////////////////////////////
-
-	public boolean isEmpty()
-	{
-		return pathnameField.isEmpty();
-	}
-
-	//------------------------------------------------------------------
-
-	public File getFile()
-	{
-		return pathnameField.getFile();
-	}
-
-	//------------------------------------------------------------------
-
-	public List<String> getItems()
-	{
-		return editor.getItems();
-	}
-
-	//------------------------------------------------------------------
-
-	public int getIndex()
-	{
-		return editor.getItemIndex();
-	}
-
-	//------------------------------------------------------------------
-
-	public void setFile(File file)
-	{
-		pathnameField.setFile(file);
-		updateList();
-	}
-
-	//------------------------------------------------------------------
-
-	public void setItems(List<String> items)
-	{
-		editor.setItems(items);
-	}
-
-	//------------------------------------------------------------------
-
-	public void setIndex(int index)
-	{
-		editor.setItemIndex(index);
-	}
-
-	//------------------------------------------------------------------
-
-	public void updateList()
-	{
-		editor.updateList();
-	}
-
-	//------------------------------------------------------------------
-
-	public void addImportListener(PathnameField.IImportListener listener)
-	{
-		pathnameField.addImportListener(listener);
-	}
-
-	//------------------------------------------------------------------
-
-	private CommandAction getAction(String key)
-	{
-		return (CommandAction)actionMap.get(key);
-	}
-
-	//------------------------------------------------------------------
-
-	private void addAction(String key,
-						   String text)
-	{
-		actionMap.put(key, new CommandAction(key, text));
-	}
-
-	//------------------------------------------------------------------
-
-	private void updateActions()
-	{
-		editor.updateActions();
-		getAction(Command.COPY).setEnabled(!pathnameField.isEmpty());
-	}
-
-	//------------------------------------------------------------------
-
-	private void showListDialog()
-	{
-		List<String> items = ListDialog.showDialog(this, getItems());
-		if (items != null)
-			setItems(items);
-	}
-
-	//------------------------------------------------------------------
-
-	private void showContextMenu(MouseEvent event)
-	{
-		if (isEnabled() && ((event == null) || event.isPopupTrigger()))
-		{
-			// Create context menu
-			if (contextMenu == null)
-			{
-				contextMenu = new JPopupMenu();
-				itemsSubmenu = new FMenu(SELECT_ITEM_STR);
-				contextMenu.add(itemsSubmenu);
-
-				contextMenu.add(new FMenuItem(editor.getAction(ListEditor.Command.SELECT_PREVIOUS)));
-				contextMenu.add(new FMenuItem(editor.getAction(ListEditor.Command.SELECT_NEXT)));
-
-				contextMenu.addSeparator();
-
-				contextMenu.add(new FMenuItem(getAction(Command.EDIT)));
-
-				contextMenu.addSeparator();
-
-				contextMenu.add(new FMenuItem(getAction(Command.COPY)));
-
-				contextMenu.addSeparator();
-
-				contextMenu.add(new FMenuItem(editor.getAction(ListEditor.Command.DELETE)));
-			}
-
-			// Update actions for menu items
-			updateActions();
-
-			// Update list and add current items to submenu
-			editor.updateList();
-			itemsSubmenu.removeAll();
-			itemsSubmenu.setEnabled(!editor.isEmpty());
-			if (itemsSubmenu.isEnabled())
-			{
-				for (Action action : editor.getItemActions())
-					itemsSubmenu.add(new FMenuItem(action));
-			}
-
-			// Display menu
-			Utils.showContextMenu(contextMenu, this, event);
-		}
-	}
-
-	//------------------------------------------------------------------
-
-////////////////////////////////////////////////////////////////////////
-//  Class variables
-////////////////////////////////////////////////////////////////////////
-
-	private static	JFileChooser	fileChooser;
-
-////////////////////////////////////////////////////////////////////////
-//  Instance variables
-////////////////////////////////////////////////////////////////////////
-
-	private	ListEditor	editor;
-	private	ActionMap	actionMap;
-	private	TextField	pathnameField;
-	private	JPopupMenu	contextMenu;
-	private	JMenu		itemsSubmenu;
 
 }
 

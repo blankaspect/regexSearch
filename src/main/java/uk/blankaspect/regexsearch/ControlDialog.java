@@ -1872,8 +1872,9 @@ class ControlDialog
 		private static final	Color	BACKGROUND_COLOUR	= SingleSelectionListEditor.BACKGROUND_COLOUR;
 		private static final	Color	TEXT_COLOUR			= Colours.FOREGROUND;
 
-		private static final	String	PROTOTYPE_STR	= "000 / 000";
-		private static final	String	END_STR			= "End";
+		private static final	String	PROTOTYPE_TEXT	= "000 / 000";
+
+		private static final	String	END_STR	= "End";
 
 	////////////////////////////////////////////////////////////////////
 	//  Instance variables
@@ -1892,7 +1893,7 @@ class ControlDialog
 		{
 			AppFont.MAIN.apply(this);
 			FontMetrics fontMetrics = getFontMetrics(getFont());
-			preferredWidth = 2 * HORIZONTAL_MARGIN + fontMetrics.stringWidth(PROTOTYPE_STR);
+			preferredWidth = 2 * HORIZONTAL_MARGIN + fontMetrics.stringWidth(PROTOTYPE_TEXT);
 			preferredHeight = 2 * VERTICAL_MARGIN + fontMetrics.getAscent() + fontMetrics.getDescent();
 			index = -1;
 			setOpaque(true);

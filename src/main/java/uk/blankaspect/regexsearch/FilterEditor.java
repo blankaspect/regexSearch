@@ -20,6 +20,7 @@ package uk.blankaspect.regexsearch;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.FontMetrics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -37,7 +38,6 @@ import javax.swing.Action;
 import javax.swing.ActionMap;
 import javax.swing.JButton;
 import javax.swing.JComponent;
-import javax.swing.JMenu;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
@@ -116,8 +116,6 @@ class FilterEditor
 	private	ListEditor			editor;
 	private	ActionMap			actionMap;
 	private	PatternField		patternField;
-	private	JPopupMenu			contextMenu;
-	private	JMenu				itemsSubmenu;
 
 ////////////////////////////////////////////////////////////////////////
 //  Constructors
@@ -207,12 +205,11 @@ class FilterEditor
 
 	//------------------------------------------------------------------
 
-	public String toActionText(String str)
+	public String toActionText(
+		String		str,
+		FontMetrics fontMetrics)
 	{
-		return (itemsSubmenu == null)
-					? str
-					: TextUtils.getLimitedWidthString(str, itemsSubmenu.getFontMetrics(itemsSubmenu.getFont()),
-													  MAX_MENU_ITEM_WIDTH, TextUtils.RemovalMode.END);
+		return TextUtils.getLimitedWidthString(str, fontMetrics, MAX_MENU_ITEM_WIDTH, TextUtils.RemovalMode.END);
 	}
 
 	//------------------------------------------------------------------
@@ -338,43 +335,39 @@ class FilterEditor
 		if (isEnabled() && ((event == null) || event.isPopupTrigger()))
 		{
 			// Create context menu
-			if (contextMenu == null)
+			JPopupMenu menu = new JPopupMenu();
+
+			editor.updateList();
+			FMenu submenu = new FMenu(SELECT_ITEM_STR);
+			submenu.setEnabled(!editor.isEmpty());
+			if (submenu.isEnabled())
 			{
-				contextMenu = new JPopupMenu();
-				itemsSubmenu = new FMenu(SELECT_ITEM_STR);
-				contextMenu.add(itemsSubmenu);
-
-				contextMenu.add(new FMenuItem(editor.getAction(ListEditor.Command.SELECT_PREVIOUS)));
-				contextMenu.add(new FMenuItem(editor.getAction(ListEditor.Command.SELECT_NEXT)));
-
-				contextMenu.addSeparator();
-
-				contextMenu.add(new FMenuItem(getAction(Command.EDIT)));
-
-				contextMenu.addSeparator();
-
-				contextMenu.add(new FMenuItem(getAction(Command.COPY)));
-
-				contextMenu.addSeparator();
-
-				contextMenu.add(new FMenuItem(editor.getAction(ListEditor.Command.DELETE)));
+				FontMetrics fontMetrics = submenu.getFontMetrics(submenu.getFont());
+				for (Action action : editor.getItemActions(fontMetrics))
+					submenu.add(new FMenuItem(action));
 			}
+			menu.add(submenu);
+
+			menu.add(new FMenuItem(editor.getAction(ListEditor.Command.SELECT_PREVIOUS)));
+			menu.add(new FMenuItem(editor.getAction(ListEditor.Command.SELECT_NEXT)));
+
+			menu.addSeparator();
+
+			menu.add(new FMenuItem(getAction(Command.EDIT)));
+
+			menu.addSeparator();
+
+			menu.add(new FMenuItem(getAction(Command.COPY)));
+
+			menu.addSeparator();
+
+			menu.add(new FMenuItem(editor.getAction(ListEditor.Command.DELETE)));
 
 			// Update actions for menu items
 			updateActions();
 
-			// Update list and add current items to submenu
-			editor.updateList();
-			itemsSubmenu.removeAll();
-			itemsSubmenu.setEnabled(!editor.isEmpty());
-			if (itemsSubmenu.isEnabled())
-			{
-				for (Action action : editor.getItemActions())
-					itemsSubmenu.add(new FMenuItem(action));
-			}
-
 			// Display menu
-			Utils.showContextMenu(contextMenu, this, event);
+			Utils.showContextMenu(menu, this, event);
 		}
 	}
 

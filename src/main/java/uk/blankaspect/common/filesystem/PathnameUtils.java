@@ -113,17 +113,18 @@ public class PathnameUtils
 	//------------------------------------------------------------------
 
 	/**
-	 * Returns {@code true} if the suffix of the specified pathname matches any of the specified suffixes (filename
-	 * extensions, for example).  Letter case is ignored if {@link #ignoreFilenameCase} is {@code true}.
+	 * Returns the element of the specified collection of suffixes (filename extensions, for example) that matches the
+	 * end of the specified pathname.  Letter case is ignored if {@link #ignoreFilenameCase} is {@code true}.
 	 *
 	 * @param  pathname
-	 *           the pathname whose suffix will be compared to {@code suffixes}.
+	 *           the pathname of interest
 	 * @param  suffixes
-	 *           the strings that will be compared to the suffix of {@code pathname}.
-	 * @return {@code true} if the suffix of {@code pathname} matches any of {@code suffixes}.
+	 *           the strings that will be compared to the end of {@code pathname}.
+	 * @return the element of {@code suffixes} that matches the end of {@code pathname}, ignoring letter case if {@link
+	 *         #ignoreFilenameCase} is {@code true}, or {@code null} if none of the suffixes matches.
 	 */
 
-	public static boolean suffixMatches(
+	public static String matchingSuffix(
 		CharSequence		pathname,
 		Iterable<String>	suffixes)
 	{
@@ -137,22 +138,65 @@ public class PathnameUtils
 			if ((pathnameLength >= suffixLength)
 					&& matcher.invoke(pathname.subSequence(pathnameLength - suffixLength, pathnameLength).toString(),
 									  suffix))
-				return true;
+				return suffix;
 		}
-		return false;
+		return null;
 	}
 
 	//------------------------------------------------------------------
 
 	/**
-	 * Returns {@code true} if the suffix of the specified pathname matches any of the specified suffixes (filename
-	 * extensions, for example).  Letter case is ignored if {@link #ignoreFilenameCase} is {@code true}.
+	 * Returns the element of the specified collection of suffixes (filename extensions, for example) that matches the
+	 * end of the specified pathname.  Letter case is ignored if {@link #ignoreFilenameCase} is {@code true}.
 	 *
 	 * @param  pathname
-	 *           the pathname whose suffix will be compared to {@code suffixes}.
+	 *           the pathname of interest
 	 * @param  suffixes
-	 *           the strings that will be compared to the suffix of {@code pathname}.
-	 * @return {@code true} if the suffix of {@code pathname} matches any of {@code suffixes}.
+	 *           the strings that will be compared to the end of {@code pathname}.
+	 * @return the element of {@code suffixes} that matches the end of {@code pathname}, ignoring letter case if {@link
+	 *         #ignoreFilenameCase} is {@code true}, or {@code null} if none of the suffixes matches.
+	 */
+
+	public static String matchingSuffix(
+		CharSequence	pathname,
+		String...		suffixes)
+	{
+		return matchingSuffix(pathname, List.of(suffixes));
+	}
+
+	//------------------------------------------------------------------
+
+	/**
+	 * Returns {@code true} if the specified pathname ends with any of the specified suffixes (filename extensions, for
+	 * example).  Letter case is ignored if {@link #ignoreFilenameCase} is {@code true}.
+	 *
+	 * @param  pathname
+	 *           the pathname of interest
+	 * @param  suffixes
+	 *           the strings that will be compared to the end of {@code pathname}.
+	 * @return {@code true} if {@code pathname} ends with any of {@code suffixes}, ignoring letter case if {@link
+	 *         #ignoreFilenameCase} is {@code true}.
+	 */
+
+	public static boolean suffixMatches(
+		CharSequence		pathname,
+		Iterable<String>	suffixes)
+	{
+		return (matchingSuffix(pathname, suffixes) != null);
+	}
+
+	//------------------------------------------------------------------
+
+	/**
+	 * Returns {@code true} if the specified pathname ends with any of the specified suffixes (filename extensions, for
+	 * example).  Letter case is ignored if {@link #ignoreFilenameCase} is {@code true}.
+	 *
+	 * @param  pathname
+	 *           the pathname of interest
+	 * @param  suffixes
+	 *           the strings that will be compared to the end of {@code pathname}.
+	 * @return {@code true} if {@code pathname} ends with any of {@code suffixes}, ignoring letter case if {@link
+	 *         #ignoreFilenameCase} is {@code true}.
 	 */
 
 	public static boolean suffixMatches(
@@ -165,14 +209,16 @@ public class PathnameUtils
 	//------------------------------------------------------------------
 
 	/**
-	 * Returns {@code true} if the suffix of the specified file-system location matches any of the specified suffixes
-	 * (filename extensions, for example).  Letter case is ignored if {@link #ignoreFilenameCase} is {@code true}.
+	 * Returns {@code true} if the string representation of the specified file-system location ends with any of the
+	 * specified suffixes (filename extensions, for example).  Letter case is ignored if {@link #ignoreFilenameCase} is
+	 * {@code true}.
 	 *
 	 * @param  location
-	 *           the file-system location whose suffix will be compared to {@code suffixes}.
+	 *           the file-system location of interest.
 	 * @param  suffixes
-	 *           the strings that will be compared to the suffix of {@code location}.
-	 * @return {@code true} if the suffix of {@code location} matches any of {@code suffixes}.
+	 *           the strings that will be compared to the end of the string representation of {@code location}.
+	 * @return {@code true} if the string representation of {@code location} ends with any of {@code suffixes}, ignoring
+	 *         letter case if {@link #ignoreFilenameCase} is {@code true}.
 	 */
 
 	public static boolean suffixMatches(
@@ -185,14 +231,16 @@ public class PathnameUtils
 	//------------------------------------------------------------------
 
 	/**
-	 * Returns {@code true} if the suffix of the specified file-system location matches any of the specified suffixes
-	 * (filename extensions, for example).  Letter case is ignored if {@link #ignoreFilenameCase} is {@code true}.
+	 * Returns {@code true} if the string representation of the specified file-system location ends with any of the
+	 * specified suffixes (filename extensions, for example).  Letter case is ignored if {@link #ignoreFilenameCase} is
+	 * {@code true}.
 	 *
 	 * @param  location
-	 *           the file-system location whose suffix will be compared to {@code suffixes}.
+	 *           the file-system location of interest
 	 * @param  suffixes
-	 *           the strings that will be compared to the suffix of {@code location}.
-	 * @return {@code true} if the suffix of {@code location} matches any of {@code suffixes}.
+	 *           the strings that will be compared to the end of the string representation of {@code location}.
+	 * @return {@code true} if the string representation of {@code location} ends with any of {@code suffixes}, ignoring
+	 *         letter case if {@link #ignoreFilenameCase} is {@code true}.
 	 */
 
 	public static boolean suffixMatches(

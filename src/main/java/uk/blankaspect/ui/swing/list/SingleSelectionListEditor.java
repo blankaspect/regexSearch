@@ -129,7 +129,6 @@ public abstract class SingleSelectionListEditor<E>
 	private	JButton					addButton;
 	private	JButton					editButton;
 	private	JButton					deleteButton;
-	private	JPopupMenu				contextMenu;
 
 ////////////////////////////////////////////////////////////////////////
 //  Constructors
@@ -442,19 +441,16 @@ public abstract class SingleSelectionListEditor<E>
 	public void showContextMenu(Point location)
 	{
 		// Create context menu
-		if (contextMenu == null)
-		{
-			contextMenu = new JPopupMenu();
-			contextMenu.add(new FMenuItem(getAction(Command.ADD)));
-			contextMenu.add(new FMenuItem(getAction(Command.EDIT)));
-			contextMenu.add(new FMenuItem(getAction(Command.DELETE)));
-		}
+		JPopupMenu menu = new JPopupMenu();
+		menu.add(new FMenuItem(getAction(Command.ADD)));
+		menu.add(new FMenuItem(getAction(Command.EDIT)));
+		menu.add(new FMenuItem(getAction(Command.DELETE)));
 
 		// Update actions for menu items
 		updateActions();
 
 		// Display menu
-		contextMenu.show(this, location.x, location.y);
+		menu.show(this, location.x, location.y);
 	}
 
 	//------------------------------------------------------------------
@@ -469,8 +465,7 @@ public abstract class SingleSelectionListEditor<E>
 	private void showContextMenu(MouseEvent event)
 	{
 		if (event.isPopupTrigger())
-			showContextMenu(SwingUtilities.convertPoint(event.getComponent(), event.getPoint(),
-														this));
+			showContextMenu(SwingUtilities.convertPoint(event.getComponent(), event.getPoint(), this));
 	}
 
 	//------------------------------------------------------------------

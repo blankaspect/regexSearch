@@ -73,14 +73,29 @@ public class DirectoryUtils
 	/** Error messages. */
 	private interface ErrorMsg
 	{
-		String	NOT_A_DIRECTORY				= "The location does not denote a directory.";
-		String	FAILED_TO_CREATE_DIRECTORY	= "Failed to create the directory.";
-		String	FAILED_TO_DELETE_FILE		= "Failed to delete the file.";
-		String	FAILED_TO_DELETE_DIRECTORY	= "Failed to delete the directory.";
-		String	FAILED_TO_COPY_FILE			= "Failed to copy the file.";
-		String	ERROR_LISTING_DIRECTORY		= "An error occurred when listing the entries of the directory.";
-		String	ERROR_TRAVERSING_DIRECTORY	= "An error occurred when traversing the directory structure.";
-		String	FAILED_TO_VISIT_FILE		= "The file or directory could not be processed.";
+		String	NOT_A_DIRECTORY =
+				"The location does not denote a directory.";
+
+		String	FAILED_TO_CREATE_DIRECTORY =
+				"Failed to create the directory.";
+
+		String	FAILED_TO_DELETE_FILE =
+				"Failed to delete the file.";
+
+		String	FAILED_TO_DELETE_DIRECTORY =
+				"Failed to delete the directory.";
+
+		String	FAILED_TO_COPY_FILE =
+				"Failed to copy the file.";
+
+		String	ERROR_LISTING_DIRECTORY =
+				"An error occurred when listing the entries of the directory.";
+
+		String	ERROR_TRAVERSING_DIRECTORY =
+				"An error occurred when traversing the directory structure.";
+
+		String	FAILED_TO_VISIT_FILE =
+				"The file or directory could not be processed.";
 	}
 
 ////////////////////////////////////////////////////////////////////////

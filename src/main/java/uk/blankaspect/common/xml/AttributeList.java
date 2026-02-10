@@ -31,7 +31,8 @@ import java.util.List;
 // CLASS: XML ATTRIBUTE LIST
 
 
-public class AttributeList implements Iterable<Attribute>
+public class AttributeList
+	implements Iterable<Attribute>
 {
 
 ////////////////////////////////////////////////////////////////////////

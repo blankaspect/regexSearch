@@ -204,8 +204,8 @@ public class FileException
 		Throwable cause = exception.getCause();
 		while (cause != null)
 		{
-			if (cause instanceof FileException)
-				throw (FileException)cause;
+			if (cause instanceof FileException fe)
+				throw fe;
 			if (!traverse)
 				break;
 			cause = cause.getCause();

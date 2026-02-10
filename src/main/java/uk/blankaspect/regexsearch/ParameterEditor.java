@@ -21,6 +21,7 @@ package uk.blankaspect.regexsearch;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.FontMetrics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
@@ -44,7 +45,6 @@ import javax.swing.BorderFactory;
 import javax.swing.InputMap;
 import javax.swing.JButton;
 import javax.swing.JComponent;
-import javax.swing.JMenu;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
@@ -168,8 +168,6 @@ class ParameterEditor
 	private	TextArea		textArea;
 	private	JScrollPane		textAreaScrollPane;
 	private	JButton			escapeButton;
-	private	JPopupMenu		contextMenu;
-	private	JMenu			itemsSubmenu;
 
 ////////////////////////////////////////////////////////////////////////
 //  Constructors
@@ -375,8 +373,7 @@ class ParameterEditor
 			str = null;
 		else
 		{
-			str = tabsEscaped ? str.replace(getEscapeSequence('t'), "\t")
-							  : str.replace(tabSurrogate, '\t');
+			str = tabsEscaped ? str.replace(getEscapeSequence('t'), "\t") : str.replace(tabSurrogate, '\t');
 			if (lineFeedsEscaped)
 				str = str.replace(getEscapeSequence('n'), "\n");
 		}
@@ -396,12 +393,11 @@ class ParameterEditor
 
 	@Override
 	public String toActionText(
-		String	str)
+		String		str,
+		FontMetrics fontMetrics)
 	{
-		return (itemsSubmenu == null)
-					? str
-					: TextUtils.getLimitedWidthString(escape(str), itemsSubmenu.getFontMetrics(itemsSubmenu.getFont()),
-													  MAX_MENU_ITEM_WIDTH, TextUtils.RemovalMode.END);
+		return TextUtils.getLimitedWidthString(escape(str), fontMetrics, MAX_MENU_ITEM_WIDTH,
+											   TextUtils.RemovalMode.END);
 	}
 
 	//------------------------------------------------------------------
@@ -638,48 +634,44 @@ class ParameterEditor
 		if (isEnabled() && ((event == null) || event.isPopupTrigger()))
 		{
 			// Create context menu
-			if (contextMenu == null)
+			JPopupMenu menu = new JPopupMenu();
+
+			editor.updateList();
+			FMenu submenu = new FMenu(SELECT_ITEM_STR);
+			submenu.setEnabled(!editor.isEmpty());
+			if (submenu.isEnabled())
 			{
-				contextMenu = new JPopupMenu();
-				itemsSubmenu = new FMenu(SELECT_ITEM_STR);
-				contextMenu.add(itemsSubmenu);
-
-				contextMenu.add(new FMenuItem(editor.getAction(ListEditor.Command.SELECT_PREVIOUS)));
-				contextMenu.add(new FMenuItem(editor.getAction(ListEditor.Command.SELECT_NEXT)));
-
-				contextMenu.addSeparator();
-
-				contextMenu.add(new FCheckBoxMenuItem(getAction(Command.TOGGLE_TABS_ESCAPED)));
-				contextMenu.add(new FCheckBoxMenuItem(getAction(Command.TOGGLE_LINE_FEEDS_ESCAPED)));
-
-				contextMenu.addSeparator();
-
-				contextMenu.add(new FMenuItem(getAction(Command.EDIT)));
-
-				contextMenu.addSeparator();
-
-				contextMenu.add(new FMenuItem(getAction(Command.COPY)));
-
-				contextMenu.addSeparator();
-
-				contextMenu.add(new FMenuItem(editor.getAction(ListEditor.Command.DELETE)));
+				FontMetrics fontMetrics = submenu.getFontMetrics(submenu.getFont());
+				for (Action action : editor.getItemActions(fontMetrics))
+					submenu.add(new FMenuItem(action));
 			}
+			menu.add(submenu);
+
+			menu.add(new FMenuItem(editor.getAction(ListEditor.Command.SELECT_PREVIOUS)));
+			menu.add(new FMenuItem(editor.getAction(ListEditor.Command.SELECT_NEXT)));
+
+			menu.addSeparator();
+
+			menu.add(new FCheckBoxMenuItem(getAction(Command.TOGGLE_TABS_ESCAPED)));
+			menu.add(new FCheckBoxMenuItem(getAction(Command.TOGGLE_LINE_FEEDS_ESCAPED)));
+
+			menu.addSeparator();
+
+			menu.add(new FMenuItem(getAction(Command.EDIT)));
+
+			menu.addSeparator();
+
+			menu.add(new FMenuItem(getAction(Command.COPY)));
+
+			menu.addSeparator();
+
+			menu.add(new FMenuItem(editor.getAction(ListEditor.Command.DELETE)));
 
 			// Update actions for menu items
 			updateActions();
 
-			// Update list and add current items to submenu
-			editor.updateList();
-			itemsSubmenu.removeAll();
-			itemsSubmenu.setEnabled(!editor.isEmpty());
-			if (itemsSubmenu.isEnabled())
-			{
-				for (Action action : editor.getItemActions())
-					itemsSubmenu.add(new FMenuItem(action));
-			}
-
 			// Display menu
-			Utils.showContextMenu(contextMenu, this, event);
+			Utils.showContextMenu(menu, this, event);
 		}
 	}
 

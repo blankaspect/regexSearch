@@ -18,6 +18,8 @@ package uk.blankaspect.regexsearch;
 // IMPORTS
 
 
+import java.awt.FontMetrics;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -79,7 +81,8 @@ public class ListEditor
 
 		//--------------------------------------------------------------
 
-		String toActionText(String str);
+		String toActionText(String      str,
+							FontMetrics fontMetrics);
 
 		//--------------------------------------------------------------
 
@@ -284,12 +287,12 @@ public class ListEditor
 
 	//------------------------------------------------------------------
 
-	public List<Action> getItemActions()
+	public List<Action> getItemActions(FontMetrics fontMetrics)
 	{
 		List<Action> actions = new ArrayList<>();
 		for (int i = 0; i < items.size(); i++)
 		{
-			String str = textModel.toActionText(items.get(i));
+			String str = textModel.toActionText(items.get(i), fontMetrics);
 			actions.add(new CommandAction(Command.SELECT_ITEM + i, str.isEmpty() ? " " : str));
 		}
 		return actions;

@@ -48,7 +48,8 @@ public class ResourceProperties
 	/** Error messages. */
 	private interface ErrorMsg
 	{
-		String	ERROR_READING_PROPERTIES	= "An error occurred when reading the properties.";
+		String	ERROR_READING_PROPERTIES =
+				"An error occurred when reading the properties.";
 	}
 
 ////////////////////////////////////////////////////////////////////////

@@ -67,8 +67,11 @@ public class JarUtils
 	/** Error messages. */
 	private interface ErrorMsg
 	{
-		String	MALFORMED_PATHNAME	= "The pathname is malformed.";
-		String	INVALID_LOCATION	= "The location is invalid.";
+		String	MALFORMED_PATHNAME =
+				"The pathname is malformed.";
+
+		String	INVALID_LOCATION =
+				"The location is invalid.";
 	}
 
 ////////////////////////////////////////////////////////////////////////

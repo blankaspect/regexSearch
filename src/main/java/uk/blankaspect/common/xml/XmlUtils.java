@@ -182,11 +182,10 @@ public class XmlUtils
 							   SAXException     cause)
 		{
 			super(id, cause);
-			if (cause instanceof SAXParseException)
+			if (cause instanceof SAXParseException spe)
 			{
-				SAXParseException e = (SAXParseException)cause;
-				lineNum = e.getLineNumber();
-				columnNum = e.getColumnNumber();
+				lineNum = spe.getLineNumber();
+				columnNum = spe.getColumnNumber();
 			}
 		}
 
@@ -314,7 +313,7 @@ public class XmlUtils
 		{
 			strs.add(element.getNodeName());
 			Node parent = element.getParentNode();
-			element = (parent instanceof Element) ? (Element)parent : null;
+			element = (parent instanceof Element parentElement) ? parentElement : null;
 		}
 
 		StringBuilder buffer = new StringBuilder(strs.size() << 4);

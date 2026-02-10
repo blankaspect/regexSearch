@@ -96,12 +96,10 @@ public class LongRange
 	@Override
 	public boolean equals(Object obj)
 	{
-		if (obj instanceof LongRange)
-		{
-			LongRange range = (LongRange)obj;
-			return (lowerBound == range.lowerBound) && (upperBound == range.upperBound);
-		}
-		return false;
+		if (this == obj)
+			return true;
+
+		return (obj instanceof LongRange other) && (lowerBound == other.lowerBound) && (upperBound == other.upperBound);
 	}
 
 	//------------------------------------------------------------------

@@ -96,12 +96,11 @@ public class IntegerRange
 	@Override
 	public boolean equals(Object obj)
 	{
-		if (obj instanceof IntegerRange)
-		{
-			IntegerRange range = (IntegerRange)obj;
-			return (lowerBound == range.lowerBound) && (upperBound == range.upperBound);
-		}
-		return false;
+		if (this == obj)
+			return true;
+
+		return (obj instanceof IntegerRange other) && (lowerBound == other.lowerBound)
+				&& (upperBound == other.upperBound);
 	}
 
 	//------------------------------------------------------------------

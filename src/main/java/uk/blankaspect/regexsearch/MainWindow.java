@@ -138,7 +138,6 @@ class MainWindow
 	private	File				deferredFile;
 	private	ControlDialog		controlDialog;
 	private	SearchDialog		searchDialog;
-	private	JPopupMenu			contextMenu;
 	private	TextArea			textView;
 	private	TextArea			resultArea;
 	private	JFileChooser		openFileChooser;
@@ -716,40 +715,37 @@ class MainWindow
 		if ((event == null) || event.isPopupTrigger())
 		{
 			// Create context menu
-			if (contextMenu == null)
-			{
-				contextMenu = new JPopupMenu();
+			JPopupMenu menu = new JPopupMenu();
 
-				contextMenu.add(new FMenuItem(AppCommand.SEARCH));
+			menu.add(new FMenuItem(AppCommand.SEARCH));
 
-				contextMenu.addSeparator();
+			menu.addSeparator();
 
-				contextMenu.add(new FMenuItem(AppCommand.TOGGLE_CONTROL_DIALOG));
+			menu.add(new FMenuItem(AppCommand.TOGGLE_CONTROL_DIALOG));
 
-				contextMenu.addSeparator();
+			menu.addSeparator();
 
-				contextMenu.add(new FMenuItem(AppCommand.EDIT_FILE));
-				contextMenu.add(new FMenuItem(AppCommand.EDIT_FILE_DEFERRED));
+			menu.add(new FMenuItem(AppCommand.EDIT_FILE));
+			menu.add(new FMenuItem(AppCommand.EDIT_FILE_DEFERRED));
 
-				contextMenu.addSeparator();
+			menu.addSeparator();
 
-				contextMenu.add(new FMenuItem(AppCommand.COPY_RESULTS));
-				contextMenu.add(new FMenuItem(AppCommand.SAVE_RESULTS));
-				contextMenu.add(new FMenuItem(AppCommand.VIEW_SAVED_RESULTS));
+			menu.add(new FMenuItem(AppCommand.COPY_RESULTS));
+			menu.add(new FMenuItem(AppCommand.SAVE_RESULTS));
+			menu.add(new FMenuItem(AppCommand.VIEW_SAVED_RESULTS));
 
-				contextMenu.addSeparator();
+			menu.addSeparator();
 
-				contextMenu.add(new FMenuItem(AppCommand.EDIT_PREFERENCES));
-			}
+			menu.add(new FMenuItem(AppCommand.EDIT_PREFERENCES));
 
 			// Update commands for menu items
 			updateCommands();
 
 			// Display menu
 			if (event == null)
-				contextMenu.show(component, 0, 0);
+				menu.show(component, 0, 0);
 			else
-				contextMenu.show(event.getComponent(), event.getX(), event.getY());
+				menu.show(event.getComponent(), event.getX(), event.getY());
 		}
 	}
 

@@ -174,8 +174,8 @@ public class BaseException
 		Throwable cause = exception.getCause();
 		while (cause != null)
 		{
-			if (cause instanceof BaseException)
-				throw (BaseException)cause;
+			if (cause instanceof BaseException be)
+				throw be;
 			if (!traverse)
 				break;
 			cause = cause.getCause();
