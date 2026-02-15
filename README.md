@@ -23,6 +23,6 @@ tasks for launching the application:
 
 The contents of this repository are covered by two licences:
 
-* You may use the contents of the `uk.blankaspect.regexsearch` package \(including resources\) under the terms of the
-GPL version 3 license.
-* You may use all other contents of this repository under the terms of the MIT license.
+* You may use the contents of the `uk.blankaspect.regexsearch` package \(including resources\) under the terms and
+conditions of the GPL version 3 license.
+* You may use all other contents of this repository under the terms and conditions of the MIT license.

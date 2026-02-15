@@ -49,8 +49,9 @@ public class DoubleRange
 
 	//------------------------------------------------------------------
 
-	public DoubleRange(double lowerBound,
-					   double upperBound)
+	public DoubleRange(
+		double	lowerBound,
+		double	upperBound)
 	{
 		this.lowerBound = lowerBound;
 		this.upperBound = upperBound;
@@ -58,7 +59,8 @@ public class DoubleRange
 
 	//------------------------------------------------------------------
 
-	public DoubleRange(DoubleRange range)
+	public DoubleRange(
+		DoubleRange	range)
 	{
 		lowerBound = range.lowerBound;
 		upperBound = range.upperBound;
@@ -71,11 +73,13 @@ public class DoubleRange
 	 * @throws IllegalArgumentException
 	 */
 
-	public DoubleRange(String str)
+	public DoubleRange(
+		String	str)
 	{
 		String[] strs = str.split(" *, *", -1);
 		if (strs.length != 2)
 			throw new IllegalArgumentException();
+
 		lowerBound = Double.parseDouble(strs[0]);
 		upperBound = Double.parseDouble(strs[1]);
 	}
@@ -102,7 +106,8 @@ public class DoubleRange
 	//------------------------------------------------------------------
 
 	@Override
-	public boolean equals(Object obj)
+	public boolean equals(
+		Object	obj)
 	{
 		if (this == obj)
 			return true;
@@ -135,7 +140,8 @@ public class DoubleRange
 //  Instance methods
 ////////////////////////////////////////////////////////////////////////
 
-	public String toString(NumberFormat format)
+	public String toString(
+		NumberFormat	format)
 	{
 		return new String(format.format(lowerBound) + ", " + format.format(upperBound));
 	}
@@ -149,21 +155,24 @@ public class DoubleRange
 
 	//------------------------------------------------------------------
 
-	public double getValue(double fraction)
+	public double getValue(
+		double	fraction)
 	{
 		return lowerBound + (upperBound - lowerBound) * fraction;
 	}
 
 	//------------------------------------------------------------------
 
-	public boolean contains(double value)
+	public boolean contains(
+		double	value)
 	{
 		return (value >= lowerBound) && (value <= upperBound);
 	}
 
 	//------------------------------------------------------------------
 
-	public double nearestValueWithin(double value)
+	public double nearestValueWithin(
+		double	value)
 	{
 		return Math.min(Math.max(lowerBound, value), upperBound);
 	}

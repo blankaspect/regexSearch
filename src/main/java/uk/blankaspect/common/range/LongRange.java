@@ -12,6 +12,12 @@ Class: long range.
 
 package uk.blankaspect.common.range;
 
+//----------------------------------------------------------------------
+
+
+// IMPORTS
+
+
 import uk.blankaspect.common.exception2.UnexpectedRuntimeException;
 
 //----------------------------------------------------------------------
@@ -41,8 +47,9 @@ public class LongRange
 
 	//------------------------------------------------------------------
 
-	public LongRange(long lowerBound,
-					 long upperBound)
+	public LongRange(
+		long	lowerBound,
+		long	upperBound)
 	{
 		this.lowerBound = lowerBound;
 		this.upperBound = upperBound;
@@ -50,7 +57,8 @@ public class LongRange
 
 	//------------------------------------------------------------------
 
-	public LongRange(LongRange range)
+	public LongRange(
+		LongRange	range)
 	{
 		lowerBound = range.lowerBound;
 		upperBound = range.upperBound;
@@ -63,11 +71,13 @@ public class LongRange
 	 * @throws IllegalArgumentException
 	 */
 
-	public LongRange(String str)
+	public LongRange(
+		String	str)
 	{
 		String[] strs = str.split(" *, *", -1);
 		if (strs.length != 2)
 			throw new IllegalArgumentException();
+
 		lowerBound = Long.parseLong(strs[0]);
 		upperBound = Long.parseLong(strs[1]);
 	}
@@ -94,7 +104,8 @@ public class LongRange
 	//------------------------------------------------------------------
 
 	@Override
-	public boolean equals(Object obj)
+	public boolean equals(
+		Object	obj)
 	{
 		if (this == obj)
 			return true;
@@ -132,21 +143,24 @@ public class LongRange
 
 	//------------------------------------------------------------------
 
-	public long getValue(double fraction)
+	public long getValue(
+		double	fraction)
 	{
 		return lowerBound + Math.round((double)(upperBound - lowerBound) * fraction);
 	}
 
 	//------------------------------------------------------------------
 
-	public boolean contains(long value)
+	public boolean contains(
+		long	value)
 	{
 		return (value >= lowerBound) && (value <= upperBound);
 	}
 
 	//------------------------------------------------------------------
 
-	public long nearestValueWithin(long value)
+	public long nearestValueWithin(
+		long	value)
 	{
 		return Math.min(Math.max(lowerBound, value), upperBound);
 	}

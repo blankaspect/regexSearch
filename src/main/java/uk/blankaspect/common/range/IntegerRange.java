@@ -12,6 +12,12 @@ Class: integer range.
 
 package uk.blankaspect.common.range;
 
+//----------------------------------------------------------------------
+
+
+// IMPORTS
+
+
 import uk.blankaspect.common.exception2.UnexpectedRuntimeException;
 
 //----------------------------------------------------------------------
@@ -41,8 +47,9 @@ public class IntegerRange
 
 	//------------------------------------------------------------------
 
-	public IntegerRange(int lowerBound,
-						int upperBound)
+	public IntegerRange(
+		int	lowerBound,
+		int	upperBound)
 	{
 		this.lowerBound = lowerBound;
 		this.upperBound = upperBound;
@@ -50,7 +57,8 @@ public class IntegerRange
 
 	//------------------------------------------------------------------
 
-	public IntegerRange(IntegerRange range)
+	public IntegerRange(
+		IntegerRange	range)
 	{
 		lowerBound = range.lowerBound;
 		upperBound = range.upperBound;
@@ -63,11 +71,13 @@ public class IntegerRange
 	 * @throws IllegalArgumentException
 	 */
 
-	public IntegerRange(String str)
+	public IntegerRange(
+		String	str)
 	{
 		String[] strs = str.split(" *, *", -1);
 		if (strs.length != 2)
 			throw new IllegalArgumentException();
+
 		lowerBound = Integer.parseInt(strs[0]);
 		upperBound = Integer.parseInt(strs[1]);
 	}
@@ -94,7 +104,8 @@ public class IntegerRange
 	//------------------------------------------------------------------
 
 	@Override
-	public boolean equals(Object obj)
+	public boolean equals(
+		Object	obj)
 	{
 		if (this == obj)
 			return true;
@@ -133,21 +144,24 @@ public class IntegerRange
 
 	//------------------------------------------------------------------
 
-	public int getValue(double fraction)
+	public int getValue(
+		double	fraction)
 	{
 		return lowerBound + (int)Math.round((double)(upperBound - lowerBound) * fraction);
 	}
 
 	//------------------------------------------------------------------
 
-	public boolean contains(int value)
+	public boolean contains(
+		int	value)
 	{
 		return (value >= lowerBound) && (value <= upperBound);
 	}
 
 	//------------------------------------------------------------------
 
-	public int nearestValueWithin(int value)
+	public int nearestValueWithin(
+		int	value)
 	{
 		return Math.min(Math.max(lowerBound, value), upperBound);
 	}
