@@ -1319,7 +1319,7 @@ public class NumberUtils
 		int		length,
 		int		bytesPerLine)
 	{
-		return bytesToHexString(data, offset, length, bytesPerLine, DIGITS_LOWER);
+		return bytesToHexString(data, offset, length, bytesPerLine, false);
 	}
 
 	//------------------------------------------------------------------
@@ -1330,7 +1330,7 @@ public class NumberUtils
 		int		length,
 		int		bytesPerLine)
 	{
-		return bytesToHexString(data, offset, length, bytesPerLine, DIGITS_UPPER);
+		return bytesToHexString(data, offset, length, bytesPerLine, true);
 	}
 
 	//------------------------------------------------------------------
@@ -1340,9 +1340,10 @@ public class NumberUtils
 		int		offset,
 		int		length,
 		int		bytesPerLine,
-		char[]	digits)
+		boolean	upperCase)
 	{
 		StringBuilder buffer = new StringBuilder();
+		char[] digits = upperCase ? DIGITS_UPPER : DIGITS_LOWER;
 		int endOffset = offset + length;
 		for (int i = offset; i < endOffset; i++)
 		{
@@ -1440,7 +1441,7 @@ public class NumberUtils
 		String	prefix,
 		String	suffix)
 	{
-		return bytesToHexString(data, offset, length, bytesPerLine, numDigits, separator, prefix, suffix, DIGITS_LOWER);
+		return bytesToHexString(data, offset, length, bytesPerLine, numDigits, separator, prefix, suffix, false);
 	}
 
 	//------------------------------------------------------------------
@@ -1455,7 +1456,7 @@ public class NumberUtils
 		String	prefix,
 		String	suffix)
 	{
-		return bytesToHexString(data, offset, length, bytesPerLine, numDigits, separator, prefix, suffix, DIGITS_UPPER);
+		return bytesToHexString(data, offset, length, bytesPerLine, numDigits, separator, prefix, suffix, true);
 	}
 
 	//------------------------------------------------------------------
@@ -1469,7 +1470,7 @@ public class NumberUtils
 		String	separator,
 		String	prefix,
 		String	suffix,
-		char[]	digits)
+		boolean	upperCase)
 	{
 		int charsPerByte = (numDigits == 0) ? 2 : numDigits;
 		if (separator != null)
@@ -1503,7 +1504,10 @@ public class NumberUtils
 			else if ((separator != null) && (i > 0))
 				buffer.append(separator);
 
-			buffer.append(uIntToHexString(data[offset + i], numDigits, '0'));
+			if (upperCase)
+				buffer.append(uIntToHexStringUpper(data[offset + i], numDigits, '0'));
+			else
+				buffer.append(uIntToHexString(data[offset + i], numDigits, '0'));
 		}
 		return buffer.toString();
 	}
