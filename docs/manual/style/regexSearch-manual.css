@@ -14,8 +14,8 @@ p.quotation {
 }
 
 table.regex {
-  margin-left: 2.5%;
-  margin-right: 2.5%;
+  margin-left: 2.0em;
+  margin-right: 2.0em;
 }
 table.regex td {
   border: 1px solid;

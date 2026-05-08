@@ -194,8 +194,8 @@ public class ResourceUtils
 	 */
 
 	public static String normalisedPathname(
-		Package		pkg,
-		String		name)
+		Package	pkg,
+		String	name)
 	{
 		// Create absolute pathname
 		String path = name.startsWith(PATHNAME_SEPARATOR)

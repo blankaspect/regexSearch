@@ -321,12 +321,14 @@
         written by the installer.  If you create a properties file, it should have the following
         form, with the example pathname replaced by the actual pathname:
       </p>
+      <div>
       <pre class="codeFragment">
 &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;
 &lt;!DOCTYPE properties SYSTEM &quot;http://java.sun.com/dtd/properties.dtd&quot;&gt;
 &lt;properties&gt;
-&lt;entry key=&quot;app.configDir&quot;&gt;/home/slothrop/.blankaspect/regexSearch&lt;/entry&gt;
+  &lt;entry key=&quot;app.configDir&quot;&gt;/home/slothrop/.blankaspect/regexSearch&lt;/entry&gt;
 &lt;/properties&gt;</pre>
+      </div>
 
       <p class="wrap">
         If the <span class="configProperty">app.configDir</span> property is set both on the
@@ -360,19 +362,20 @@
               <div><i>The current working directory</i></div>
               <div class="wrap">
                 The current working directory, which is denoted by the environment variable
-                <code>$PWD</code> on Linux/UNIX systems, depends on the system and the way in
+                <code>PWD</code> on Unix-like systems, depends on the system and the way in
                 which RegexSearch was run.
               </div>
             </li>
             <li class="spaced" id="defaultDirectory">
               <div><i>The default directory</i></div>
               <div class="wrap">
-                On Linux/UNIX systems, the default directory is
-                <code>$HOME/.blankaspect/regexSearch</code>, where <code>$HOME</code> is the
+                On Unix-like systems, the default directory is
+                <code>$HOME/.blankaspect/regexSearch</code>, where <code>HOME</code> is the
                 environment variable that denotes the user&apos;s home directory.  On Windows
                 systems, the default directory is
-                <code>%APPDATA%\blankaspect\regexSearch</code>, where <code>%APPDATA%</code> is
-                an environment variable.
+                <code>%APPDATA%\blankaspect\regexSearch</code>, where <code>APPDATA</code> is an
+                environment variable that denotes a subdirectory of the user&apos;s home
+                directory named <code>AppData</code>.
               </div>
             </li>
           </ol>
@@ -561,7 +564,7 @@
       <p class="wrap">
         The files in a directory are searched in order of filename.  The ordering is
         lexicographic (ie, the Unicode values of characters in the filename are compared) and
-        platform-dependent: it is case-sensitive on Linux/UNIX systems, but alphabetic case is
+        platform-dependent: it is case-sensitive on Unix-like systems, but alphabetic case is
         ignored on Windows systems.  Recursion is specified implicitly by <a
         href="#section4-1-2-2">pathname wildcards</a>.  A recursive search on a directory is
         depth-first: files in subdirectories are searched before the files in the directory.
@@ -1162,7 +1165,7 @@
         metasymbols outside a character class delimited by square brackets:
       </p>
       <p class="shaded">
-        <code class="noBackground">$ ( ) * + . ? [ \ ] ^ { | }</code>
+        <code class="undecorated">$ ( ) * + . ? [ \ ] ^ { | }</code>
       </p>
       <p class="wrap">
         (<code>]</code> and <code>}</code> are not metacharacters but are included in the set
@@ -1704,7 +1707,7 @@
                     The file is first written to a temporary file.  When the temporary file has
                     been written and closed, the existing file is deleted and the temporary file
                     renamed.  This is safer than the direct-writing mode but it does not
-                    preserve the file attributes on Linux/UNIX.  (Files were always written in
+                    preserve the file attributes on Linux/Unix.  (Files were always written in
                     this way by RegexSearch prior to the introduction of this configuration
                     property in version 2.2.)
                   </dd>
@@ -1712,7 +1715,7 @@
                   <dt>Use a temporary file, preserve attributes</dt>
                   <dd class="wrap">
                     With this option, the file is first written to a temporary file, as with the
-                    previous option.  After the temporary file has been renamed, the Linux/UNIX
+                    previous option.  After the temporary file has been renamed, the Linux/Unix
                     <code>chmod</code>, <code>chgrp</code> and <code>chown</code> commands are
                     issued with the <code>--reference</code> option, which should set the
                     file&apos;s permissions, group and owner to those of the original file.
@@ -2215,7 +2218,7 @@
       </p>
       <p class="wrap">
         <strong>Note:</strong> There are several differences between the syntax of regular
-        expressions in Java and the syntax of regular expressions in Linux/UNIX tools such as
+        expressions in Java and the syntax of regular expressions in Linux/Unix tools such as
         <i>sed</i> and <i>(g)awk</i>.
       </p>
       <p class="wrap">
@@ -2239,7 +2242,7 @@
         don&apos;t behave normally in regular expressions.  The metacharacters are:
       </p>
       <p class="shaded">
-        <code class="noBackground">$ ( ) * + . ? [ \ ^ { |</code>
+        <code class="undecorated">$ ( ) * + . ? [ \ ^ { |</code>
       </p>
       <p class="wrap">
         A metacharacter can be <i>escaped</i> &mdash; that is, its special meaning can be
@@ -3218,8 +3221,8 @@
         <dd class="wrap">
           A leading <code>~</code> in a pathname is expanded into the user&apos;s home directory
           using the <code>user.home</code> system property, which is usually equivalent to the
-          environment variable <code>$HOME</code> on Linux/UNIX systems or
-          <code>%USERPROFILE%</code> on Windows systems.
+          environment variable <code>HOME</code> on Unix-like systems or
+          <code>USERPROFILE</code> on Windows systems.
         </dd>
         <dd class="wrap">
           &bull; Example: <code>~/projects</code>
@@ -3491,7 +3494,7 @@
     <div id="lastModified">
       <div>
         <div>
-          Last modified: 2026-02-15
+          Last modified: 2026-04-19
         </div>
         <div class="image">
           <a class="hideHover" href="http://validator.w3.org/check?uri=referer">

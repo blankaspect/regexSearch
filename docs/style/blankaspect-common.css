@@ -223,7 +223,7 @@ p {
 p.tableId {
   font-style: italic;
   font-size: 83%;
-  margin: 0  2.5% 1.5em 2.5%;
+  margin: 0 2.0em 1.5em 2.0em;
 }
 
 p.tocLink {
@@ -261,8 +261,12 @@ ul.toc li {
 }
 
 @media (prefers-color-scheme: light) {
+  :root {
+    --background-color: #F6F6F2;
+  }
+
   .hiddenText {
-    color: #F6F6F2;
+    color: var(--background-color);
   }
 
   a:hover {
@@ -279,7 +283,7 @@ ul.toc li {
 
   body {
     color: #000000;
-    background-color: #F6F6F2;
+    background-color: var(--background-color);
   }
 
   div.example {
@@ -307,7 +311,8 @@ ul.toc li {
     border-color: #C0C0C0;
   }
 
-  h1, h2, h3, h4, h5 {
+  h1, h2, h3, h4, h5,
+  h1 code, h2 code, h3 code, h4 code, h5 code {
     color: #304868;
   }
 
@@ -318,8 +323,12 @@ ul.toc li {
 }
 
 @media (prefers-color-scheme: dark) {
+  :root {
+    --background-color: #202020;
+  }
+
   .hiddenText {
-    color: #202020;
+    color: var(--background-color);
   }
 
   a:hover {
@@ -336,7 +345,7 @@ ul.toc li {
 
   body {
     color: #F4F4F4;
-    background-color: #202020;
+    background-color: var(--background-color);
   }
 
   div.example {
@@ -364,7 +373,8 @@ ul.toc li {
     border-color: #606060;
   }
 
-  h1, h2, h3, h4, h5 {
+  h1, h2, h3, h4, h5,
+  h1 code, h2 code, h3 code, h4 code, h5 code {
     color: #E0C890;
   }
 

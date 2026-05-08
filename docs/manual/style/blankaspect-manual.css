@@ -27,8 +27,9 @@ code, code:link, code:visited {
   padding-right: 0.25em;
 }
 
-code.noBackground {
+code.undecorated {
   background-color: inherit;
+  border: none;
 }
 
 div.commandLine {
@@ -55,7 +56,7 @@ div.preferences {
   display: table;
   border-collapse: collapse;
   width: 95%;
-  margin: 1.0em 2.5%;
+  margin: 1.0em 2.0em;
 }
 div.preferences > div {
   display: table-row;
@@ -95,6 +96,10 @@ div.spacer {
   margin: 0.5em 0 0 0;
 }
 
+div:has(> pre.codeFragment) {
+  margin: 0.8em 0;
+}
+
 ol {
   margin-left: -0.7em;
 }
@@ -113,7 +118,7 @@ pre.codeFragment {
 
 table.basic {
   line-height: 125%;
-  margin: 1.0em 2.5% 0.8em 2.5%;
+  margin: 1.0em 2.0em 0.8em 2.0em;
 }
 table.basic td {
   border: 1px solid;
@@ -135,7 +140,7 @@ table.commandLine td.system {
 
 table.configProperties {
   line-height: 125%;
-  margin: 0.3em 2.5%;
+  margin: 0.3em 2.0em;
 }
 table.configProperties td {
   border: 1px solid;
@@ -153,7 +158,7 @@ table.configProperties th {
 
 table.dataStructure {
   line-height: 125%;
-  margin: 1.0em 2.5% 0.8em 2.5%;
+  margin: 1.0em 2.0em 0.8em 2.0em;
 }
 table.dataStructure .shaded1 {
   vertical-align: top;
@@ -176,7 +181,7 @@ table.dataStructure th {
 }
 
 table.distribution {
-  margin: 0.8em 2.5%;
+  margin: 0.8em 2.0em;
 }
 table.distribution td {
   border: 1px solid;
@@ -200,7 +205,7 @@ ul {
 }
 
 @media (prefers-color-scheme: light) {
-  a {
+  a, a code {
     color: #0000A0;
   }
   a.command, span.command {
@@ -297,7 +302,7 @@ ul {
 }
 
 @media (prefers-color-scheme: dark) {
-  a {
+  a, a code {
     color: #A0C0FC;
   }
   a.command, span.command {
@@ -343,7 +348,7 @@ ul {
   }
 
   pre.codeFragment {
-    background-color: #402820;
+    background-color: #3C2820;
     border-color: #705C50;
   }
 

@@ -885,9 +885,14 @@ public class StringUtils
 	//------------------------------------------------------------------
 
 	/**
-	 * Splits the specified text at line separators and returns the resulting list of lines.  The line separators that
-	 * are recognised are CR+LF (U+000D, U+000A) and LF (U+000A).  The line separators are not included in the output
-	 * list.
+	 * Splits the specified text at line separators and returns the resulting list of lines.  The following line
+	 * separators are recognised:
+	 * <ul>
+	 *   <li>a line feed (U+000A),</li>
+	 *   <li>a carriage return (U+000D) not followed by a line feed,</li>
+	 *   <li>a carriage return followed by a line feed (U+000D, U+000A).</li>
+	 * </ul>
+	 * The line separators are not included in the output list.
 	 *
 	 * @param  text
 	 *           the text that will be split into lines at line separators.
@@ -901,21 +906,26 @@ public class StringUtils
 		List<String> lines = new ArrayList<>();
 
 		// Extract lines from input sequence
-		int index = 0;
 		int startIndex = 0;
-		char prevCh = '\0';
-		while (index < text.length())
+		int endIndex = text.length();
+		int index = 0;
+		while (index < endIndex)
 		{
 			char ch = text.charAt(index);
-			if (ch == '\n')
+			if ((ch == '\n') || (ch == '\r'))
 			{
-				lines.add(text.subSequence(startIndex, (prevCh == '\r') ? index - 1 : index).toString());
-				startIndex = index + 1;
+				lines.add(text.subSequence(startIndex, index++).toString());
+				if ((ch == '\r') && (index < endIndex) && (text.charAt(index) == '\n'))
+					++index;
+				startIndex = index;
 			}
-			prevCh = ch;
-			++index;
+			else
+				++index;
 		}
-		lines.add(text.subSequence(startIndex, index).toString());
+
+		// Add residual line to list
+		if (startIndex < endIndex)
+			lines.add(text.subSequence(startIndex, endIndex).toString());
 
 		// Return list of lines
 		return lines;
