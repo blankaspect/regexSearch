@@ -118,7 +118,7 @@ pre.codeFragment {
 
 table.basic {
   line-height: 125%;
-  margin: 1.0em 2.0em 0.8em 2.0em;
+  margin: 1.0em 2.0em;
 }
 table.basic td {
   border: 1px solid;
@@ -269,14 +269,11 @@ ul {
     border-color: #D4D8E0;
   }
 
-  table.configProperties td {
+  table.configProperties td, table.configProperties th {
     border-color: #B4B8C8;
   }
   table.configProperties td.propertyKey {
     color: #004060;
-  }
-  table.configProperties th {
-    border-color: #B4B8C8;
   }
 
   table.dataStructure .shaded1 {
@@ -285,10 +282,7 @@ ul {
   table.dataStructure .shaded2 {
     background-color: #D8D8D8;
   }
-  table.dataStructure td {
-    border-color: #B4B8C8;
-  }
-  table.dataStructure th {
+  table.dataStructure td, table.dataStructure th {
     border-color: #B4B8C8;
   }
 
@@ -366,14 +360,11 @@ ul {
     border-color: #D4D8E0;
   }
 
-  table.configProperties td {
+  table.configProperties td, table.configProperties th {
     border-color: #606888;
   }
   table.configProperties td.propertyKey {
     color: #D09078;
-  }
-  table.configProperties th {
-    border-color: #606888;
   }
 
   table.dataStructure .shaded1 {
@@ -382,10 +373,7 @@ ul {
   table.dataStructure .shaded2 {
     background-color: #D8D8D8;
   }
-  table.dataStructure td {
-    border-color: #606888;
-  }
-  table.dataStructure th {
+  table.dataStructure td, table.dataStructure th {
     border-color: #606888;
   }
 
